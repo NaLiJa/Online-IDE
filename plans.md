@@ -80,3 +80,31 @@ if (typeof Object.create != 'function') {
 ### Instantiate Objects by class name
 https://www.stevefenton.co.uk/2014/07/creating-typescript-classes-dynamically/
 
+
+# Compiling examples #
+
+int a = b + adder.add(c, d);
+
+ - Step 1:
+thread.pushCurrentProgram();
+  -- macht:
+    stackframes.push(stack.size);
+    pcStack.push(pc);
+    programStack.push(currentProgram);
+  --
+  stack.push(stack[pos_adder]); 
+  stack.push(stack[pos_c]);
+  stack.push(stack[pos_d]);
+  programstack.push(stack[pos_adder]["add(int, int)"])
+  thread.pc = -1;
+
+Step 2: 
+  stack[pos_a] = stack[pos_b] + stack[pos_retVal];
+
+
+String test(int a, double b){
+  int c = a + Math.round(b);
+  return "Test: " + c + b;
+}
+
+

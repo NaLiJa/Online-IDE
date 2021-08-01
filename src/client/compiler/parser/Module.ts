@@ -80,6 +80,7 @@ import { GNGFigurClass } from "../../runtimelibrary/gng/GNGFigur.js";
 import { RandomClass } from "../../runtimelibrary/Random.js";
 import { DirectionClass } from "../../runtimelibrary/graphics/Direction.js";
 import { Patcher } from "./Patcher.js";
+import { NewProgram } from "../fastcode/NewProgram.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -165,6 +166,7 @@ export class Module {
     */
 
     mainProgram?: Program;
+    newMainProgram: NewProgram;
     mainProgramEnd: TextPosition;
     mainSymbolTable: SymbolTable;
 

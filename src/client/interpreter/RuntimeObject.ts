@@ -3,6 +3,13 @@ import { PrimitiveType, Value } from "../compiler/types/Types.js";
 
 
 
+export type NewRuntimeObject = {
+    __class: Klass | StaticClass;
+    __att: any[];     // attribute-values
+    // Methods are stored in Prototype
+}
+
+
 export class RuntimeObject {
 
     class: Klass | StaticClass;
