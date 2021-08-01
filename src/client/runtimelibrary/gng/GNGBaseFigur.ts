@@ -15,29 +15,29 @@ export class GNGBaseFigurClass extends Klass {
         super("GNGBaseFigur", module, "Oberklasse der graphischen Elemente in der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
 
         this.addAttribute(new Attribute("farbe", stringPrimitiveType, (value: Value) => { 
-            let farbe = value.object.intrinsicData["Farbe"];
+            let farbe = value.intrinsicData["Farbe"];
             value.value = farbe == null ? "schwarz" : farbe;
         }, false, Visibility.protected, false, "Farbe des Grafikobjekts"));
 
         this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { 
-            let sh = value.object.intrinsicData["Actor"];
+            let sh = value.intrinsicData["Actor"];
             value.value = Math.round(sh.getCenterX()); 
         }, false, Visibility.protected, false, "x-Position des Grafikobjekts"));
         this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { 
-            let sh = value.object.intrinsicData["Actor"];
+            let sh = value.intrinsicData["Actor"];
             value.value = Math.round(sh.getCenterY()); 
         }, false, Visibility.protected, false, "y-Position des Grafikobjekts"));
 
         this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
-            value.value = value.object.intrinsicData["Actor"].angle 
+            value.value = value.intrinsicData["Actor"].angle 
         }, false, Visibility.protected, false, "Blickrichtung des Grafikobjekts in Grad"));
 
         this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
-            value.value = Math.round(value.object.intrinsicData["Actor"].scaleFactor*100) 
+            value.value = Math.round(value.intrinsicData["Actor"].scaleFactor*100) 
         }, false, Visibility.protected, false, "Größe des Grafikobjekts (100 entspricht 'normalgroß')"));
 
         this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (value: Value) => { 
-            value.value = value.object.intrinsicData["Actor"].displayObject?.visible 
+            value.value = value.intrinsicData["Actor"].displayObject?.visible 
         }, false, Visibility.protected, false, "true, wenn das Grafikobjekt sichtbar ist"));
 
         this.setupAttributeIndicesRecursive();

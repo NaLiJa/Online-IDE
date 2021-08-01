@@ -4,12 +4,12 @@ import { Program, Statement, ReturnStatement } from "../compiler/parser/Program.
 import { ArrayType } from "../compiler/types/Array.js";
 import { Klass, Interface } from "../compiler/types/Class.js";
 import { Enum, EnumRuntimeObject } from "../compiler/types/Enum.js";
-import { PrimitiveType, Type, Value, Heap, Method, Variable } from "../compiler/types/Types.js";
+import { PrimitiveType, Type, Value, Heap, Method, Variable, NewValue } from "../compiler/types/Types.js";
 import { PrintManager } from "../main/gui/PrintManager.js";
 import { Main } from "../main/Main.js";
 import { Debugger } from "./Debugger.js";
 import { RuntimeObject } from "./RuntimeObject.js";
-import { intPrimitiveType, stringPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
+import { getType, intPrimitiveType, stringPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { InputManager } from "./InputManager.js";
 import { WorldHelper } from "../runtimelibrary/graphics/World.js";
 import { Helper } from "../main/gui/Helper.js";
@@ -36,7 +36,7 @@ export type ProgramStackElement = {
     method: Method | string,
     callbackAfterReturn: (interpreter: Interpreter) => void,
     isCalledFromOutside: string,
-    stackElementsToPushBeforeFirstExecuting?: Value[]
+    stackElementsToPushBeforeFirstExecuting?: NewValue[]
 };
 
 export class Interpreter {
@@ -65,7 +65,7 @@ export class Interpreter {
 
     programStack: ProgramStackElement[] = [];
 
-    stack: Value[] = [];
+    stack: NewValue[] = [];
     stackframes: number[] = [];
     currentStackframe: number;
 
@@ -378,7 +378,7 @@ export class Interpreter {
 
                 enumClass.pushStaticInitializationPrograms(this.programStack);
 
-                let valueList: Value[] = [];
+                let valueList: RuntimeObject[] = [];
 
                 let valueInitializationProgram: Program = {
                     module: enumClass.module,
@@ -404,10 +404,7 @@ export class Interpreter {
                 for (let enumInfo of enumClass.enumInfoList) {
                     enumInfo.object = new EnumRuntimeObject(enumClass, enumInfo);
 
-                    valueList.push({
-                        type: enumClass,
-                        value: enumInfo.object
-                    });
+                    valueList.push(enumInfo.object);
 
                     if (enumInfo.constructorCallProgram != null) {
                         this.programStack.push({
@@ -439,10 +436,7 @@ export class Interpreter {
                     })
                 }
 
-                enumClass.valueList = {
-                    type: new ArrayType(enumClass),
-                    value: valueList
-                };
+                enumClass.valueList = valueList;
             }
         }
 
@@ -809,11 +803,11 @@ export class Interpreter {
         let stackTop = this.stack.length - 1;
         let stackframeBegin = this.currentStackframe;
         let stack = this.stack;
-        let value: Value;
+        let value: NewValue;
 
         switch (node.type) {
             case TokenType.newAssignment:
-                let newValue = stack.pop().value;
+                let newValue = stack.pop();
 
                 let array1: any[];
                 let index1: number;
@@ -824,8 +818,8 @@ export class Interpreter {
                 // check for errors
                 switch (node.target) {
                     case AssignTarget.arrayElement:
-                        index1 = stack.pop().value;
-                        array1 = <any[]>stack.pop().value;
+                        index1 = stack.pop();
+                        array1 = <any[]>stack.pop();
 
                         if (array1 == null) return "Zugriff auf ein Element eines null-Feldes";
 
@@ -834,12 +828,12 @@ export class Interpreter {
                         }
                         break;
                     case AssignTarget.attribute:
-                        object2 = node.useThisObject ? stack[stackframeBegin].value : stack.pop().value;
+                        object2 = node.useThisObject ? stack[stackframeBegin] : stack.pop();
                         if (object2 == null) return "Zugriff auf ein Attribut (" + node.attributeIdentifier + ") des null-Objekts";
                         break;
                     case AssignTarget.heap:
                         heapVariable = this.heap[node.identifier];
-                        if(heapVariable == null){
+                        if (heapVariable == null) {
                             return "Die Variable " + node.identifier + " ist nicht bekannt.";
                         }
                         break;
@@ -847,59 +841,59 @@ export class Interpreter {
 
                 if (node.assignmentType != TokenType.assignment) {
 
-                    let oldValue: any;
+                    let oldValue: NewValue;
                     switch (node.target) {
                         case AssignTarget.arrayElement:
                             oldValue = array1[index1];
                             break;
                         case AssignTarget.stack:
-                            oldValue = stack[node.stackposOfVariable + stackframeBegin].value;
+                            oldValue = stack[node.stackposOfVariable + stackframeBegin];
                             break;
                         case AssignTarget.attribute:
-                            oldValue = (<RuntimeObject>object2).getValue(node.attributeIndex).value;
+                            oldValue = (<RuntimeObject>object2).attributes[node.attributeIndex];
                             break;
                         case AssignTarget.staticAttribute:
-                            oldValue = node.klass.classObject.getValue(node.attributeIndex).value;
+                            oldValue = node.klass.classObject.attributes[node.attributeIndex];
                             break;
                         case AssignTarget.heap:
-                            oldValue = heapVariable.value.value;
+                            oldValue = heapVariable.value;
                             break;
                     }
 
 
                     switch (node.assignmentType) {
                         case TokenType.plusAssignment:
-                            newValue = oldValue + newValue;
+                            newValue = <any>oldValue + newValue;
                             break;
                         case TokenType.minusAssignment:
-                            newValue = oldValue - newValue;
+                            newValue = <any>oldValue - <any>newValue;
                             break;
                         case TokenType.multiplicationAssignment:
-                            newValue = oldValue * newValue;
+                            newValue = <any>oldValue * <any>newValue;
                             break;
                         case TokenType.divisionAssignment:
-                            newValue = oldValue / newValue;
+                            newValue = <any>oldValue / <any>newValue;
                             break;
                         case TokenType.moduloAssignment:
-                            newValue = oldValue % newValue;
+                            newValue = <any>oldValue % <any>newValue;
                             break;
                         case TokenType.ANDAssigment:
-                            newValue = oldValue & newValue;
+                            newValue = <any>oldValue & <any>newValue;
                             break;
                         case TokenType.ORAssigment:
-                            newValue = oldValue | newValue;
+                            newValue = <any>oldValue | <any>newValue;
                             break;
                         case TokenType.XORAssigment:
-                            newValue = oldValue ^ newValue;
+                            newValue = <any>oldValue ^ <any>newValue;
                             break;
                         case TokenType.shiftLeftAssigment:
-                            newValue = oldValue << newValue;
+                            newValue = <any>oldValue << <any>newValue;
                             break;
                         case TokenType.shiftRightAssigment:
-                            newValue = oldValue >> newValue;
+                            newValue = <any>oldValue >> <any>newValue;
                             break;
                         case TokenType.shiftRightUnsignedAssigment:
-                            newValue = oldValue >>> newValue;
+                            newValue = <any>oldValue >>> <any>newValue;
                             break;
                     }
 
@@ -908,32 +902,34 @@ export class Interpreter {
 
                 switch (node.target) {
                     case AssignTarget.arrayElement:
-                        array1[index1].value = newValue;
+                        array1[index1] = newValue;
                         break;
                     case AssignTarget.stack:
-                        stack[node.stackposOfVariable + stackframeBegin].value = newValue;
+                        stack[node.stackposOfVariable + stackframeBegin] = newValue;
                         break;
                     case AssignTarget.attribute:
-                        (<RuntimeObject>object2).getValue(node.attributeIndex).value = newValue;
+                        (<RuntimeObject>object2).attributes[node.attributeIndex] = newValue;
                         break;
                     case AssignTarget.staticAttribute:
-                        node.klass.classObject.getValue(node.attributeIndex).value = newValue;
+                        node.klass.classObject.attributes[node.attributeIndex] = newValue;
                         break;
                     case AssignTarget.heap:
-                        heapVariable.value.value = newValue;
+                        heapVariable.value = newValue;
                         break;
                 }
                 break;
 
-                case TokenType.castValue:
+            case TokenType.castValue:
                 let relPos = node.stackPosRelative == null ? 0 : node.stackPosRelative;
                 value = stack[stackTop + relPos];
-                stack[stackTop + relPos] = value.type.castTo(value, node.newType);
+                let oldType = getType(value);
+
+                stack[stackTop + relPos] = oldType.castTo(value, node.newType);
                 break;
             case TokenType.checkCast:
                 value = stack[stackTop];
-                if (value.value == null) break;
-                let rto = <RuntimeObject>value.value;
+                if (value == null) break;
+                let rto = <RuntimeObject>value;
                 if (node.newType instanceof Klass) {
                     if (typeof rto == "object") {
                         if (!rto.class.hasAncestorOrIs(node.newType)) {
@@ -957,12 +953,9 @@ export class Interpreter {
             case TokenType.localVariableDeclaration:
                 let variable = node.variable;
                 let type = variable.type;
-                value = {
-                    type: type,
-                    value: null
-                };
+                value = null;
                 if (type instanceof PrimitiveType) {
-                    value.value = type.initialValue;
+                    value = type.initialValue;
                 }
                 stack[variable.stackPos + stackframeBegin] = value;
                 if (node.pushOnTopOfStackForInitialization) {
@@ -976,119 +969,43 @@ export class Interpreter {
                 stack[node.stackposOfVariable + stackframeBegin] = stack.pop();
                 break;
             case TokenType.pushAttribute:
-                let object1 = node.useThisObject ? stack[stackframeBegin].value : stack.pop().value;
+                let object1 = node.useThisObject ? stack[stackframeBegin] : stack.pop();
                 if (object1 == null) return "Zugriff auf ein Attribut (" + node.attributeIdentifier + ") des null-Objekts";
-                let value1 = (<RuntimeObject>object1).getValue(node.attributeIndex);
-                if (value1?.updateValue != null) {
-                    value1.updateValue(value1);
-                }
+                let value1 = (<RuntimeObject>object1).attributes[node.attributeIndex];
                 stack.push(value1);
                 break;
             case TokenType.pushArrayLength:
-                let a = stack.pop().value;
+                let a = stack.pop();
                 if (a == null) return "Zugriff auf das length-Attribut des null-Objekts";
-                stack.push({ type: intPrimitiveType, value: (<any[]>a).length });
-                break;
-            case TokenType.assignment:
-                value = stack.pop();
-                stack[stackTop - 1].value = value.value;
-                if (!node.leaveValueOnStack) {
-                    stack.pop();
-                }
-                break;
-            case TokenType.plusAssignment:
-                value = stack.pop();
-                stack[stackTop - 1].value += value.value;
-                break;
-            case TokenType.minusAssignment:
-                value = stack.pop();
-                stack[stackTop - 1].value -= value.value;
-                break;
-            case TokenType.multiplicationAssignment:
-                value = stack.pop();
-                stack[stackTop - 1].value *= value.value;
-                break;
-            case TokenType.divisionAssignment:
-                value = stack.pop();
-                stack[stackTop - 1].value /= value.value;
-                break;
-            case TokenType.moduloAssignment:
-                value = stack.pop();
-                stack[stackTop - 1].value %= value.value;
-                break;
-            case TokenType.ANDAssigment:
-                value = stack.pop();
-                stack[stackTop - 1].value &= value.value;
-                break;
-            case TokenType.ORAssigment:
-                value = stack.pop();
-                stack[stackTop - 1].value |= value.value;
-                break;
-            case TokenType.XORAssigment:
-                value = stack.pop();
-                stack[stackTop - 1].value ^= value.value;
-                break;
-            case TokenType.shiftLeftAssigment:
-                value = stack.pop();
-                stack[stackTop - 1].value <<= value.value;
-                break;
-            case TokenType.shiftRightAssigment:
-                value = stack.pop();
-                stack[stackTop - 1].value >>= value.value;
-                break;
-            case TokenType.shiftRightUnsignedAssigment:
-                value = stack.pop();
-                stack[stackTop - 1].value >>>= value.value;
+                stack.push((<NewValue[]>a).length);
                 break;
             case TokenType.binaryOp:
                 let secondOperand = stack.pop();
                 let resultValue =
                     node.leftType.compute(node.operator, stack[stackTop - 1], secondOperand);
-                let resultType = node.leftType.getResultType(node.operator, secondOperand.type);
-                stack[stackTop - 1] = {
-                    type: resultType,
-                    value: resultValue
-                };
+                stack[stackTop - 1] = resultValue;
                 break;
             case TokenType.unaryOp:
                 let oldValue = stack.pop();
                 if (node.operator == TokenType.minus) {
-                    stack.push({
-                        type: oldValue.type,
-                        value: -oldValue.value
-                    })
+                    stack.push(-oldValue);
                 } else {
-                    stack.push({
-                        type: oldValue.type,
-                        value: !oldValue.value
-                    })
+                    stack.push(!oldValue);
                 }
                 break;
             case TokenType.pushConstant:
-                stack.push({
-                    value: node.value,
-                    type: node.dataType
-                });
+                stack.push(node.value);
                 break;
             case TokenType.pushStaticClassObject:
                 if (node.klass instanceof Klass) {
-                    stack.push({
-                        type: node.klass.staticClass,
-                        value: node.klass.staticClass.classObject
-                    });
+                    stack.push(node.klass.staticClass.classObject);
                 } else {
                     // This is to enable instanceof operator with interfaces
-                    stack.push({
-                        type: node.klass,
-                        value: node.klass
-                    });
+                    stack.push(<any>node.klass);
                 }
                 break;
             case TokenType.pushStaticAttribute:
-                value = node.klass.classObject.getValue(node.attributeIndex);
-                if (value.updateValue != null) {
-                    value.updateValue(value);
-                }
+                value = node.klass.classObject.attributes[node.attributeIndex];
                 stack.push(value);
                 break;
             // case TokenType.pushStaticAttributeIntrinsic:
@@ -1096,24 +1013,21 @@ export class Interpreter {
             //     stack.push({ type: node.attribute.type, value: node.attribute.updateValue(null) });
             //     break;
             case TokenType.selectArrayElement:
-                let index = stack.pop();
-                let array = stack.pop();
+                let index = <number>stack.pop();
+                let array = <NewValue[]>stack.pop();
 
-                if (array.value == null) return "Zugriff auf ein Element eines null-Feldes";
+                if (array == null) return "Zugriff auf ein Element eines null-Feldes";
 
-                if (index.value >= array.value.length || index.value < 0) {
-                    return "Zugriff auf das Element mit Index " + index.value + " eines Feldes der Länge " + array.value.length;
+                if (index >= array.length || index < 0) {
+                    return "Zugriff auf das Element mit Index " + index + " eines Feldes der Länge " + array.length;
                 }
-                stack.push(array.value[index.value]);
+                stack.push(array[index]);
                 break;
 
             case TokenType.callMainMethod:
-                this.stack.push({ value: node.staticClass.classObject, type: node.staticClass });
+                this.stack.push(node.staticClass.classObject);
 
-                let parameter: Value = {
-                    value: [{ value: "Test", type: stringPrimitiveType }],
-                    type: new ArrayType(stringPrimitiveType)
-                };
+                let parameter: NewValue[] = ["Test"];
                 let parameterBegin2 = stackTop + 2; // 1 parameter
 
                 this.stack.push(parameter);
@@ -1143,12 +1057,9 @@ export class Interpreter {
 
                 break;
             case TokenType.makeEllipsisArray:
-                let ellipsisArray: Value[] = stack.splice(stack.length - node.parameterCount, node.parameterCount);
+                let ellipsisArray: NewValue[] = stack.splice(stack.length - node.parameterCount, node.parameterCount);
 
-                stack.push({
-                    value: ellipsisArray,
-                    type: node.arrayType
-                })
+                stack.push(ellipsisArray);
 
                 break;
             case TokenType.callMethod:
@@ -1157,23 +1068,23 @@ export class Interpreter {
                 let method = node.method;
 
                 let parameterBegin = stackTop + 1 + node.stackframeBegin;
-                let parameters1 = method.parameterlist.parameters;
-                for (let i = parameterBegin + 1; i <= stackTop; i++) {
-                    if (this.stack[i] != null && this.stack[i].type instanceof PrimitiveType) {
-                        stack[i] = {
-                            type: parameters1[i - parameterBegin - 1].type,  // cast to parameter type...
-                            value: stack[i].value
-                        }
-                    }
-                }
+                // let parameters1 = method.parameterlist.parameters;
+                // for (let i = parameterBegin + 1; i <= stackTop; i++) {
+                //     if (this.stack[i] != null && this.stack[i].type instanceof PrimitiveType) {
+                //         stack[i] = {
+                //             type: parameters1[i - parameterBegin - 1].type,  // cast to parameter type...
+                //             value: stack[i].value
+                //         }
+                //     }
+                // }
 
-                if (stack[parameterBegin].value == null && !method.isStatic) {
+                if (stack[parameterBegin] == null && !method.isStatic) {
                     return "Aufruf der Methode " + method.identifier + " des null-Objekts";
                 }
 
                 if (method.isAbstract || method.isVirtual && !node.isSuperCall) {
                     let object = stack[parameterBegin];
-                    method = (<Klass>(<RuntimeObject>object.value).class).getMethodBySignature(method.signature);
+                    method = (<Klass>(<RuntimeObject>object).class).getMethodBySignature(method.signature);
                 }
 
                 if (method == null) {
@@ -1186,10 +1097,7 @@ export class Interpreter {
                     let parameters = stack.splice(parameterBegin);
                     let returnValue = method.invoke(parameters);
                     if (rt != null && rt.identifier != 'void') {
-                        stack.push({
-                            value: returnValue,
-                            type: rt
-                        });
+                        stack.push(returnValue);
                     }
                 } else {
                     this.stackframes.push(this.currentStackframe);
@@ -1233,7 +1141,7 @@ export class Interpreter {
                 this.showProgramPointerAndVariables();
 
                 let that = this;
-                this.inputManager.readInput(method1, parameters, (value: Value) => {
+                this.inputManager.readInput(method1, parameters, (value: NewValue) => {
                     stack.push(value);
                     this.main.hideProgramPointerPosition();
                     that.setState(InterpreterState.paused);
@@ -1266,14 +1174,9 @@ export class Interpreter {
             case TokenType.newObject:
                 let object = new RuntimeObject(node.class);
 
-                value = {
-                    value: object,
-                    type: node.class
-                };
-
-                stack.push(value);
+                stack.push(object);
                 if (node.subsequentConstructorCall) {
-                    stack.push(value);
+                    stack.push(object);
                     stackTop++;
                 }
 
@@ -1311,36 +1214,31 @@ export class Interpreter {
 
                 break;
             case TokenType.processPostConstructorCallbacks:
-                value = stack[stackTop];
-                let classType = <Klass>value.type;
+                value = <RuntimeObject>stack[stackTop];
+                let classType = <Klass>(value).class;
                 for (let pcc of classType.getPostConstructorCallbacks()) {
-                    pcc(value.value);
+                    pcc(value);
                 }
                 break;
             case TokenType.extendedForLoopInit:
-                stack[node.stackPosOfCounter + stackframeBegin] = {
-                    type: intPrimitiveType,
-                    value: 0
-                }
+                stack[node.stackPosOfCounter + stackframeBegin] = 0;
                 break;
             case TokenType.extendedForLoopCheckCounterAndGetElement:
-                let counter: number = stack[node.stackPosOfCounter + stackframeBegin].value++;
-                let collection = stack[node.stackPosOfCollection + stackframeBegin].value;
+                let counter: number = (<number>stack[node.stackPosOfCounter + stackframeBegin])++;
+                let collection = stack[node.stackPosOfCollection + stackframeBegin];
 
                 switch (node.kind) {
                     case "array":
                         if (counter < (<any[]>collection).length) {
-                            stack[node.stackPosOfElement + stackframeBegin].value = (<any[]>collection)[counter].value;
-                            stack[node.stackPosOfElement + stackframeBegin].type = (<any[]>collection)[counter].type;
+                            stack[node.stackPosOfElement + stackframeBegin] = (<NewValue[]>collection)[counter];
                         } else {
                             this.currentProgramPosition = node.destination - 1;
                         }
                         break;
                     case "internalList":
-                        let list: any[] = (<ListHelper>(<RuntimeObject>collection).intrinsicData["ListHelper"]).valueArray;
+                        let list: NewValue[] = (<ListHelper>(<RuntimeObject>collection).intrinsicData["ListHelper"]).valueArray;
                         if (counter < list.length) {
-                            stack[node.stackPosOfElement + stackframeBegin].value = list[counter].value;
-                            stack[node.stackPosOfElement + stackframeBegin].type = list[counter].type;
+                            stack[node.stackPosOfElement + stackframeBegin] = list[counter];
                         } else {
                             this.currentProgramPosition = node.destination - 1;
                         }
@@ -1348,52 +1246,53 @@ export class Interpreter {
                     case "group":
                         let list1: any[] = (<GroupHelper>(<RuntimeObject>collection).intrinsicData["Actor"]).shapes;
                         if (counter < list1.length) {
-                            stack[node.stackPosOfElement + stackframeBegin].value = list1[counter];
-                            stack[node.stackPosOfElement + stackframeBegin].type = list1[counter].klass;
+                            stack[node.stackPosOfElement + stackframeBegin] = list1[counter];
                         } else {
                             this.currentProgramPosition = node.destination - 1;
                         }
                         break;
                 }
                 break;
+            // TODO: Das funktioniert so nicht mehr!
             case TokenType.incrementDecrementBefore:
-                value = stack[stackTop];
-                value.value += node.incrementDecrementBy;
+                (<number>stack[stackTop]) += node.incrementDecrementBy;
                 break;
+            // TODO: Das funktioniert so nicht mehr!
             case TokenType.incrementDecrementAfter:
-                value = stack[stackTop];
-                // replace value by copy:
-                stack[stackTop] = {
-                    value: value.value,
-                    type: value.type
-                };
-                // increment value which is not involved in subsequent 
-                value.value += node.incrementDecrementBy;
+                (<number>stack[stackTop]) += node.incrementDecrementBy;
+                // value = stack[stackTop];
+                // // replace value by copy:
+                // stack[stackTop] = {
+                //     value: value.value,
+                //     type: value.type
+                // };
+                // // increment value which is not involved in subsequent 
+                // value.value += node.incrementDecrementBy;
                 break;
             case TokenType.jumpAlways:
                 this.currentProgramPosition = node.destination - 1;
                 break;
             case TokenType.jumpIfTrue:
                 value = stack.pop();
-                if (<boolean>value.value) {
+                if (<boolean>value) {
                     this.currentProgramPosition = node.destination - 1;
                 }
                 break;
             case TokenType.jumpIfFalse:
                 value = stack.pop();
-                if (!(<boolean>value.value)) {
+                if (!(<boolean>value)) {
                     this.currentProgramPosition = node.destination - 1;
                 }
                 break;
             case TokenType.jumpIfTrueAndLeaveOnStack:
                 value = stack[stackTop];
-                if (<boolean>value.value) {
+                if (<boolean>value) {
                     this.currentProgramPosition = node.destination - 1;
                 }
                 break;
             case TokenType.jumpIfFalseAndLeaveOnStack:
                 value = stack[stackTop];
-                if (!(<boolean>value.value)) {
+                if (!(<boolean>value)) {
                     this.currentProgramPosition = node.destination - 1;
                 }
                 break;
@@ -1465,8 +1364,8 @@ export class Interpreter {
             case TokenType.println:
                 let text = null;
                 let color = null;
-                if (node.withColor) color = <string | number>stack.pop().value;
-                if (!node.empty) text = <string>stack.pop().value;
+                if (node.withColor) color = <string | number>stack.pop();
+                if (!node.empty) text = <string>stack.pop();
                 if (node.type == TokenType.println) {
                     this.printManager.println(text, color);
                 } else {
@@ -1476,28 +1375,25 @@ export class Interpreter {
             case TokenType.pushEmptyArray:
                 let counts: number[] = [];
                 for (let i = 0; i < node.dimension; i++) {
-                    counts.push(<number>stack.pop().value);
+                    counts.push(<number>stack.pop());
                 }
                 stack.push(this.makeEmptyArray(counts, node.arrayType));
                 break;
             case TokenType.beginArray:
-                stack.push({
-                    type: node.arrayType,
-                    value: []
-                });
+                stack.push([]);
                 break;
             case TokenType.addToArray:
                 stackTop -= node.numberOfElementsToAdd;
                 // let values: Value[] = stack.splice(stackTop + 1, node.numberOfElementsToAdd);
-                let values: Value[] = stack.splice(stackTop + 1, node.numberOfElementsToAdd).map(tvo => ({ type: tvo.type, value: tvo.value }));
-                stack[stackTop].value = (<any[]>stack[stackTop].value).concat(values);
+                let values: NewValue[] = stack.splice(stackTop + 1, node.numberOfElementsToAdd);
+                stack[stackTop] = (<NewValue[]>stack[stackTop]).concat(values);
                 break;
             case TokenType.pushEnumValue:
                 let enumInfo = node.enumClass.identifierToInfoMap[node.valueIdentifier];
-                stack.push(node.enumClass.valueList.value[enumInfo.ordinal]);
+                stack.push(node.enumClass.valueList[enumInfo.ordinal]);
                 break;
             case TokenType.keywordSwitch:
-                let switchValue = stack.pop().value;
+                let switchValue = <string|number>stack.pop();
                 let destination = node.destinationMap[switchValue];
                 if (destination != null) {
                     this.currentProgramPosition = destination - 1; // it will be increased after this switch-statement!
@@ -1513,10 +1409,7 @@ export class Interpreter {
 
                 let v = node.variable;
                 this.heap[v.identifier] = v;
-                v.value = {
-                    type: v.type,
-                    value: (v.type instanceof PrimitiveType) ? v.type.initialValue : null
-                }
+                v.value = (v.type instanceof PrimitiveType) ? v.type.initialValue : null;
                 if (node.pushOnTopOfStackForInitialization) {
                     this.stack.push(v.value);
                 }
@@ -1531,7 +1424,7 @@ export class Interpreter {
                 }
                 break;
             case TokenType.returnIfDestroyed:
-                let shapeRuntimeObject: RuntimeObject = this.stack[stackframeBegin].value;
+                let shapeRuntimeObject = <RuntimeObject>stack[stackframeBegin];
                 if (shapeRuntimeObject != null) {
                     let shape = shapeRuntimeObject.intrinsicData["Actor"];
                     if (shape["isDestroyed"] == true) {
@@ -1546,12 +1439,12 @@ export class Interpreter {
         this.currentProgramPosition++;
 
     }
-    return(node: ReturnStatement | null, stack: Value[]) {
+    return(node: ReturnStatement | null, stack: NewValue[]) {
 
         let currentCallbackAfterReturn = this.currentCallbackAfterReturn;
 
         if (node != null && node.copyReturnValueToStackframePos0) {
-            let returnValue: Value = stack.pop();
+            let returnValue: NewValue = stack.pop();
             stack[this.currentStackframe] = returnValue;
             stack.splice(this.currentStackframe + 1);
         } else {
@@ -1572,37 +1465,23 @@ export class Interpreter {
     }
 
 
-    makeEmptyArray(counts: number[], type: Type): Value {
+    makeEmptyArray(counts: number[], type: Type): NewValue[] {
         let type1 = (<ArrayType>type).arrayOfType;
         if (counts.length == 1) {
-            let array: Value[] = [];
-            for (let i = 0; i < counts[0]; i++) {
-                let v = {
-                    type: type1,
-                    value: null
-                };
-
-                if (type1 instanceof PrimitiveType) {
-                    v.value = type1.initialValue;
-                }
-
-                array.push(v);
-
+            let array: NewValue[] = new Array(counts[0]);
+            if (type1 instanceof PrimitiveType) {
+                array.fill(type1.initialValue);
+            } else {
+                array.fill(null);
             }
-            return {
-                type: type,
-                value: array
-            };
+            return array;
         } else {
-            let array: Value[] = [];
+            let array: NewValue[] = [];
             let n = counts.pop();
             for (let i = 0; i < n; i++) {
                 array.push(this.makeEmptyArray(counts, type1));
             }
-            return {
-                type: type,
-                value: array
-            };
+            return array;
         }
     }
 
@@ -1721,7 +1600,7 @@ export class Interpreter {
 
     // }
 
-    runTimer(method: Method, stackElements: Value[],
+    runTimer(method: Method, stackElements: NewValue[],
         callbackAfterReturn: (interpreter: Interpreter) => void, isActor: boolean) {
 
         if (this.state != InterpreterState.running) {
@@ -1770,7 +1649,7 @@ export class Interpreter {
 
     }
 
-    evaluate(program: Program): { error: string, value: Value } {
+    evaluate(program: Program): { error: string, value: NewValue } {
 
         this.pushCurrentProgram();
 
@@ -1806,7 +1685,7 @@ export class Interpreter {
             this.popProgram();
         }
 
-        let stackTop: Value;
+        let stackTop: NewValue;
         if (this.stack.length > stacksizeBefore) {
             stackTop = this.stack.pop();
 
@@ -1827,7 +1706,7 @@ export class Interpreter {
 
     }
 
-    executeImmediatelyInNewStackframe(program: Program, valuesToPushBeforeExecuting: Value[]): { error: string, value: Value } {
+    executeImmediatelyInNewStackframe(program: Program, valuesToPushBeforeExecuting: NewValue[]): { error: string, value: NewValue } {
 
         this.pushCurrentProgram();
 
@@ -1840,6 +1719,7 @@ export class Interpreter {
         let stacksizeBefore = this.stack.length;
         this.currentStackframe = stacksizeBefore;
 
+        // TODO: concat?
         for (let v of valuesToPushBeforeExecuting) this.stack.push(v);
 
         let oldInterpreterState = this.state;
@@ -1865,7 +1745,7 @@ export class Interpreter {
 
         if (stepCount == 100000) this.throwException("Die Ausführung des Konstruktors dauerte zu lange.");
 
-        let stackTop: Value;
+        let stackTop: NewValue;
         if (this.stack.length > stacksizeBefore) {
             stackTop = this.stack.pop();
 
@@ -1892,18 +1772,13 @@ export class Interpreter {
     instantiateObjectImmediately(klass: Klass): RuntimeObject {
         let object = new RuntimeObject(klass);
 
-        let value = {
-            value: object,
-            type: klass
-        };
-
         let klass1 = klass;
 
         while (klass1 != null) {
             let aip = klass1.attributeInitializationProgram;
             if (aip.statements.length > 0) {
 
-                this.executeImmediatelyInNewStackframe(aip, [value]);
+                this.executeImmediatelyInNewStackframe(aip, [object]);
 
             }
             klass1 = klass1.baseClass;
@@ -1916,7 +1791,7 @@ export class Interpreter {
             //     module: constructor.program.module,
             //     statements: constructor.program.statements.slice(0, constructor.program.statements.length - 1)
             // };
-            this.executeImmediatelyInNewStackframe(constructor.program, [value]);
+            this.executeImmediatelyInNewStackframe(constructor.program, [object]);
         }
 
         return object;

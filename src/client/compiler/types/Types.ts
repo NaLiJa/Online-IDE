@@ -33,11 +33,11 @@ export abstract class Type {
 
     public abstract getResultType(operation: TokenType, secondOperandType?: Type): Type;
 
-    public abstract compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any;
+    public abstract compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue): any;
 
     public abstract canCastTo(type: Type): boolean;
 
-    public abstract castTo(value: Value, type: Type): Value;
+    public abstract castTo(value: NewValue, type: Type): NewValue;
 
     public abstract equals(type: Type): boolean;
 
@@ -45,7 +45,7 @@ export abstract class Type {
         return null;
     };
 
-    public abstract debugOutput(value: Value, maxLength?: number): string;
+    public abstract debugOutput(value: NewValue, maxLength?: number): string;
 
     clearUsagePositions() {
         this.usagePositions = new Map();
@@ -140,7 +140,7 @@ export class Method extends Type {
     returnType: Type;
     annotation?: string;
 
-    invoke?: (parameters: Value[]) => any;  // only for system functions
+    invoke?: (parameters: NewValue[]) => any;  // only for system functions
     program?: Program;
 
     reserveStackForLocalVariables: number = 0;
@@ -211,7 +211,7 @@ export class Method extends Type {
 
 
     constructor(name: string, parameterlist: Parameterlist, returnType: Type,
-        invokeOrAST: ((parameters: Value[]) => any) | Program,
+        invokeOrAST: ((parameters: NewValue[]) => any) | Program,
         isAbstract: boolean, isStatic: boolean, documentation?: string, isConstructor: boolean = false) {
         super();
         this.identifier = name;
@@ -316,7 +316,7 @@ export class Method extends Type {
         return snippet;
     }
 
-    public debugOutput(value: Value): string {
+    public debugOutput(value: NewValue): string {
         return "";
     }
 
@@ -328,7 +328,7 @@ export class Method extends Type {
         return null;
     }
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue): any {
         return null;
     }
 
@@ -336,7 +336,7 @@ export class Method extends Type {
         return false;
     }
 
-    public castTo(value: Value, type: Type): Value { return value }
+    public castTo(value: NewValue, type: Type): NewValue { return value }
 
 
 }
@@ -374,7 +374,7 @@ export type Variable = {
     declaration: TextPositionWithModule,
     isFinal: boolean,
     isEllipsis?: boolean,
-    value?: Value // only for variables on heap,
+    value?: NewValue // only for variables on heap,
     declarationError?: any,     // if v.declarationError != null then variable has been used before initialization.
     usedBeforeInitialization?: boolean,
     initialized?: boolean
@@ -382,11 +382,13 @@ export type Variable = {
 
 export type Heap = { [identifier: string]: Variable };
 
+export type NewValue = RuntimeObject | string | number | boolean | NewValue[];
+
 export type Value = {
     type: Type;
     value: any;
     updateValue?: (value: Value) => void;
-    object?: RuntimeObject;
+    // object?: RuntimeObject;
 }
 
 

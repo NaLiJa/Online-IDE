@@ -2,7 +2,7 @@ import { TokenType } from "../lexer/Token.js";
 import { ArrayType } from "./Array.js";
 import { Interface, Klass, setBooleanPrimitiveTypeCopy } from "./Class.js";
 import { ObjectClass } from "./ObjectClass.js";
-import { Method, Parameterlist, PrimitiveType, Type, Value } from "./Types.js";
+import { Method, NewValue, Parameterlist, PrimitiveType, Type, Value } from "./Types.js";
 import { IntegerClass } from "./boxedTypes/IntegerClass.js";
 import { FloatClass } from "./boxedTypes/FloatClass.js";
 import { CharacterClass } from "./boxedTypes/CharacterClass.js";
@@ -19,20 +19,20 @@ export class NullType extends Type {
     getResultType(operation: TokenType, secondOperandType: Type) {
         return null;
     }
-    compute(operation: TokenType, firstOperand: Value, secondOperand: Value) {
+    compute(operation: TokenType, firstOperand: NewValue, secondOperand: NewValue) {
         return null;
     }
     canCastTo(type: Type) {
         return (type instanceof Klass || type instanceof Interface);
     }
-    castTo(value: Value, type: Type) {
+    castTo(value: NewValue, type: Type) {
         return value;
     }
     equals(type: Type) {
         return (type instanceof Klass || type instanceof Interface);
     }
 
-    public debugOutput(value: Value): string {
+    public debugOutput(value: NewValue): string {
         return "null";
     }
 }
@@ -47,20 +47,20 @@ export class VarType extends Type {
     getResultType(operation: TokenType, secondOperandType: Type) {
         return null;
     }
-    compute(operation: TokenType, firstOperand: Value, secondOperand: Value) {
+    compute(operation: TokenType, firstOperand: NewValue, secondOperand: NewValue) {
         return null;
     }
     canCastTo(type: Type) {
         return (type instanceof Klass || type instanceof Interface);
     }
-    castTo(value: Value, type: Type) {
+    castTo(value: NewValue, type: Type) {
         return value;
     }
     equals(type: Type) {
         return (type instanceof Klass || type instanceof Interface);
     }
 
-    public debugOutput(value: Value): string {
+    public debugOutput(value: NewValue): string {
         return "var";
     }
 }
@@ -119,60 +119,51 @@ export class IntPrimitiveType extends PrimitiveType {
         return TokenType.integerConstant;
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
 
         if (type == floatPrimitiveType || type == doublePrimitiveType) {
-            return {
-                type: type,
-                value: value.value
-            };
+            return value;
         }
 
         if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
+            return  "" + <number>value;
         }
 
         if (type == charPrimitiveType) {
-            return {
-                type: type,
-                value: String.fromCharCode(<number>value.value)
-            }
+            return String.fromCharCode(<number>value);
         }
 
     }
 
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue): any {
 
-        let value = <number>(firstOperand.value);
+        let value = <number>(firstOperand);
 
         switch (operation) {
             case TokenType.plus:
-                if (secondOperand.type == stringPrimitiveType) {
-                    return value + <string>(secondOperand.value);
+                if (typeof secondOperand == "string") {
+                    return value + <string>(secondOperand);
                 } else {
-                    return value + <number>(secondOperand.value);
+                    return value + <number>(secondOperand);
                 }
 
             case TokenType.minus:
                 if (secondOperand == null) return -value;
-                return value - <number>(secondOperand.value);
+                return value - <number>(secondOperand);
 
             case TokenType.multiplication:
-                return value * <number>(secondOperand.value);
+                return value * <number>(secondOperand);
 
             case TokenType.division:
-                if (secondOperand.type == intPrimitiveType) {
-                    return Math.trunc(value / <number>(secondOperand.value));
+                if (Math.round(<number>secondOperand) == secondOperand) {
+                    return Math.trunc(value / <number>(secondOperand));
                 }
-                return value / <number>(secondOperand.value);
+                return value / <number>(secondOperand);
 
             case TokenType.modulo:
-                if (secondOperand.type == intPrimitiveType) {
-                    return Math.trunc(value % <number>(secondOperand.value));
+                if (Math.round(<number>secondOperand) == secondOperand) {
+                    return Math.trunc(value % <number>(secondOperand));
                 }
                 return 1;
 
@@ -189,48 +180,48 @@ export class IntPrimitiveType extends PrimitiveType {
                 return ~value;
 
             case TokenType.lower:
-                return value < (<number>(secondOperand.value));
+                return value < (<number>(secondOperand));
 
             case TokenType.greater:
-                return value > <number>(secondOperand.value);
+                return value > <number>(secondOperand);
 
             case TokenType.lowerOrEqual:
-                return value <= <number>(secondOperand.value);
+                return value <= <number>(secondOperand);
 
             case TokenType.greaterOrEqual:
-                return value >= <number>(secondOperand.value);
+                return value >= <number>(secondOperand);
 
             case TokenType.equal:
-                return value == <number>(secondOperand.value);
+                return value == <number>(secondOperand);
 
             case TokenType.notEqual:
-                return value != <number>(secondOperand.value);
+                return value != <number>(secondOperand);
 
             case TokenType.OR:
-                return value | <number>(secondOperand.value);
+                return value | <number>(secondOperand);
 
             case TokenType.XOR:
-                return value ^ <number>(secondOperand.value);
+                return value ^ <number>(secondOperand);
 
             case TokenType.ampersand:
-                return value & <number>(secondOperand.value);
+                return value & <number>(secondOperand);
 
             case TokenType.shiftLeft:
-                return value << <number>(secondOperand.value);
+                return value << <number>(secondOperand);
 
             case TokenType.shiftRight:
-                return value >> <number>(secondOperand.value);
+                return value >> <number>(secondOperand);
 
             case TokenType.shiftRightUnsigned:
-                return value >>> <number>(secondOperand.value);
+                return value >>> <number>(secondOperand);
 
         }
 
 
     }
 
-    public debugOutput(value: Value): string {
-        return "" + <number>value.value;
+    public debugOutput(value: NewValue): string {
+        return "" + <number>value;
     }
 
 
@@ -279,53 +270,44 @@ export class FloatPrimitiveType extends PrimitiveType {
         return TokenType.floatingPointConstant;
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
 
         if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
+            return "" + <number>value;
         }
 
         if (type == intPrimitiveType) {
-            return {
-                type: type,
-                value: Math.trunc(<number>value.value)
-            }
+            return Math.trunc(<number>value);
         }
 
         if (type == doublePrimitiveType) {
-            return {
-                type: type,
-                value: value.value
-            }
+            return value;
         }
 
     }
 
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue): any {
 
-        let value = <number>(firstOperand.value);
+        let value = <number>(firstOperand);
 
         switch (operation) {
             case TokenType.plus:
-                if (secondOperand.type == stringPrimitiveType) {
-                    return value + <string>(secondOperand.value);
+                if (typeof secondOperand == "string") {
+                    return value + <string>(secondOperand);
                 } else {
-                    return value + <number>(secondOperand.value);
+                    return value + <number>(secondOperand);
                 }
 
             case TokenType.minus:
                 if (secondOperand == null) return -value;
-                return value - <number>(secondOperand.value);
+                return value - <number>(secondOperand);
 
             case TokenType.multiplication:
-                return value * <number>(secondOperand.value);
+                return value * <number>(secondOperand);
 
             case TokenType.division:
-                return value / <number>(secondOperand.value);
+                return value / <number>(secondOperand);
 
             case TokenType.doublePlus:
                 return value++;
@@ -337,30 +319,30 @@ export class FloatPrimitiveType extends PrimitiveType {
                 return -value;
 
             case TokenType.lower:
-                return value < (<number>(secondOperand.value));
+                return value < (<number>(secondOperand));
 
             case TokenType.greater:
-                return value > <number>(secondOperand.value);
+                return value > <number>(secondOperand);
 
             case TokenType.lowerOrEqual:
-                return value <= <number>(secondOperand.value);
+                return value <= <number>(secondOperand);
 
             case TokenType.greaterOrEqual:
-                return value >= <number>(secondOperand.value);
+                return value >= <number>(secondOperand);
 
             case TokenType.equal:
-                return value == <number>(secondOperand.value);
+                return value == <number>(secondOperand);
 
             case TokenType.notEqual:
-                return value != <number>(secondOperand.value);
+                return value != <number>(secondOperand);
 
         }
 
 
     }
 
-    public debugOutput(value: Value): string {
-        return "" + <number>value.value;
+    public debugOutput(value: NewValue): string {
+        return "" + <number>value;
     }
 
 
@@ -409,53 +391,44 @@ export class DoublePrimitiveType extends PrimitiveType {
         return TokenType.floatingPointConstant;
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
 
         if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
+            return "" + <number>value;
         }
 
         if (type == intPrimitiveType) {
-            return {
-                type: type,
-                value: Math.trunc(<number>value.value)
-            }
+            return Math.trunc(<number>value);
         }
 
         if (type == floatPrimitiveType) {
-            return {
-                type: type,
-                value: value.value
-            }
+            return value;
         }
 
     }
 
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue): any {
 
-        let value = <number>(firstOperand.value);
+        let value = <number>(firstOperand);
 
         switch (operation) {
             case TokenType.plus:
-                if (secondOperand.type == stringPrimitiveType) {
-                    return value + <string>(secondOperand.value);
+                if (typeof secondOperand == "string") {
+                    return value + <string>(secondOperand);
                 } else {
-                    return value + <number>(secondOperand.value);
+                    return value + <number>(secondOperand);
                 }
 
             case TokenType.minus:
                 if (secondOperand == null) return -value;
-                return value - <number>(secondOperand.value);
+                return value - <number>(secondOperand);
 
             case TokenType.multiplication:
-                return value * <number>(secondOperand.value);
+                return value * <number>(secondOperand);
 
             case TokenType.division:
-                return value / <number>(secondOperand.value);
+                return value / <number>(secondOperand);
 
             case TokenType.doublePlus:
                 return value++;
@@ -467,30 +440,30 @@ export class DoublePrimitiveType extends PrimitiveType {
                 return -value;
 
             case TokenType.lower:
-                return value < (<number>(secondOperand.value));
+                return value < (<number>(secondOperand));
 
             case TokenType.greater:
-                return value > <number>(secondOperand.value);
+                return value > <number>(secondOperand);
 
             case TokenType.lowerOrEqual:
-                return value <= <number>(secondOperand.value);
+                return value <= <number>(secondOperand);
 
             case TokenType.greaterOrEqual:
-                return value >= <number>(secondOperand.value);
+                return value >= <number>(secondOperand);
 
             case TokenType.equal:
-                return value == <number>(secondOperand.value);
+                return value == <number>(secondOperand);
 
             case TokenType.notEqual:
-                return value != <number>(secondOperand.value);
+                return value != <number>(secondOperand);
 
         }
 
 
     }
 
-    public debugOutput(value: Value): string {
-        return "" + <number>value.value;
+    public debugOutput(value: NewValue): string {
+        return "" + <number>value;
     }
 
 
@@ -528,37 +501,34 @@ export class BooleanPrimitiveType extends PrimitiveType {
         return TokenType.booleanConstant;
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
 
         if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
+            return "" + <number>value;
         }
 
     }
 
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue): any {
 
-        let value = <boolean>(firstOperand.value);
+        let value = <boolean>(firstOperand);
 
         switch (operation) {
             case TokenType.plus:
-                return value + <string>(secondOperand.value);
+                return value + <string>(secondOperand);
 
             case TokenType.equal:
-                return value == <boolean>(secondOperand.value);
+                return value == <boolean>(secondOperand);
 
             case TokenType.notEqual:
-                return value != <boolean>(secondOperand.value);
+                return value != <boolean>(secondOperand);
 
             case TokenType.and:
-                return value && <boolean>(secondOperand.value);
+                return value && <boolean>(secondOperand);
 
             case TokenType.or:
-                return value || <boolean>(secondOperand.value);
+                return value || <boolean>(secondOperand);
 
             case TokenType.not:
                 return !value;
@@ -568,8 +538,8 @@ export class BooleanPrimitiveType extends PrimitiveType {
 
     }
 
-    public debugOutput(value: Value): string {
-        return "" + <boolean>value.value;
+    public debugOutput(value: NewValue): string {
+        return "" + <boolean>value;
     }
 
 
@@ -596,20 +566,20 @@ export class VoidPrimitiveType extends PrimitiveType {
         return TokenType.keywordVoid;
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
 
         return value;
 
     }
 
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue): any {
 
         return null;
 
     }
 
-    public debugOutput(value: Value): string {
+    public debugOutput(value: NewValue): string {
         return "void";
     }
 
@@ -670,84 +640,84 @@ export class StringPrimitiveType extends Klass {
 
 
         this.addMethod(new Method("length", new Parameterlist([]), intPrimitiveType,
-            (parameters) => { return (<string>parameters[0].value).length; }, false, false, "Länge der Zeichenkette, d.h. Anzahl der Zeichen in der Zeichenkette."));
+            (parameters) => { return (<string>parameters[0]).length; }, false, false, "Länge der Zeichenkette, d.h. Anzahl der Zeichen in der Zeichenkette."));
         this.addMethod(new Method("charAt", new Parameterlist([{ identifier: "Position", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), charPrimitiveType,
-            (parameters) => { return (<string>parameters[0].value).charAt(<number>(parameters[1].value)); }, false, false, "Zeichen an der gegebenen Position.\n**Bem.: ** Position == 0 bedeutet das erste Zeichen in der Zeichenkette, Position == 1 das zweite usw. ."));
+            (parameters) => { return (<string>parameters[0]).charAt(<number>(parameters[1])); }, false, false, "Zeichen an der gegebenen Position.\n**Bem.: ** Position == 0 bedeutet das erste Zeichen in der Zeichenkette, Position == 1 das zweite usw. ."));
         this.addMethod(new Method("equals", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), booleanPrimitiveType,
-            (parameters) => { return <string>parameters[0].value == <string>(parameters[1].value); }, false, false, "Gibt genau dann **wahr** zurück, wenn die zwei Zeichenketten übereinstimmen (unter Berücksichtigung von Klein-/Großschreibung)."));
+            (parameters) => { return <string>parameters[0] == <string>(parameters[1]); }, false, false, "Gibt genau dann **wahr** zurück, wenn die zwei Zeichenketten übereinstimmen (unter Berücksichtigung von Klein-/Großschreibung)."));
         this.addMethod(new Method("compareTo", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), intPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).localeCompare(<string>(parameters[1].value), 'de', { caseFirst: 'upper' }); }, false, false, "Vergleicht den String mit dem übergebenen String. Gibt -1 zurück, falls ersterer im Alphabet vor letzterem steht, +1, falls umgekehrt und 0, falls beide Strings identisch sind."));
+            (parameters) => { return (<string>(parameters[0])).localeCompare(<string>(parameters[1]), 'de', { caseFirst: 'upper' }); }, false, false, "Vergleicht den String mit dem übergebenen String. Gibt -1 zurück, falls ersterer im Alphabet vor letzterem steht, +1, falls umgekehrt und 0, falls beide Strings identisch sind."));
         this.addMethod(new Method("compareToIgnoreCase", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), intPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).localeCompare(<string>(parameters[1].value), 'de', { sensitivity: "accent" }); }, false, false, "Vergleicht den String mit dem übergebenen String. Gibt -1 zurück, falls ersterer im Alphabet vor letzterem steht, +1, falls umgekehrt und 0, falls beide Strings identisch sind."));
+            (parameters) => { return (<string>(parameters[0])).localeCompare(<string>(parameters[1]), 'de', { sensitivity: "accent" }); }, false, false, "Vergleicht den String mit dem übergebenen String. Gibt -1 zurück, falls ersterer im Alphabet vor letzterem steht, +1, falls umgekehrt und 0, falls beide Strings identisch sind."));
         this.addMethod(new Method("equalsIgnoreCase", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), booleanPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).toLowerCase() == (<string>(parameters[1].value).toLowerCase()); }, false, false, "Gibt genau dann **wahr** zurück, wenn die zwei Zeichenketten übereinstimmen (**ohne** Berücksichtigung von Klein-/Großschreibung)."));
+            (parameters) => { return (<string>(parameters[0])).toLowerCase() == (<string>parameters[1]).toLowerCase(); }, false, false, "Gibt genau dann **wahr** zurück, wenn die zwei Zeichenketten übereinstimmen (**ohne** Berücksichtigung von Klein-/Großschreibung)."));
         this.addMethod(new Method("endsWith", new Parameterlist([{ identifier: "suffix", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), booleanPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).endsWith(<string>(parameters[1].value)); }, false, false, "Gibt genau dann **wahr** zurück, wenn die Zeichenkette mit der übergebenen Zeichenkette ( = suffix) endet. Klein-/Großschreibung wird dabei berücksichtigt!"));
+            (parameters) => { return (<string>(parameters[0])).endsWith(<string>(parameters[1])); }, false, false, "Gibt genau dann **wahr** zurück, wenn die Zeichenkette mit der übergebenen Zeichenkette ( = suffix) endet. Klein-/Großschreibung wird dabei berücksichtigt!"));
         this.addMethod(new Method("startsWith", new Parameterlist([{ identifier: "präfix", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), booleanPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).startsWith(<string>(parameters[1].value)); }, false, false, "Gibt genau dann **wahr** zurück, wenn die Zeichenkette mit der übergebenen Zeichenkette ( = präfix) beginnt. Klein-/Großschreibung wird dabei berücksichtigt!"));
+            (parameters) => { return (<string>(parameters[0])).startsWith(<string>(parameters[1])); }, false, false, "Gibt genau dann **wahr** zurück, wenn die Zeichenkette mit der übergebenen Zeichenkette ( = präfix) beginnt. Klein-/Großschreibung wird dabei berücksichtigt!"));
         this.addMethod(new Method("toLowerCase", new Parameterlist([]), stringPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).toLocaleLowerCase(); }, false, false, "Gibt die Zeichenkette zurück, die sich ergibt, wenn man in der gegebenen Zeichnkette jeden Großbuchstaben durch den entsprechenden Kleinbuchstaben ersetzt.\n**Bemerkung: ** Die Methode verändert die Zeichenkette selbst nicht."));
+            (parameters) => { return (<string>(parameters[0])).toLocaleLowerCase(); }, false, false, "Gibt die Zeichenkette zurück, die sich ergibt, wenn man in der gegebenen Zeichnkette jeden Großbuchstaben durch den entsprechenden Kleinbuchstaben ersetzt.\n**Bemerkung: ** Die Methode verändert die Zeichenkette selbst nicht."));
         this.addMethod(new Method("toUpperCase", new Parameterlist([]), stringPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).toLocaleUpperCase(); }, false, false, "Gibt die Zeichenkette zurück, die sich ergibt, wenn man in der gegebenen Zeichnkette jeden Kleinbuchstaben durch den entsprechenden Großbuchstaben ersetzt.\n**Bemerkung: ** Die Methode verändert die Zeichenkette selbst nicht."));
+            (parameters) => { return (<string>(parameters[0])).toLocaleUpperCase(); }, false, false, "Gibt die Zeichenkette zurück, die sich ergibt, wenn man in der gegebenen Zeichnkette jeden Kleinbuchstaben durch den entsprechenden Großbuchstaben ersetzt.\n**Bemerkung: ** Die Methode verändert die Zeichenkette selbst nicht."));
         this.addMethod(new Method("substring", new Parameterlist([{ identifier: "beginIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), stringPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).substring(<number>(parameters[1].value)); }, false, false, "Gibt das hintere Ende der Zeichenkette ab **beginIndex** zurück. **beginIndex** == 1 bedeutet, dass die Zeichenkette ab dem 2.(!) Zeichen zurückgegeben wird. "));
+            (parameters) => { return (<string>(parameters[0])).substring(<number>(parameters[1])); }, false, false, "Gibt das hintere Ende der Zeichenkette ab **beginIndex** zurück. **beginIndex** == 1 bedeutet, dass die Zeichenkette ab dem 2.(!) Zeichen zurückgegeben wird. "));
         this.addMethod(new Method("substring", new Parameterlist([{ identifier: "beginIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
         { identifier: "endIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), stringPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).substring(<number>(parameters[1].value), <number>(parameters[2].value)); }, false, false, "Gibt die Teil-Zeichenkette von **beginIndex** bis **endIndex** zurück.\n**Vorsicht: ** beginIndex und endIndex sind nullbasiert, d.h. beginIndex == 0 bedeutet die Position vor dem ersten Zeichen."));
+            (parameters) => { return (<string>(parameters[0])).substring(<number>(parameters[1]), <number>(parameters[2])); }, false, false, "Gibt die Teil-Zeichenkette von **beginIndex** bis **endIndex** zurück.\n**Vorsicht: ** beginIndex und endIndex sind nullbasiert, d.h. beginIndex == 0 bedeutet die Position vor dem ersten Zeichen."));
         this.addMethod(new Method("trim", new Parameterlist([]), stringPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).trim(); }, false, false, "Gibt die Zeichenkette zurück, die entsteht, wenn man am Anfang und Ende der Zeichenkette alle Leerzeichen, Tabs und Zeilenumbrüche entfernt."));
+            (parameters) => { return (<string>(parameters[0])).trim(); }, false, false, "Gibt die Zeichenkette zurück, die entsteht, wenn man am Anfang und Ende der Zeichenkette alle Leerzeichen, Tabs und Zeilenumbrüche entfernt."));
         this.addMethod(new Method("isEmpty", new Parameterlist([]), booleanPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)) == ""; }, false, false, "Gibt genau dann wahr zurück, wenn die Zeichenkette leer ist.\n**Warnung: ** Die Methode darf nicht mit dem '''null'''-Objekt aufgerufen werden!"));
+            (parameters) => { return (<string>(parameters[0])) == ""; }, false, false, "Gibt genau dann wahr zurück, wenn die Zeichenkette leer ist.\n**Warnung: ** Die Methode darf nicht mit dem '''null'''-Objekt aufgerufen werden!"));
         this.addMethod(new Method("indexOf", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), intPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).indexOf(<string>(parameters[1].value)); }, false, false, "Gibt die erste Position zurück, an der **otherString** in der Zeichenkette gefunden wird."));
+            (parameters) => { return (<string>(parameters[0])).indexOf(<string>(parameters[1])); }, false, false, "Gibt die erste Position zurück, an der **otherString** in der Zeichenkette gefunden wird."));
         this.addMethod(new Method("indexOf", new Parameterlist([
             { identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
             { identifier: "fromIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
         ]), intPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).indexOf(<string>(parameters[1].value), <number>(parameters[2].value)); }, false, false, "Gibt die erste Position zurück, an der **otherString** in der Zeichenkette gefunden wird. Dabei wird erst bei fromIndex mit der Suche begonnen."));
+            (parameters) => { return (<string>(parameters[0])).indexOf(<string>(parameters[1]), <number>(parameters[2])); }, false, false, "Gibt die erste Position zurück, an der **otherString** in der Zeichenkette gefunden wird. Dabei wird erst bei fromIndex mit der Suche begonnen."));
         this.addMethod(new Method("lastIndexOf", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), intPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).lastIndexOf(<string>(parameters[1].value)); }, false, false, "Gibt die letzte Position zurück, bei der otherString in der Zeichenkette gefunden wird."));
+            (parameters) => { return (<string>(parameters[0])).lastIndexOf(<string>(parameters[1])); }, false, false, "Gibt die letzte Position zurück, bei der otherString in der Zeichenkette gefunden wird."));
         this.addMethod(new Method("lastIndexOf", new Parameterlist([
             { identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
             { identifier: "fromIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
         ]), intPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).lastIndexOf(<string>(parameters[1].value), <number>(parameters[2].value)); }, false, false, "Gibt die letzte Position zurück, bei der otherString in der Zeichenkette gefunden wird. Dabei wird erst bei fromIndex - von rechts her beginnend - gesucht."));
+            (parameters) => { return (<string>(parameters[0])).lastIndexOf(<string>(parameters[1]), <number>(parameters[2])); }, false, false, "Gibt die letzte Position zurück, bei der otherString in der Zeichenkette gefunden wird. Dabei wird erst bei fromIndex - von rechts her beginnend - gesucht."));
         this.addMethod(new Method("replace", new Parameterlist([
             { identifier: "target", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
             { identifier: "replacement", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
         ]), stringPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).replace(<string>(parameters[1].value), <string>(parameters[2].value)); }, false, false, "Ersetzt alle Vorkommen von **target** durch **replacement** und gibt die entstandene Zeichenkette zurück. Die Zeichenkette selbst wird nicht verändert."));
+            (parameters) => { return (<string>(parameters[0])).replace(<string>(parameters[1]), <string>(parameters[2])); }, false, false, "Ersetzt alle Vorkommen von **target** durch **replacement** und gibt die entstandene Zeichenkette zurück. Die Zeichenkette selbst wird nicht verändert."));
         this.addMethod(new Method("replaceAll", new Parameterlist([
             { identifier: "regex", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
             { identifier: "replacement", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
         ]), stringPrimitiveType,
             (parameters) => {
-                let pattern = <string>(parameters[1].value);
+                let pattern = <string>(parameters[1]);
                 let regExp = new RegExp(pattern, 'g');
 
-                return (<string>(parameters[0].value)).replace(regExp, <string>(parameters[2].value));
+                return (<string>(parameters[0])).replace(regExp, <string>(parameters[2]));
             }, false, false, "Durchsucht den String mit dem regulären Ausdruck (regex) und ersetzt **alle** Fundstellen durch **replacement**."));
         this.addMethod(new Method("replaceFirst", new Parameterlist([
             { identifier: "regex", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
             { identifier: "replacement", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
         ]), stringPrimitiveType,
             (parameters) => {
-                let pattern = <string>(parameters[1].value);
+                let pattern = <string>(parameters[1]);
                 let regExp = new RegExp(pattern, '');
 
-                return (<string>(parameters[0].value)).replace(regExp, <string>(parameters[2].value));
+                return (<string>(parameters[0])).replace(regExp, <string>(parameters[2]));
             }, false, false, "Durchsucht den String mit dem regulären Ausdruck (regex) und ersetzt **die erste** Fundstelle durch **replacement**."));
         this.addMethod(new Method("split", new Parameterlist([
             { identifier: "regex", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
         ]), new ArrayType(stringPrimitiveType),
             (parameters) => {
-                let pattern = <string>(parameters[1].value);
+                let pattern = <string>(parameters[1]);
                 let regExp = new RegExp(pattern, '');
 
-                let strings = (<string>(parameters[0].value)).split(regExp);
-                let values: Value[] = [];
+                let strings = (<string>(parameters[0])).split(regExp);
+                let values: NewValue[] = [];
                 for (let s of strings) {
-                    values.push({ type: stringPrimitiveType, value: s });
+                    values.push(s);
                 }
 
                 return values;
@@ -756,41 +726,41 @@ export class StringPrimitiveType extends Klass {
 
     }
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue): any {
 
-        let value = <string>(firstOperand.value);
+        let value = <string>(firstOperand);
 
         switch (operation) {
             case TokenType.plus:
-                if (secondOperand.type == stringPrimitiveType || secondOperand.type == charPrimitiveType) {
-                    return value + <string>(secondOperand.value);
-                } else if (secondOperand.type == booleanPrimitiveType) {
-                    return value + <boolean>(secondOperand.value);
+                if (typeof secondOperand == "string") {
+                    return value + <string>(secondOperand);
+                } else if (typeof secondOperand == "boolean") {
+                    return value + <boolean>(secondOperand);
                 } else {
-                    return value + <number>(secondOperand.value);
+                    return value + <number>(secondOperand);
                 }
 
             case TokenType.lower:
-                return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) < 0;
-                // return value < (<string>(secondOperand.value));
+                return value.localeCompare(<string>(secondOperand), 'de', { caseFirst: 'upper' }) < 0;
+                // return value < (<string>(secondOperand));
 
             case TokenType.greater:
-                return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) > 0;
-                // return value > <string>(secondOperand.value);
+                return value.localeCompare(<string>(secondOperand), 'de', { caseFirst: 'upper' }) > 0;
+                // return value > <string>(secondOperand);
 
             case TokenType.lowerOrEqual:
-                return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) <= 0;
-                // return value <= <string>(secondOperand.value);
+                return value.localeCompare(<string>(secondOperand), 'de', { caseFirst: 'upper' }) <= 0;
+                // return value <= <string>(secondOperand);
 
             case TokenType.greaterOrEqual:
-                return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) >= 0;
-                // return value >= <string>(secondOperand.value);
+                return value.localeCompare(<string>(secondOperand), 'de', { caseFirst: 'upper' }) >= 0;
+                // return value >= <string>(secondOperand);
 
             case TokenType.equal:
-                return value == <string>(secondOperand.value);
+                return value == <string>(secondOperand);
 
             case TokenType.notEqual:
-                return value != <string>(secondOperand.value);
+                return value != <string>(secondOperand);
 
             case TokenType.keywordInstanceof:
                 return super.compute(operation, firstOperand, secondOperand);
@@ -800,8 +770,8 @@ export class StringPrimitiveType extends Klass {
 
     }
 
-    public debugOutput(value: Value): string {
-        return '"' + <string>value.value + '"';
+    public debugOutput(value: NewValue): string {
+        return '"' + <string>value + '"';
     }
 
 
@@ -844,54 +814,51 @@ export class CharPrimitiveType extends PrimitiveType {
         return TokenType.charConstant;
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
 
         if (type == stringPrimitiveType) {
             return value;
         }
 
         if (type == intPrimitiveType || type == floatPrimitiveType || type == doublePrimitiveType) {
-            return {
-                type: type,
-                value: (<string>value.value).charCodeAt(0)
-            }
+            return (<string>value).charCodeAt(0);
         }
 
     }
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue): any {
 
-        let value = <string>(firstOperand.value);
+        let value = <string>(firstOperand);
 
         switch (operation) {
             case TokenType.plus:
-                return value + <string>(secondOperand.value);
+                return value + <string>(secondOperand);
 
             case TokenType.lower:
-                return value < (<string>(secondOperand.value));
+                return value < (<string>(secondOperand));
 
             case TokenType.greater:
-                return value > <string>(secondOperand.value);
+                return value > <string>(secondOperand);
 
             case TokenType.lowerOrEqual:
-                return value <= <string>(secondOperand.value);
+                return value <= <string>(secondOperand);
 
             case TokenType.greaterOrEqual:
-                return value >= <string>(secondOperand.value);
+                return value >= <string>(secondOperand);
 
             case TokenType.equal:
-                return value == <string>(secondOperand.value);
+                return value == <string>(secondOperand);
 
             case TokenType.notEqual:
-                return value != <string>(secondOperand.value);
+                return value != <string>(secondOperand);
 
         }
 
 
     }
 
-    public debugOutput(value: Value): string {
-        return "'" + <string>value.value + "'";
+    public debugOutput(value: NewValue): string {
+        return "'" + <string>value + "'";
     }
 
 
@@ -922,4 +889,18 @@ export var TokenTypeToDataTypeMap: { [tt: number]: Type } = {
     [TokenType.stringConstant]: stringPrimitiveType,
     [TokenType.charConstant]: charPrimitiveType,
     [TokenType.keywordNull]: nullType
+}
+
+export function getType(v: any): Type {
+    if(v == null) return stringPrimitiveType;
+    switch(typeof v){
+        case "string": return stringPrimitiveType;
+        case "number": return v == Math.round(v) ? intPrimitiveType : doublePrimitiveType;
+        case "boolean": return booleanPrimitiveType;
+        case "object": 
+            if(v.klass){
+                return v.klass;
+            }
+        default: return stringPrimitiveType;
+    }
 }

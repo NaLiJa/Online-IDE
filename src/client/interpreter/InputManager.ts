@@ -1,4 +1,4 @@
-import { Type, Method, Value } from "../compiler/types/Types.js";
+import { Type, Method, Value, NewValue } from "../compiler/types/Types.js";
 import { stringPrimitiveType, charPrimitiveType, intPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { MainBase } from "../main/MainBase.js";
 import { PrintManager } from "../main/gui/PrintManager.js";
@@ -11,11 +11,11 @@ export class InputManager {
 
     }
 
-    public readInput(method: Method, parameters: Value[], callback: (value: Value) => void){
+    public readInput(method: Method, parameters: NewValue[], callback: (value: NewValue) => void){
 
         let returnType = method.getReturnType();
-        let message = parameters[1].value;
-        let defaultValue = parameters.length == 3 ? parameters[2].value : null;
+        let message = parameters[1];
+        let defaultValue = parameters.length == 3 ? parameters[2] : null;
 
         let printManager: PrintManager = this.main.getInterpreter().printManager;
         if(message != null && message != ""){
@@ -30,7 +30,7 @@ export class InputManager {
         $od.append(this.$input);
 
         let dvt = defaultValue == null ? "" : defaultValue;
-        this.$input.val(dvt);
+        this.$input.val(<any>dvt);
 
         let that = this;
 
@@ -57,7 +57,7 @@ export class InputManager {
 
     }
 
-    onSubmit(type: Type, callback: (value: Value) => void){
+    onSubmit(type: Type, callback: (value: NewValue) => void){
         let v: string = <string>(this.$input.val());
         let printManager = this.main.getInterpreter().printManager;
 
@@ -83,12 +83,12 @@ export class InputManager {
 
     }
 
-    parse(v: string, type: Type):{value: Value, error: string} {
+    parse(v: string, type: Type):{value: NewValue, error: string} {
 
         if(type == stringPrimitiveType){
             return {
                 error: null,
-                value: {value: v, type: type}
+                value: v
             }
         }
 
@@ -97,7 +97,7 @@ export class InputManager {
             if(v.length > 1) return {error: "Zu lange Eingabe. Erwartet wird ein Zeichen.", value: null};
             return {
                 error: null,
-                value: {value: v, type: type}
+                value: v
             }
         }
 
@@ -105,7 +105,7 @@ export class InputManager {
             if(v != "true" && v != "false") return {error: "Erwartet wird true oder false.", value: null};
             return {
                 error: null,
-                value: {value: v == "true", type: type}
+                value: v == "true"
             }
         }
 
@@ -121,13 +121,13 @@ export class InputManager {
             if(n != Math.round(n)) return {error: "Erwartet wird eine ganze Zahl.", value: null};
             return {
                 error: null,
-                value: {value: Math.round(n), type: type}
+                value: Math.round(n)
             }
         }
 
         return {
             error: null,
-            value: {value: n, type: type}
+            value: n
         }
 
     }

@@ -7,14 +7,12 @@ export class RuntimeObject {
 
     class: Klass | StaticClass;
 
-    intrinsicData: {[classIdentifier: string]: any} = {};  // for intrinsic (= builtin) classes to store data
+    intrinsicData: { [classIdentifier: string]: any } = {};  // for intrinsic (= builtin) classes to store data
 
     // Attributes of class and base-classes
-    // Map class-identifier to Map <attribute-identifier, attribute-value>
-    // attributeValues: Map<string, Map<string, Value>> = new Map();
-    attributes: Value[];
+    attributes: any[];
 
-    constructor(klass: Klass | StaticClass ) {
+    constructor(klass: Klass | StaticClass) {
 
         this.class = klass;
 
@@ -22,46 +20,35 @@ export class RuntimeObject {
 
     }
 
-    getValue(attributeIndex: number):Value{
+    getValue(attributeIndex: number): any {
 
-        let av: Value = this.attributes[attributeIndex];
-        if(av?.updateValue != null){
-            av.updateValue(av);
-        }
-        return av;
+        return this.attributes[attributeIndex];
 
     }
 
-    private initializeAttributeValues(){
+    private initializeAttributeValues() {
 
-        this.attributes = Array(this.class.numberOfAttributesIncludingBaseClass).fill(null);
+        if (this.class instanceof Klass) {
+            this.attributes = this.class.attributeTemplates.slice(0);
+        } else {
 
-        let klass = this.class;
-        while(klass != null){
+            this.attributes = Array(this.class.numberOfAttributesIncludingBaseClass).fill(null);
 
-            for(let att of klass.attributes){
-                
-                let value:any = null;
-                if(att.type instanceof PrimitiveType){
-                    value = att.type.initialValue;
+            let klass = this.class;
+            while (klass != null) {
+
+                for (let att of klass.attributes) {
+
+                    if (att.type instanceof PrimitiveType) {
+                        this.attributes[att.index] = att.type.initialValue;
+                    }
+
                 }
 
-                let v: Value = {
-                    type: att.type,
-                    value: value
-                };
-
-                if(att.updateValue != null){
-                    v.updateValue = att.updateValue;
-                    v.object = this;
-                } 
-                
-                this.attributes[att.index] = v;
-
+                klass = klass.baseClass;
             }
-
-            klass = klass.baseClass;
         }
+
 
     }
 

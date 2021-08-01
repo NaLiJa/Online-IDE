@@ -1,6 +1,6 @@
 import { Program } from "../parser/Program.js";
 import { Klass, Visibility } from "./Class.js";
-import { Value, Attribute, Method, Parameterlist, Type } from "./Types.js";
+import { Value, Attribute, Method, Parameterlist, Type, NewValue } from "./Types.js";
 import { Module } from "../parser/Module.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ArrayType } from "./Array.js";
@@ -34,7 +34,7 @@ export class Enum extends Klass {
     identifierToInfoMap: { [identifier: string]: EnumInfo } = {};
     indexToInfoMap: { [index: number]: EnumInfo } = {};
 
-    valueList: Value = null;
+    valueList: RuntimeObject[] = null;
 
     getOrdinal(valueIdentifier: string): number {
 
@@ -44,8 +44,8 @@ export class Enum extends Klass {
 
     }
 
-    public debugOutput(value: Value, maxLength: number = 40): string {
-        let enumObject = <EnumRuntimeObject>value.value;
+    public debugOutput(value: NewValue, maxLength: number = 40): string {
+        let enumObject = <EnumRuntimeObject>value;
         return this.identifier + "." + enumObject.enumValue.identifier;
     }
 
@@ -86,54 +86,42 @@ export class Enum extends Klass {
         }
 
         if(module.isSystemModule){
-            this.valueList = {
-                type: new ArrayType(this),
-                value: []
-            };
+            this.valueList = [];
             for(let ei of this.enumInfoList){
 
                 ei.object = new EnumRuntimeObject(this, ei);
 
-                this.valueList.value.push({
-                    type: this,
-                    value: ei.object
-                })
+                this.valueList.push(ei.object)
             }
         }
 
         let that = this;
 
         this.staticClass.addMethod(new Method("getValues",
-            new Parameterlist([]), new ArrayType(this), (parameters: Value[]) => {
+            new Parameterlist([]), new ArrayType(this), (parameters: NewValue[]) => {
 
                 if (this.valueList == null) {
 
                     let values = [];
                     for (let vi of this.enumInfoList) {
 
-                        values.push({
-                            type: that,
-                            value: vi.object
-                        });
+                        values.push(vi.object);
 
                     }
 
-                    this.valueList = {
-                        type: new ArrayType(that),
-                        value: values
-                    }
+                    this.valueList = values;
 
                 }
 
-                return this.valueList.value;
+                return this.valueList;
 
             }, false, true)
         );
 
         this.addMethod(new Method("toString",
-            new Parameterlist([]), stringPrimitiveType, (parameters: Value[]) => {
+            new Parameterlist([]), stringPrimitiveType, (parameters: NewValue[]) => {
 
-                let erto: EnumRuntimeObject = <EnumRuntimeObject>(parameters[0].value);
+                let erto: EnumRuntimeObject = <EnumRuntimeObject>(parameters[0]);
 
                 return erto.enumValue.identifier;
 
@@ -141,9 +129,9 @@ export class Enum extends Klass {
         );
 
         this.addMethod(new Method("toOrdinal",
-            new Parameterlist([]), intPrimitiveType, (parameters: Value[]) => {
+            new Parameterlist([]), intPrimitiveType, (parameters: NewValue[]) => {
 
-                let erto: EnumRuntimeObject = <EnumRuntimeObject>(parameters[0].value);
+                let erto: EnumRuntimeObject = <EnumRuntimeObject>(parameters[0]);
 
                 return erto.enumValue.ordinal;
 
@@ -162,14 +150,11 @@ export class Enum extends Klass {
 
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
 
         if (type == intPrimitiveType) {
-            let en = <EnumRuntimeObject>value.value;
-            return {
-                type: intPrimitiveType,
-                value: en.enumValue.ordinal
-            };
+            let en = <EnumRuntimeObject>value;
+            return en.enumValue.ordinal;
         }
 
         return super.castTo(value, type);

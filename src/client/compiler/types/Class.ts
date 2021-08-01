@@ -7,7 +7,7 @@ import { Program } from "../parser/Program.js";
 import { SymbolTable } from "../parser/SymbolTable.js";
 import { ArrayType } from "./Array.js";
 import { nullType, stringPrimitiveType, voidPrimitiveType } from "./PrimitiveTypes.js";
-import { Attribute, Method, Parameterlist, PrimitiveType, Type, Value } from "./Types.js";
+import { Attribute, Method, NewValue, Parameterlist, PrimitiveType, Type, Value } from "./Types.js";
 
 
 export enum Visibility { public, protected, private };
@@ -65,6 +65,7 @@ export class Klass extends Type {
     public attributes: Attribute[] = [];
     public attributeMap: Map<string, Attribute> = new Map();
     public numberOfAttributesIncludingBaseClass: number = null;
+    public attributeTemplates: any[];
 
     public symbolTable: SymbolTable;
 
@@ -102,6 +103,26 @@ export class Klass extends Type {
         }
 
         this.numberOfAttributesIncludingBaseClass = numberOfAttributesInBaseClasses;
+        this.setupAttributeTemplates;
+    }
+
+    private setupAttributeTemplates(){
+
+        this.attributes = Array(this.numberOfAttributesIncludingBaseClass).fill(null);
+
+        let klass: Klass = this;
+        while(klass != null){
+
+            for(let att of klass.attributes){
+ 
+                if(att.type instanceof PrimitiveType){
+                    this.attributeTemplates[att.index] = att.type.initialValue;
+                }
+
+            }
+
+            klass = klass.baseClass;
+        }
 
     }
 
@@ -395,20 +416,20 @@ export class Klass extends Type {
 
     }
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value) {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue) {
         if (operation == TokenType.equal) {
-            return firstOperand.value == secondOperand.value;
+            return firstOperand == secondOperand;
         }
 
         if (operation == TokenType.notEqual) {
-            return firstOperand.value != secondOperand.value;
+            return firstOperand != secondOperand;
         }
 
         if (operation == TokenType.keywordInstanceof) {
-            let firstOpClass = firstOperand?.value?.class;
+            let firstOpClass = (<RuntimeObject>firstOperand)?.class;
             if (firstOpClass == null) return false;
             let typeLeft: Klass = <Klass>firstOpClass;
-            let typeRight = secondOperand.type;
+            let typeRight = (<RuntimeObject>secondOperand).class;
             if (typeRight instanceof StaticClass) {
 
                 while (typeLeft != null) {
@@ -661,7 +682,7 @@ export class Klass extends Type {
 
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
 
         return value;
 
@@ -775,11 +796,11 @@ export class Klass extends Type {
         return false;
     }
 
-    public debugOutput(value: Value, maxLength: number = 40): string {
+    public debugOutput(value: NewValue, maxLength: number = 40): string {
 
         let s: string = "{";
         let attributes = this.getAttributes(Visibility.private);
-        let object = <RuntimeObject>value.value;
+        let object = <RuntimeObject>value;
 
         if (object == null) {
             return "null";
@@ -884,7 +905,7 @@ export class StaticClass extends Type {
 
     }
 
-    public debugOutput(value: Value, maxLength: number = 40): string {
+    public debugOutput(value: NewValue, maxLength: number = 40): string {
 
         let s: string = "{";
         let attributes = this.getAttributes(Visibility.private);
@@ -964,7 +985,7 @@ export class StaticClass extends Type {
 
     }
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value) {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue) {
         return null;
     }
 
@@ -1086,7 +1107,7 @@ export class StaticClass extends Type {
 
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
         return value;
     }
 
@@ -1185,12 +1206,12 @@ export class Interface extends Type {
         return itemList;
     }
 
-    public debugOutput(value: Value, maxLength: number = 40): string {
-        if (value.value == null) {
+    public debugOutput(value: NewValue, maxLength: number = 40): string {
+        if (value == null) {
             return "null";
         } else {
-            if (value.value instanceof RuntimeObject) {
-                return value.value.class.debugOutput(value);
+            if (value instanceof RuntimeObject) {
+                return value.class.debugOutput(value);
             } else {
                 return "{...}";
             }
@@ -1223,14 +1244,14 @@ export class Interface extends Type {
 
     }
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value) {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue) {
 
         if (operation == TokenType.equal) {
-            return firstOperand.value == secondOperand.value;
+            return firstOperand == secondOperand;
         }
 
         if (operation == TokenType.notEqual) {
-            return firstOperand.value != secondOperand.value;
+            return firstOperand != secondOperand;
         }
 
         return null;
@@ -1317,7 +1338,7 @@ export class Interface extends Type {
         // return (type instanceof Klass) || (type instanceof Interface);
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
         return value;
     }
 

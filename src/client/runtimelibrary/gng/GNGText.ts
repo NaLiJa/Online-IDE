@@ -15,12 +15,12 @@ export class GNGTextClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
         this.addAttribute(new Attribute("text", stringPrimitiveType, (value: Value) => { 
-            let text = value.object.intrinsicData["Actor"].text;
+            let text = value.intrinsicData["Actor"].text;
             value.value = text; 
         }, false, Visibility.private, false, "Angezeigter Text"));
 
         this.addAttribute(new Attribute("textgröße", intPrimitiveType, (value: Value) => { 
-            let fontsize = value.object.intrinsicData["Actor"].fontsize;
+            let fontsize = value.intrinsicData["Actor"].fontsize;
             value.value = Math.round(fontsize); 
         }, false, Visibility.private, false, "Textgröße"));
 

@@ -6,6 +6,7 @@ import { Main } from "../main/Main.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { MainBase } from "../main/MainBase.js";
 import { DebuggerElement } from "./DebuggerElement.js";
+import { getType } from "../compiler/types/PrimitiveTypes.js";
 
 export class Evaluator {
 
@@ -71,7 +72,7 @@ export class Evaluator {
         let ret = interpreter.evaluate(c.program);
 
         if(ret.value != null){
-            ret.value.type = DebuggerElement.getType(ret.value.value);
+            ret.value.type = getType(ret.value.value);
         }
 
         return ret;

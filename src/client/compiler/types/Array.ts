@@ -1,4 +1,4 @@
-import { Method, Attribute, Value, Type, Parameterlist, PrimitiveType } from "./Types.js";
+import { Method, Attribute, Value, Type, Parameterlist, PrimitiveType, NewValue } from "./Types.js";
 import { TokenType } from "../lexer/Token.js";
 import { intPrimitiveType } from "./PrimitiveTypes.js";
 import { Visibility } from "./Class.js";
@@ -39,10 +39,10 @@ export class ArrayType extends Type {
 
     }
 
-    public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
+    public compute(operation: TokenType, firstOperand: NewValue, secondOperand?: NewValue): any {
 
         if(operation == TokenType.referenceElement){
-            return <any[]>firstOperand.value[<number>secondOperand.value];
+            return <any[]>firstOperand[<number>secondOperand];
         }
 
     }
@@ -67,37 +67,34 @@ export class ArrayType extends Type {
         return this.arrayOfType.canCastTo(type.arrayOfType);
     }
 
-    public castTo(value: Value, type: Type): Value {
+    public castTo(value: NewValue, type: Type): NewValue {
 
-        let array = (<Value[]>value.value).slice();
+        let array = (<NewValue[]>value).slice();
         let destType = (<ArrayType><unknown>type).arrayOfType;
 
         for(let a of array){
             this.arrayOfType.castTo(a, destType);
         }
 
-        return {
-            type: type,
-            value: array
-        }
+        return array;
 
     }
 
-    public debugOutput(value: Value, maxLength: number = 40):string {
+    public debugOutput(value: NewValue, maxLength: number = 40):string {
 
         let length: number = 0;
 
-        if(value.value != null){
+        if(value != null){
 
             let s: string = "[";
 
-                let a: Value[] = <Value[]>value.value;
+                let a: NewValue[] = <NewValue[]>value;
 
                 for(let i = 0; i < a.length; i++){
 
                     let v = a[i];
 
-                    let s1 = v.type.debugOutput(v, maxLength/2);
+                    let s1 = this.arrayOfType.debugOutput(v, maxLength/2);
 
                     s += s1;
                     if(i < a.length - 1) s += ",&nbsp;";

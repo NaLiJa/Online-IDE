@@ -16,12 +16,12 @@ export class GNGDreieckClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
         this.addAttribute(new Attribute("breite", intPrimitiveType, (value: Value) => { 
-            let breite = value.object.intrinsicData["Breite"];
+            let breite = value.intrinsicData["Breite"];
             value.value = Math.round(breite); 
         }, false, Visibility.private, false, "Breite des Dreiecks"));
 
         this.addAttribute(new Attribute("höhe", intPrimitiveType, (value: Value) => { 
-            let höhe = value.object.intrinsicData["Höhe"];
+            let höhe = value.intrinsicData["Höhe"];
             value.value = Math.round(höhe); 
         }, false, Visibility.private, false, "Höhe des Dreiecks"));
 

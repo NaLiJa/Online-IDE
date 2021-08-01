@@ -1,5 +1,5 @@
 import { Value, Type, Variable } from "../compiler/types/Types.js";
-import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, StringPrimitiveType, stringPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
+import { booleanPrimitiveType, doublePrimitiveType, getType, intPrimitiveType, StringPrimitiveType, stringPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { ArrayType } from "../compiler/types/Array.js";
 import { Klass, Visibility, StaticClass, Interface } from "../compiler/types/Class.js";
 import { Enum } from "../compiler/types/Enum.js";
@@ -174,26 +174,12 @@ export class DebuggerElement {
                     title = "...";
                 }
                 // let de = new DebuggerElement(null, this, title, v, v.type, null);
-                let de = new DebuggerElement(null, this, title, v, DebuggerElement.getType(v.value), null);
+                let de = new DebuggerElement(null, this, title, v, getType(v.value), null);
                 de.render();
                 this.$debuggerElement.find('.jo_deChildContainer').first().append(de.$debuggerElement);
             }
         }
 
-    }
-
-    static getType(v: any): Type {
-        if(v == null) return stringPrimitiveType;
-        switch(typeof v){
-            case "string": return stringPrimitiveType;
-            case "number": return v == Math.round(v) ? intPrimitiveType : doublePrimitiveType;
-            case "boolean": return booleanPrimitiveType;
-            case "object": 
-                if(v.klass){
-                    return v.klass;
-                }
-            default: return stringPrimitiveType;
-        }
     }
 
     renderValue() {

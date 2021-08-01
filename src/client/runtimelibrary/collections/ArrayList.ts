@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Interface, Klass, TypeVariable } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, StringPrimitiveType, DoubleType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value, PrimitiveType } from "../../compiler/types/Types.js";
+import { Method, Parameterlist, Value, PrimitiveType, NewValue } from "../../compiler/types/Types.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { Program, Statement } from "../../compiler/parser/Program.js";
@@ -227,7 +227,7 @@ export class ArrayListClass extends Klass {
 
 export class ListHelper {
 
-    valueArray: Value[] = [];
+    valueArray: NewValue[] = [];
     objectArray: any[] = []; // wird mitgeführt, um schnelle indexOf-Operationen zu ermöglichen
 
     constructor(private runtimeObject: RuntimeObject, public interpreter: Interpreter, private module: Module) {

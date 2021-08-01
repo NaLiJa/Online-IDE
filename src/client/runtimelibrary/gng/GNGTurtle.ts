@@ -20,28 +20,28 @@ export class GNGTurtleClass extends Klass {
         super("GTurtle", module, "Turtle-Klasse der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
 
         this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { 
-            let sh = value.object.intrinsicData["Actor"];
+            let sh = value.intrinsicData["Actor"];
             value.value = Math.round(sh.lineElements[sh.lineElements.length - 1].x); 
         }, false, Visibility.private, false, "x-Position der Figur"));
         this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { 
-            let sh = value.object.intrinsicData["Actor"];
+            let sh = value.intrinsicData["Actor"];
             value.value = Math.round(sh.lineElements[sh.lineElements.length - 1].y); 
         }, false, Visibility.private, false, "x-Position der Figur"));
 
         this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
-            value.value = value.object.intrinsicData["Actor"].angle 
+            value.value = value.intrinsicData["Actor"].angle 
         }, false, Visibility.private, false, "Blickrichtung der Figur in Grad"));
 
         this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
-            value.value = Math.round(value.object.intrinsicData["Actor"].scaleFactor*100) 
+            value.value = Math.round(value.intrinsicData["Actor"].scaleFactor*100) 
         }, false, Visibility.private, false, "Größe der Figur (100 entspricht 'normalgroß')"));
 
         this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (value: Value) => { 
-            value.value = value.object.intrinsicData["Actor"].displayObject?.visible 
+            value.value = value.intrinsicData["Actor"].displayObject?.visible 
         }, false, Visibility.private, false, "true, wenn die Figur sichtbar ist"));
 
         this.addAttribute(new Attribute("stiftUnten", booleanPrimitiveType, (value: Value) => { 
-            value.value = value.object.intrinsicData["Actor"].penIsDown; 
+            value.value = value.intrinsicData["Actor"].penIsDown; 
         }, false, Visibility.private, false, "true, wenn die Turtle beim Gehen zeichnet"));
 
         this.setupAttributeIndicesRecursive();
