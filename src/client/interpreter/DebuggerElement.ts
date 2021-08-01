@@ -1,5 +1,5 @@
 import { Value, Type, Variable } from "../compiler/types/Types.js";
-import { stringPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
+import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, StringPrimitiveType, stringPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { ArrayType } from "../compiler/types/Array.js";
 import { Klass, Visibility, StaticClass, Interface } from "../compiler/types/Class.js";
 import { Enum } from "../compiler/types/Enum.js";
@@ -101,10 +101,14 @@ export class DebuggerElement {
             if (listHelper != null) {
                 this.renderListElements(listHelper);
             } else {
-                for (let a of (<Klass>this.value.type).getAttributes(Visibility.private)) {
-                    let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.index), a.type, null);
-                    de.render();
-                    this.$debuggerElement.find('.jo_deChildContainer').append(de.$debuggerElement);
+                if(this.value.value != null){
+                    let type = (<RuntimeObject>this.value.value).class;
+                    // for (let a of (<Klass>this.value.type).getAttributes(Visibility.private)) {
+                    for (let a of (<Klass>type).getAttributes(Visibility.private)) {
+                        let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.index), a.type, null);
+                        de.render();
+                        this.$debuggerElement.find('.jo_deChildContainer').append(de.$debuggerElement);
+                    }
                 }
             }
 
@@ -169,12 +173,27 @@ export class DebuggerElement {
                     v = { type: stringPrimitiveType, value: "" + (listHelper.valueArray.length - 100) + " weitere..." };
                     title = "...";
                 }
-                let de = new DebuggerElement(null, this, title, v, v.type, null);
+                // let de = new DebuggerElement(null, this, title, v, v.type, null);
+                let de = new DebuggerElement(null, this, title, v, DebuggerElement.getType(v.value), null);
                 de.render();
                 this.$debuggerElement.find('.jo_deChildContainer').first().append(de.$debuggerElement);
             }
         }
 
+    }
+
+    static getType(v: any): Type {
+        if(v == null) return stringPrimitiveType;
+        switch(typeof v){
+            case "string": return stringPrimitiveType;
+            case "number": return v == Math.round(v) ? intPrimitiveType : doublePrimitiveType;
+            case "boolean": return booleanPrimitiveType;
+            case "object": 
+                if(v.klass){
+                    return v.klass;
+                }
+            default: return stringPrimitiveType;
+        }
     }
 
     renderValue() {

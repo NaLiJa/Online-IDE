@@ -1,10 +1,10 @@
-import { TextPosition, TokenType } from "../compiler/lexer/Token.js";
+import { AssignTarget, TextPosition, TokenType } from "../compiler/lexer/Token.js";
 import { Module, ModuleStore } from "../compiler/parser/Module.js";
 import { Program, Statement, ReturnStatement } from "../compiler/parser/Program.js";
 import { ArrayType } from "../compiler/types/Array.js";
 import { Klass, Interface } from "../compiler/types/Class.js";
 import { Enum, EnumRuntimeObject } from "../compiler/types/Enum.js";
-import { PrimitiveType, Type, Value, Heap, Method } from "../compiler/types/Types.js";
+import { PrimitiveType, Type, Value, Heap, Method, Variable } from "../compiler/types/Types.js";
 import { PrintManager } from "../main/gui/PrintManager.js";
 import { Main } from "../main/Main.js";
 import { Debugger } from "./Debugger.js";
@@ -812,7 +812,120 @@ export class Interpreter {
         let value: Value;
 
         switch (node.type) {
-            case TokenType.castValue:
+            case TokenType.newAssignment:
+                let newValue = stack.pop().value;
+
+                let array1: any[];
+                let index1: number;
+
+                let object2: RuntimeObject;
+                let heapVariable: Variable;
+
+                // check for errors
+                switch (node.target) {
+                    case AssignTarget.arrayElement:
+                        index1 = stack.pop().value;
+                        array1 = <any[]>stack.pop().value;
+
+                        if (array1 == null) return "Zugriff auf ein Element eines null-Feldes";
+
+                        if (index1 >= array1.length || index1 < 0) {
+                            return "Zugriff auf das Element mit Index " + index1 + " eines Feldes der Länge " + array1.length;
+                        }
+                        break;
+                    case AssignTarget.attribute:
+                        object2 = node.useThisObject ? stack[stackframeBegin].value : stack.pop().value;
+                        if (object2 == null) return "Zugriff auf ein Attribut (" + node.attributeIdentifier + ") des null-Objekts";
+                        break;
+                    case AssignTarget.heap:
+                        heapVariable = this.heap[node.identifier];
+                        if(heapVariable == null){
+                            return "Die Variable " + node.identifier + " ist nicht bekannt.";
+                        }
+                        break;
+                }
+
+                if (node.assignmentType != TokenType.assignment) {
+
+                    let oldValue: any;
+                    switch (node.target) {
+                        case AssignTarget.arrayElement:
+                            oldValue = array1[index1];
+                            break;
+                        case AssignTarget.stack:
+                            oldValue = stack[node.stackposOfVariable + stackframeBegin].value;
+                            break;
+                        case AssignTarget.attribute:
+                            oldValue = (<RuntimeObject>object2).getValue(node.attributeIndex).value;
+                            break;
+                        case AssignTarget.staticAttribute:
+                            oldValue = node.klass.classObject.getValue(node.attributeIndex).value;
+                            break;
+                        case AssignTarget.heap:
+                            oldValue = heapVariable.value.value;
+                            break;
+                    }
+
+
+                    switch (node.assignmentType) {
+                        case TokenType.plusAssignment:
+                            newValue = oldValue + newValue;
+                            break;
+                        case TokenType.minusAssignment:
+                            newValue = oldValue - newValue;
+                            break;
+                        case TokenType.multiplicationAssignment:
+                            newValue = oldValue * newValue;
+                            break;
+                        case TokenType.divisionAssignment:
+                            newValue = oldValue / newValue;
+                            break;
+                        case TokenType.moduloAssignment:
+                            newValue = oldValue % newValue;
+                            break;
+                        case TokenType.ANDAssigment:
+                            newValue = oldValue & newValue;
+                            break;
+                        case TokenType.ORAssigment:
+                            newValue = oldValue | newValue;
+                            break;
+                        case TokenType.XORAssigment:
+                            newValue = oldValue ^ newValue;
+                            break;
+                        case TokenType.shiftLeftAssigment:
+                            newValue = oldValue << newValue;
+                            break;
+                        case TokenType.shiftRightAssigment:
+                            newValue = oldValue >> newValue;
+                            break;
+                        case TokenType.shiftRightUnsignedAssigment:
+                            newValue = oldValue >>> newValue;
+                            break;
+                    }
+
+                }
+
+
+                switch (node.target) {
+                    case AssignTarget.arrayElement:
+                        array1[index1].value = newValue;
+                        break;
+                    case AssignTarget.stack:
+                        stack[node.stackposOfVariable + stackframeBegin].value = newValue;
+                        break;
+                    case AssignTarget.attribute:
+                        (<RuntimeObject>object2).getValue(node.attributeIndex).value = newValue;
+                        break;
+                    case AssignTarget.staticAttribute:
+                        node.klass.classObject.getValue(node.attributeIndex).value = newValue;
+                        break;
+                    case AssignTarget.heap:
+                        heapVariable.value.value = newValue;
+                        break;
+                }
+                break;
+
+                case TokenType.castValue:
                 let relPos = node.stackPosRelative == null ? 0 : node.stackPosRelative;
                 value = stack[stackTop + relPos];
                 stack[stackTop + relPos] = value.type.castTo(value, node.newType);

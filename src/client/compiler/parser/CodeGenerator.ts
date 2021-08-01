@@ -1,5 +1,5 @@
 import { Error, QuickFix, ErrorLevel } from "../lexer/Lexer.js";
-import { TextPosition, TokenType, TokenTypeReadable } from "../lexer/Token.js";
+import { AssignTarget, TextPosition, TokenType, TokenTypeReadable } from "../lexer/Token.js";
 import { ArrayType } from "../types/Array.js";
 import { Klass, Interface, StaticClass, Visibility, getVisibilityUpTo } from "../types/Class.js";
 import { booleanPrimitiveType, charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, nullType, voidPrimitiveType, varType, doublePrimitiveType } from "../types/PrimitiveTypes.js";
@@ -7,7 +7,7 @@ import { Attribute, Type, Variable, Value, PrimitiveType, UsagePositions, Method
 import { ASTNode, AttributeDeclarationNode, BinaryOpNode, ClassDeclarationNode, ConstantNode, DoWhileNode, ForNode, IdentifierNode, IfNode, IncrementDecrementNode, MethodcallNode, MethodDeclarationNode, NewObjectNode, ReturnNode, SelectArrayElementNode, SelectArributeNode, SuperconstructorCallNode, SuperNode, ThisNode, UnaryOpNode, WhileNode, LocalVariableDeclarationNode, ArrayInitializationNode, NewArrayNode, PrintNode, CastManuallyNode, EnumDeclarationNode, TermNode, SwitchNode, ScopeNode, ParameterNode, ForNodeOverCollecion, ConstructorCallNode } from "./AST.js";
 import { LabelManager } from "./LabelManager.js";
 import { Module, ModuleStore, MethodCallPosition } from "./Module.js";
-import { AssignmentStatement, InitStackframeStatement, JumpAlwaysStatement, Program, Statement, BeginArrayStatement, NewObjectStatement, JumpOnSwitchStatement, Breakpoint, ExtendedForLoopCheckCounterAndGetElement } from "./Program.js";
+import { AssignmentStatement, InitStackframeStatement, JumpAlwaysStatement, Program, Statement, BeginArrayStatement, NewObjectStatement, JumpOnSwitchStatement, Breakpoint, ExtendedForLoopCheckCounterAndGetElement, NewAssignmentStatement } from "./Program.js";
 import { SymbolTable } from "./SymbolTable.js";
 import { Enum, EnumInfo } from "../types/Enum.js";
 import { InputClass } from "../../runtimelibrary/Input.js";
@@ -511,7 +511,7 @@ export class CodeGenerator {
 
     getSuperconstructorCalls(nodes: ASTNode[], superconstructorCallsFound: ASTNode[], isFirstStatement: boolean): boolean {
         for (let node of nodes) {
-            if(node == null) continue;
+            if (node == null) continue;
             if (node.type == TokenType.superConstructorCall) {
 
                 if (!isFirstStatement) {
@@ -704,22 +704,24 @@ export class CodeGenerator {
         // assumption: attribute != null
         if (attribute.identifier == null || attribute.initialization == null) return;
 
+        let retrieveValueStatement: Statement;
+
         if (attribute.isStatic) {
-            this.pushStatements({
+            retrieveValueStatement = {
                 type: TokenType.pushStaticAttribute,
                 attributeIndex: attribute.resolvedType.index,
                 attributeIdentifier: attribute.resolvedType.identifier,
                 position: attribute.initialization.position,
                 klass: <StaticClass>(this.currentSymbolTable.classContext)
-            });
+            };
         } else {
-            this.pushStatements({
+            retrieveValueStatement = {
                 type: TokenType.pushAttribute,
                 attributeIndex: attribute.resolvedType.index,
                 attributeIdentifier: attribute.identifier,
                 position: attribute.initialization.position,
                 useThisObject: true
-            });
+            };
         }
 
 
@@ -737,12 +739,15 @@ export class CodeGenerator {
 
             }
 
-            this.pushStatements({
-                type: TokenType.assignment,
-                position: attribute.initialization.position,
-                stepFinished: true,
-                leaveValueOnStack: false
-            });
+            this.insertAssignmentStatement(retrieveValueStatement, TokenType.assignment, attribute.initialization.position,
+                false);
+
+            // this.pushStatements({
+            //     type: TokenType.assignment,
+            //     position: attribute.initialization.position,
+            //     stepFinished: true,
+            //     leaveValueOnStack: false
+            // });
         }
 
     }
@@ -969,7 +974,7 @@ export class CodeGenerator {
             if (type != null && type.type != null && type.type != voidPrimitiveType) {
 
                 if (this.lastStatement != null &&
-                    this.lastStatement.type == TokenType.assignment && this.lastStatement.leaveValueOnStack) {
+                    this.lastStatement.type == TokenType.newAssignment && this.lastStatement.leaveValueOnStack) {
                     this.lastStatement.leaveValueOnStack = false;
                 } else {
                     this.pushStatements({
@@ -1517,7 +1522,7 @@ export class CodeGenerator {
             this.pushStatements({
                 type: TokenType.heapVariableDeclaration,
                 position: node.position,
-                pushOnTopOfStackForInitialization: node.initialization != null,
+                pushOnTopOfStackForInitialization: false, // node.initialization != null,
                 variable: variable,
                 stepFinished: node.initialization == null
             });
@@ -1541,7 +1546,7 @@ export class CodeGenerator {
             this.pushStatements({
                 type: TokenType.localVariableDeclaration,
                 position: node.position,
-                pushOnTopOfStackForInitialization: node.initialization != null,
+                pushOnTopOfStackForInitialization: false, // node.initialization != null,
                 variable: variable,
                 stepFinished: node.initialization == null
             })
@@ -1561,12 +1566,24 @@ export class CodeGenerator {
                     if (!this.ensureAutomaticCasting(initType.type, variable.type)) {
                         this.pushError("Der Term vom Typ " + initType.type.identifier + " kann der Variable vom Typ " + variable.type.identifier + " nicht zugeordnet werden.", node.initialization.position);
                     };
+
                 this.pushStatements({
-                    type: TokenType.assignment,
+                    type: TokenType.newAssignment,
                     position: node.initialization.position,
                     stepFinished: true,
-                    leaveValueOnStack: false
+                    leaveValueOnStack: false,
+                    assignmentType: TokenType.assignment,
+                    target: declareVariableOnHeap ? AssignTarget.heap : AssignTarget.stack,
+                    identifier: node.identifier,
+                    stackposOfVariable: variable.stackPos
                 });
+
+                    // this.pushStatements({
+                //     type: TokenType.assignment,
+                //     position: node.initialization.position,
+                //     stepFinished: true,
+                //     leaveValueOnStack: false
+                // });
             }
 
         } else {
@@ -1932,12 +1949,12 @@ export class CodeGenerator {
         } else {
             // get Iterator from collection
             this.pushStatements([
-                {
-                    type: TokenType.pushLocalVariableToStack,
-                    position: node.position,
-                    stackposOfVariable: stackPosOfCounterVariableOrIterator,
-                    stepFinished: false
-                },
+                // {
+                //     type: TokenType.pushLocalVariableToStack,
+                //     position: node.position,
+                //     stackposOfVariable: stackPosOfCounterVariableOrIterator,
+                //     stepFinished: false
+                // },
                 {
                     type: TokenType.pushLocalVariableToStack,
                     position: node.position,
@@ -1953,11 +1970,21 @@ export class CodeGenerator {
                     stackframeBegin: -1
                 },
                 {
-                    type: TokenType.assignment,
+                    type: TokenType.newAssignment,
                     position: node.position,
                     stepFinished: true,
-                    leaveValueOnStack: false
-                }], true);
+                    leaveValueOnStack: false,
+                    assignmentType: TokenType.assignment,
+                    target: AssignTarget.stack,
+                    stackposOfVariable: stackPosOfCounterVariableOrIterator
+                }
+                // {
+                //     type: TokenType.assignment,
+                //     position: node.position,
+                //     stepFinished: true,
+                //     leaveValueOnStack: false
+                // }
+            ], true);
         }
 
         let labelBeforeCondition = lm.markJumpDestination(1);
@@ -2003,12 +2030,12 @@ export class CodeGenerator {
             labelAfterForLoop = lm.insertJumpNode(TokenType.jumpIfFalse, null, this);
             // call collection.next() and assign to loop variable
             this.pushStatements([
-                {
-                    type: TokenType.pushLocalVariableToStack,
-                    position: node.position,
-                    stackposOfVariable: variableStackPos,
-                    stepFinished: false
-                },
+                // {
+                //     type: TokenType.pushLocalVariableToStack,
+                //     position: node.position,
+                //     stackposOfVariable: variableStackPos,
+                //     stepFinished: false
+                // },
                 {
                     type: TokenType.pushLocalVariableToStack,
                     position: node.position,
@@ -2024,11 +2051,21 @@ export class CodeGenerator {
                     stackframeBegin: -1
                 },
                 {
-                    type: TokenType.assignment,
+                    type: TokenType.newAssignment,
                     position: node.position,
                     stepFinished: true,
-                    leaveValueOnStack: false
-                }]);
+                    leaveValueOnStack: false,
+                    assignmentType: TokenType.assignment,
+                    target: AssignTarget.stack,
+                    stackposOfVariable: variableStackPos
+                }
+                // {
+                //     type: TokenType.assignment,
+                //     position: node.position,
+                //     stepFinished: true,
+                //     leaveValueOnStack: false
+                // }
+            ]);
         }
 
         if (!noCastingNeeded) {
@@ -3086,11 +3123,15 @@ export class CodeGenerator {
 
         let isAssignment = CodeGenerator.assignmentOperators.indexOf(node.operator) >= 0;
 
+        if (isAssignment) {
+            return this.processAssignmentOperator(node);
+        }
+
         if (node.operator == TokenType.ternaryOperator) {
             return this.processTernaryOperator(node);
         }
 
-        let leftType = this.processNode(node.firstOperand, isAssignment);
+        let leftType = this.processNode(node.firstOperand, false);
 
         let programPosAfterLeftOpoerand = this.currentProgram.statements.length;
 
@@ -3105,123 +3146,173 @@ export class CodeGenerator {
 
         if (leftType == null || leftType.type == null || rightType == null || rightType.type == null) return null;
 
-        if (isAssignment) {
-            if (!this.ensureAutomaticCasting(rightType.type, leftType.type, node.position, node.firstOperand)) {
-                this.pushError("Der Wert vom Datentyp " + rightType.type.identifier + " auf der rechten Seite kann der Variablen auf der linken Seite (Datentyp " + leftType.type.identifier + ") nicht zugewiesen werden.", node.position);
-                return leftType;
+        if (node.firstOperand.type == TokenType.identifier && node.firstOperand.variable != null) {
+            let v = node.firstOperand.variable;
+            if (v.initialized != null && !v.initialized) {
+                v.usedBeforeInitialization = true;
+                this.pushError("Die Variable " + v.identifier + " wird hier benutzt bevor sie initialisiert wurde.", node.position, "info");
             }
+        }
 
-            if (!leftType.isAssignable) {
-                this.pushError("Dem Term/der Variablen auf der linken Seite des Zuweisungsoperators (=) kann kein Wert zugewiesen werden.", node.position);
-            }
+        let resultType = leftType.type.getResultType(node.operator, rightType.type);
 
-            let statement: AssignmentStatement = {
-                //@ts-ignore
-                type: node.operator,
-                position: node.position,
-                stepFinished: true,
-                leaveValueOnStack: true
-            };
+        let unboxableLeft = leftType.type["unboxableAs"];
+        let unboxableRight = rightType.type["unboxableAs"];
 
-            this.pushStatements(statement);
+        if (resultType == null && (unboxableLeft != null || unboxableRight != null)) {
+            let leftTypes: Type[] = unboxableLeft == null ? [leftType.type] : unboxableLeft;
+            let rightTypes: Type[] = unboxableRight == null ? [rightType.type] : unboxableRight;
 
-
-            return leftType;
-
-        } else {
-
-            if (node.firstOperand.type == TokenType.identifier && node.firstOperand.variable != null) {
-                let v = node.firstOperand.variable;
-                if (v.initialized != null && !v.initialized) {
-                    v.usedBeforeInitialization = true;
-                    this.pushError("Die Variable " + v.identifier + " wird hier benutzt bevor sie initialisiert wurde.", node.position, "info");
-                }
-            }
-
-            let resultType = leftType.type.getResultType(node.operator, rightType.type);
-
-            let unboxableLeft = leftType.type["unboxableAs"];
-            let unboxableRight = rightType.type["unboxableAs"];
-
-            if (resultType == null && (unboxableLeft != null || unboxableRight != null)) {
-                let leftTypes: Type[] = unboxableLeft == null ? [leftType.type] : unboxableLeft;
-                let rightTypes: Type[] = unboxableRight == null ? [rightType.type] : unboxableRight;
-
-                for (let lt of leftTypes) {
-                    for (let rt of rightTypes) {
-                        resultType = lt.getResultType(node.operator, rt);
-                        if (resultType != null) {
-                            leftType.type = lt;
-                            rightType.type = rt;
-                            break;
-                        }
+            for (let lt of leftTypes) {
+                for (let rt of rightTypes) {
+                    resultType = lt.getResultType(node.operator, rt);
+                    if (resultType != null) {
+                        leftType.type = lt;
+                        rightType.type = rt;
+                        break;
                     }
-                    if (resultType != null) break;
                 }
+                if (resultType != null) break;
             }
+        }
 
-            // Situation Object + String: insert toString()-Method
-            if (resultType == null && node.operator == TokenType.plus) {
-                if (leftType.type instanceof Klass && rightType.type == stringPrimitiveType) {
-                    this.insertStatements(programPosAfterLeftOpoerand, this.getToStringStatement(leftType.type, node.firstOperand.position));
-                    resultType = stringPrimitiveType;
-                } else if (rightType.type instanceof Klass && leftType.type == stringPrimitiveType) {
-                    this.pushStatements(this.getToStringStatement(rightType.type, node.firstOperand.position));
-                    resultType = stringPrimitiveType;
-                }
+        // Situation Object + String: insert toString()-Method
+        if (resultType == null && node.operator == TokenType.plus) {
+            if (leftType.type instanceof Klass && rightType.type == stringPrimitiveType) {
+                this.insertStatements(programPosAfterLeftOpoerand, this.getToStringStatement(leftType.type, node.firstOperand.position));
+                resultType = stringPrimitiveType;
+            } else if (rightType.type instanceof Klass && leftType.type == stringPrimitiveType) {
+                this.pushStatements(this.getToStringStatement(rightType.type, node.firstOperand.position));
+                resultType = stringPrimitiveType;
             }
-
-
-            if (node.operator in [TokenType.and, TokenType.or]) {
-                this.checkIfAssignmentInstedOfEqual(node.firstOperand);
-                this.checkIfAssignmentInstedOfEqual(node.secondOperand);
-            }
-
-            if (resultType == null) {
-                let bitOperators = [TokenType.ampersand, TokenType.OR];
-                let booleanOperators = ["&& (boolescher UND-Operator)", "|| (boolescher ODER-Operator)"];
-                let betterOperators = ["& &", "||"];
-                let opIndex = bitOperators.indexOf(node.operator);
-                if (opIndex >= 0 && leftType.type == booleanPrimitiveType && rightType.type == booleanPrimitiveType) {
-                    this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert. Du meintest wahrscheinlich den Operator " + booleanOperators[opIndex] + ".", node.position, "error",
-                        {
-                            title: "Operator " + betterOperators[opIndex] + " verwenden statt " + TokenTypeReadable[node.operator],
-                            editsProvider: (uri) => {
-                                return [
-                                    {
-                                        resource: uri,
-                                        edit: {
-                                            range: { startLineNumber: node.position.line, startColumn: node.position.column, endLineNumber: node.position.line, endColumn: node.position.column },
-                                            text: TokenTypeReadable[node.operator]
-                                        }
-                                    }
-                                ]
-                            }
-
-                        });
-                } else {
-                    this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert.", node.position);
-                }
-                return leftType;
-            }
-
-
-            this.pushStatements({
-                type: TokenType.binaryOp,
-                leftType: leftType.type,
-                operator: node.operator,
-                position: node.position
-            });
-
-            if (lazyEvaluationDest != null) {
-                this.currentProgram.labelManager.markJumpDestination(1, lazyEvaluationDest);
-            }
-
-            return { type: resultType, isAssignable: false };
         }
 
 
+        if (node.operator in [TokenType.and, TokenType.or]) {
+            this.checkIfAssignmentInstedOfEqual(node.firstOperand);
+            this.checkIfAssignmentInstedOfEqual(node.secondOperand);
+        }
+
+        if (resultType == null) {
+            let bitOperators = [TokenType.ampersand, TokenType.OR];
+            let booleanOperators = ["&& (boolescher UND-Operator)", "|| (boolescher ODER-Operator)"];
+            let betterOperators = ["& &", "||"];
+            let opIndex = bitOperators.indexOf(node.operator);
+            if (opIndex >= 0 && leftType.type == booleanPrimitiveType && rightType.type == booleanPrimitiveType) {
+                this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert. Du meintest wahrscheinlich den Operator " + booleanOperators[opIndex] + ".", node.position, "error",
+                    {
+                        title: "Operator " + betterOperators[opIndex] + " verwenden statt " + TokenTypeReadable[node.operator],
+                        editsProvider: (uri) => {
+                            return [
+                                {
+                                    resource: uri,
+                                    edit: {
+                                        range: { startLineNumber: node.position.line, startColumn: node.position.column, endLineNumber: node.position.line, endColumn: node.position.column },
+                                        text: TokenTypeReadable[node.operator]
+                                    }
+                                }
+                            ]
+                        }
+
+                    });
+            } else {
+                this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert.", node.position);
+            }
+            return leftType;
+        }
+
+
+        this.pushStatements({
+            type: TokenType.binaryOp,
+            leftType: leftType.type,
+            operator: node.operator,
+            position: node.position
+        });
+
+        if (lazyEvaluationDest != null) {
+            this.currentProgram.labelManager.markJumpDestination(1, lazyEvaluationDest);
+        }
+
+        return { type: resultType, isAssignable: false };
+
+
     }
+
+    processAssignmentOperator(node: BinaryOpNode): StackType {
+
+        let leftType = this.processNode(node.firstOperand, true);
+
+        let leftSideRetrieveValueStatement = this.lastStatement;
+        this.removeLastStatement();
+
+        let rightType = this.processNode(node.secondOperand);
+
+        if (leftType == null || leftType.type == null || rightType == null || rightType.type == null) return null;
+
+        if (!this.ensureAutomaticCasting(rightType.type, leftType.type, node.position, node.firstOperand)) {
+            this.pushError("Der Wert vom Datentyp " + rightType.type.identifier + " auf der rechten Seite kann der Variablen auf der linken Seite (Datentyp " + leftType.type.identifier + ") nicht zugewiesen werden.", node.position);
+            return leftType;
+        }
+
+        if (!leftType.isAssignable) {
+            this.pushError("Dem Term/der Variablen auf der linken Seite des Zuweisungsoperators (=) kann kein Wert zugewiesen werden.", node.position);
+        }
+
+        this.insertAssignmentStatement(leftSideRetrieveValueStatement, node.operator, node.position, true);
+
+
+        return leftType;
+
+    }
+
+    insertAssignmentStatement(retrieveValueStatement: Statement, assignmentOperator: TokenType, position: TextPosition, leaveValueOnStack: boolean) {
+
+        let assignmentStatement: NewAssignmentStatement = {
+            type: TokenType.newAssignment,
+            assignmentType: <any>assignmentOperator,
+            leaveValueOnStack: leaveValueOnStack,
+            position: position,
+            stepFinished: true,
+            target: null
+        }
+
+        switch (retrieveValueStatement.type) {
+            case TokenType.selectArrayElement: assignmentStatement.target = AssignTarget.arrayElement; break;
+            case TokenType.pushAttribute:
+                assignmentStatement.target = AssignTarget.attribute;
+                assignmentStatement.attributeIndex = retrieveValueStatement.attributeIndex;
+                assignmentStatement.attributeIdentifier = retrieveValueStatement.attributeIdentifier;
+                assignmentStatement.useThisObject = retrieveValueStatement.useThisObject;
+                break;
+            case TokenType.pushStaticAttribute:
+                assignmentStatement.target = AssignTarget.staticAttribute;
+                assignmentStatement.attributeIndex = retrieveValueStatement.attributeIndex;
+                assignmentStatement.attributeIdentifier = retrieveValueStatement.attributeIdentifier;
+                assignmentStatement.klass = retrieveValueStatement.klass;
+                break;
+            case TokenType.pushLocalVariableToStack:
+                assignmentStatement.target = AssignTarget.stack;
+                assignmentStatement.stackposOfVariable = retrieveValueStatement.stackposOfVariable;
+                break;
+            case TokenType.pushFromHeapToStack:
+                assignmentStatement.target = AssignTarget.heap;
+                assignmentStatement.identifier = retrieveValueStatement.identifier;
+                break;
+        }
+
+
+        // let statement: AssignmentStatement = {
+        //     //@ts-ignore
+        //     type: node.operator,
+        //     position: node.position,
+        //     stepFinished: true,
+        //     leaveValueOnStack: true
+        // };
+
+        this.pushStatements(assignmentStatement);
+
+    }
+
 
     processTernaryOperator(node: BinaryOpNode): StackType {
 

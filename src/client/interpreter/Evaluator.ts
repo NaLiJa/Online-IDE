@@ -5,6 +5,7 @@ import { Heap, Value } from "../compiler/types/Types.js";
 import { Main } from "../main/Main.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { MainBase } from "../main/MainBase.js";
+import { DebuggerElement } from "./DebuggerElement.js";
 
 export class Evaluator {
 
@@ -67,8 +68,13 @@ export class Evaluator {
 
         let interpreter = this.main.getInterpreter();
 
-        return interpreter.evaluate(c.program);
+        let ret = interpreter.evaluate(c.program);
 
+        if(ret.value != null){
+            ret.value.type = DebuggerElement.getType(ret.value.value);
+        }
+
+        return ret;
     }
 
 

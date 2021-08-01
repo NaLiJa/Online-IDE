@@ -1,4 +1,4 @@
-import { TextPosition, TokenType, Token } from "../lexer/Token.js";
+import { TextPosition, TokenType, Token, AssignTarget as AssignmentTarget } from "../lexer/Token.js";
 import { Klass, StaticClass, Interface } from "../types/Class.js";
 import { Method, Type, Variable, Attribute } from "../types/Types.js";
 import { LabelManager } from "./LabelManager.js";
@@ -31,7 +31,7 @@ export type Statement = PushValueStatement | PopAndStoreIntoLocalVariableStateme
     PushEmptyArrayStatement | PrintStatement | PushEnumValueStatement | InitializeEnumValueStatement |
     JumpOnSwitchStatement | JumpIfTrueAndLeaveOnStackStatement | JumpIfFalseAndLeaveOnStackStatement |
     DeclareHeapVariableStatement | PushFromHeapToStackStatement | ProcessPostConstructorCallbacksStatement |
-    ReturnIfDestroyedStatement | ExtendedForLoopCheckCounterAndGetElement | ExtendedForLoopInitStatement;
+    ReturnIfDestroyedStatement | ExtendedForLoopCheckCounterAndGetElement | ExtendedForLoopInitStatement | NewAssignmentStatement;
 
 
 
@@ -137,6 +137,29 @@ export type AssignmentStatement = {
     stepFinished?: boolean,
     leaveValueOnStack: boolean,
 }
+
+export type NewAssignmentStatement = {
+    type: TokenType.newAssignment,
+    assignmentType: TokenType.assignment | TokenType.plusAssignment | TokenType.minusAssignment | 
+     TokenType.multiplicationAssignment | TokenType.divisionAssignment | TokenType.moduloAssignment |
+     TokenType.ANDAssigment | TokenType.ORAssigment | TokenType.XORAssigment | TokenType.shiftLeftAssigment |
+     TokenType.shiftRightAssigment | TokenType.shiftRightUnsignedAssigment,
+    target: AssignmentTarget,
+    position: TextPosition,
+    breakpoint?: Breakpoint
+    stepFinished?: boolean,
+    leaveValueOnStack: boolean,
+    // push (static) attribute
+    klass?: StaticClass,
+    attributeIndex?: number,
+    attributeIdentifier?: string,
+    useThisObject?: boolean,
+    // push local variable to stack
+    stackposOfVariable?: number,
+    // push from heap to stack
+    identifier?: string
+}
+
 
 export type BinaryOpStatement = {
     type: TokenType.binaryOp,

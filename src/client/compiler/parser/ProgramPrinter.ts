@@ -1,4 +1,4 @@
-import { TokenType, TokenTypeReadable } from "../lexer/Token.js";
+import { AssignTargetReadable, TokenType, TokenTypeReadable } from "../lexer/Token.js";
 import { Variable } from "../types/Types.js";
 import { Statement } from "./Program.js";
 import { Module } from "./Module.js";
@@ -203,6 +203,13 @@ export class ProgramPrinter {
             break;
             case TokenType.pushAttribute:
                 s1 += "Attribut: " + node.attributeIdentifier + ", use THIS-Object: " + node.useThisObject
+                break;
+            case TokenType.newAssignment:
+                s1 += "Assignmenttype: " + TokenTypeReadable[node.assignmentType] + "&nbsp;&nbsp;";
+                s1 += ", target: " + AssignTargetReadable[node.target];
+                if(node.assignmentType == TokenType.assignment){
+                    s1 += ", leaveValueOnStack: " + node.leaveValueOnStack;
+                }
                 break;
             case TokenType.assignment:
             case TokenType.plusAssignment:

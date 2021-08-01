@@ -172,6 +172,7 @@ export enum TokenType {
     addToArray, // pop element form stack and add it to array (on second stack position)
     pushEmptyArray, // push multidimensional empty array to stack
     forLoopOverCollection,
+    newAssignment,
 
     // additional AST node types
     type, // e.g. int[][]
@@ -191,6 +192,18 @@ export enum TokenType {
     returnIfDestroyed,
     extendedForLoopInit,
     extendedForLoopCheckCounterAndGetElement,
+}
+
+export enum AssignTarget {
+    heap, stack, arrayElement, attribute, staticAttribute
+}
+
+export var AssignTargetReadable: {[tt: number]: string} = {
+    [AssignTarget.heap]: "Heap",
+    [AssignTarget.stack]: "Stack",
+    [AssignTarget.arrayElement]: "ArrayElement",
+    [AssignTarget.attribute]: "Attribute",
+    [AssignTarget.staticAttribute]: "StaticAttribute",
 }
 
 export var TokenTypeReadable: {[tt: number]: string} = {
