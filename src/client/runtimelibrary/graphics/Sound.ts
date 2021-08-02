@@ -14,7 +14,7 @@ export class SoundKlass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
 
         for(let sound of SoundTools.sounds){
-            this.addAttribute(new Attribute(sound.name, stringPrimitiveType, (value) => { value.value = sound.name }, true, Visibility.public, true, sound.description));
+            this.addAttribute(new Attribute(sound.name, stringPrimitiveType, (rto) => { return sound.name }, true, Visibility.public, true, sound.description));
         }
 
         this.staticClass.setupAttributeIndicesRecursive();
@@ -25,7 +25,7 @@ export class SoundKlass extends Klass {
             { identifier: "sound", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
         (parameters) => {
-            let sound: string = parameters[1].value;
+            let sound: string = <string>parameters[1];
             SoundTools.play(sound);
         }    
         , false, true, "Spielt einen Sound ab. Die Möglichen Sounds sind als statische Variablen der Klasse Sound hinterlegt. Tippe als Parameter also Sound gefolgt von einem Punkt ein, um eine Auswahl zu sehen!"));

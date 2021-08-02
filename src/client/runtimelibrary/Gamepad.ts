@@ -25,9 +25,9 @@ export class GamepadClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let gamepadIndex: number = parameters[1].value;
-                let buttonIndex: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let gamepadIndex: number = <number>parameters[1];
+                let buttonIndex: number = <number>parameters[2];
 
                 return module.main.getInterpreter().gamepadTool.isGamepadButtonPressed(gamepadIndex, buttonIndex);
 
@@ -38,8 +38,8 @@ export class GamepadClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let gamepadIndex: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let gamepadIndex: number = <number>parameters[1];
 
                 return module.main.getInterpreter().gamepadTool.isGamepadConnected(gamepadIndex);
 
@@ -51,9 +51,9 @@ export class GamepadClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let gamepadIndex: number = parameters[1].value;
-                let axisIndex: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let gamepadIndex: number = <number>parameters[1];
+                let axisIndex: number = <number>parameters[2];
 
                 return module.main.getInterpreter().gamepadTool.getGamepadAxisValue(gamepadIndex, axisIndex);
 

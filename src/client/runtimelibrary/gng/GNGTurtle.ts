@@ -19,29 +19,29 @@ export class GNGTurtleClass extends Klass {
 
         super("GTurtle", module, "Turtle-Klasse der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
 
-        this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { 
-            let sh = value.intrinsicData["Actor"];
-            value.value = Math.round(sh.lineElements[sh.lineElements.length - 1].x); 
+        this.addAttribute(new Attribute("x", intPrimitiveType, (ro) => { 
+            let sh = ro.intrinsicData["Actor"];
+            return Math.round(sh.lineElements[sh.lineElements.length - 1].x); 
         }, false, Visibility.private, false, "x-Position der Figur"));
-        this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { 
-            let sh = value.intrinsicData["Actor"];
-            value.value = Math.round(sh.lineElements[sh.lineElements.length - 1].y); 
+        this.addAttribute(new Attribute("y", intPrimitiveType, (ro) => { 
+            let sh = ro.intrinsicData["Actor"];
+            return Math.round(sh.lineElements[sh.lineElements.length - 1].y); 
         }, false, Visibility.private, false, "x-Position der Figur"));
 
-        this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
-            value.value = value.intrinsicData["Actor"].angle 
+        this.addAttribute(new Attribute("winkel", intPrimitiveType, (ro) => { 
+            return ro.intrinsicData["Actor"].angle 
         }, false, Visibility.private, false, "Blickrichtung der Figur in Grad"));
 
-        this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
-            value.value = Math.round(value.intrinsicData["Actor"].scaleFactor*100) 
+        this.addAttribute(new Attribute("größe", intPrimitiveType, (ro) => { 
+            return Math.round(ro.intrinsicData["Actor"].scaleFactor*100) 
         }, false, Visibility.private, false, "Größe der Figur (100 entspricht 'normalgroß')"));
 
-        this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (value: Value) => { 
-            value.value = value.intrinsicData["Actor"].displayObject?.visible 
+        this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (ro) => { 
+            return ro.intrinsicData["Actor"].displayObject?.visible 
         }, false, Visibility.private, false, "true, wenn die Figur sichtbar ist"));
 
-        this.addAttribute(new Attribute("stiftUnten", booleanPrimitiveType, (value: Value) => { 
-            value.value = value.intrinsicData["Actor"].penIsDown; 
+        this.addAttribute(new Attribute("stiftUnten", booleanPrimitiveType, (ro) => { 
+            return ro.intrinsicData["Actor"].penIsDown; 
         }, false, Visibility.private, false, "true, wenn die Turtle beim Gehen zeichnet"));
 
         this.setupAttributeIndicesRecursive();
@@ -49,7 +49,7 @@ export class GNGTurtleClass extends Klass {
         this.addMethod(new Method("GTurtle", new Parameterlist([]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 o.intrinsicData["isGNG"] = true;
 
                 let rh = new TurtleHelper(100, 200, true, module.main.getInterpreter(), o);
@@ -67,9 +67,9 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
-                let größe: number = parameters[1].value;
+                let größe: number = <number>parameters[1];
 
                 if (sh.testdestroyed("größeSetzen")) return;
 
@@ -83,9 +83,9 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
-                let farbe: string = parameters[1].value;
+                let farbe: string = <string>parameters[1];
 
                 let color: number = GNGFarben[farbe.toLocaleLowerCase()];
                 if (color == null) color = 0x000000; // default: schwarz
@@ -103,9 +103,9 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
-                let grad: number = parameters[1].value;
+                let grad: number = <number>parameters[1];
 
                 if (sh.testdestroyed("Drehen")) return;
 
@@ -118,9 +118,9 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
-                let länge: number = parameters[1].value;
+                let länge: number = <number>parameters[1];
 
                 if (sh.testdestroyed("Gehen")) return;
 
@@ -132,7 +132,7 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("StiftHeben")) return;
@@ -145,7 +145,7 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("StiftSenken")) return;
@@ -158,7 +158,7 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("Löschen")) return;
@@ -173,10 +173,10 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
 
                 if (sh.testdestroyed("PositionSetzen")) return;
 
@@ -188,7 +188,7 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("ZumStartpunktGehen")) return;
@@ -202,9 +202,9 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
-                let winkel: number = parameters[1].value;
+                let winkel: number = <number>parameters[1];
 
                 if (sh.testdestroyed("WinkelSetzen")) return;
 
@@ -216,7 +216,7 @@ export class GNGTurtleClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("WinkelGeben")) return;
@@ -229,7 +229,7 @@ export class GNGTurtleClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("XPositionGeben")) return;
@@ -242,7 +242,7 @@ export class GNGTurtleClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("YPositionGeben")) return;
@@ -256,9 +256,9 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
-                let sichtbarkeit: boolean = parameters[1].value;
+                let sichtbarkeit: boolean = <boolean>parameters[1];
 
                 if (sh.testdestroyed("SichtbarkeitSetzen")) return;
 
@@ -269,7 +269,7 @@ export class GNGTurtleClass extends Klass {
         this.addMethod(new Method("Entfernen", new Parameterlist([]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("Entfernen")) return;
@@ -282,7 +282,7 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("GanzNachVornBringen")) return;
@@ -295,7 +295,7 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("GanzNachHintenBringen")) return;
@@ -308,7 +308,7 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("NachVornBringen")) return;
@@ -321,7 +321,7 @@ export class GNGTurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("NachHintenBringen")) return;
@@ -334,7 +334,7 @@ export class GNGTurtleClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("Berührt")) return;
@@ -348,8 +348,8 @@ export class GNGTurtleClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let farbeString: string = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let farbeString: string = <string>parameters[1];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("Berührt")) return;
@@ -366,8 +366,8 @@ export class GNGTurtleClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: RuntimeObject = <RuntimeObject>parameters[1];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
                 let objectShapeHelper = object.intrinsicData["Actor"];
 

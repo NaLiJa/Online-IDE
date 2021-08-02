@@ -3,8 +3,8 @@ import { Module } from "../../compiler/parser/Module.js";
 import { Program, Statement } from "../../compiler/parser/Program.js";
 import { Interface, Klass } from "../../compiler/types/Class.js";
 import { Enum } from "../../compiler/types/Enum.js";
-import { booleanPrimitiveType, stringPrimitiveType, StringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, PrimitiveType, Value } from "../../compiler/types/Types.js";
+import { booleanPrimitiveType, getType, stringPrimitiveType, StringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { Method, NewValue, Parameterlist, PrimitiveType, Value } from "../../compiler/types/Types.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ListHelper } from "./ArrayList.js";
@@ -12,7 +12,7 @@ import { ListHelper } from "./ArrayList.js";
 
 export class SetHelper {
 
-    valueArray: Value[] = [];
+    valueArray: NewValue[] = [];
 
     map: Map<any, boolean> = new Map(); // Maps key objects to index in keyArray/valueArray
 
@@ -21,7 +21,8 @@ export class SetHelper {
 
     allElementsPrimitive(): boolean {
         for (let v of this.valueArray) {
-            if (!(v.type instanceof PrimitiveType || ["String", "_Double", "Integer", "Boolean" ,"Character"].indexOf(v.type.identifier) >= 0)) {
+            let type = getType(v);
+            if (!(type instanceof PrimitiveType || ["String", "_Double", "Integer", "Boolean" ,"Character"].indexOf(type.identifier) >= 0)) {
                 return false;
             }
         }
@@ -31,7 +32,7 @@ export class SetHelper {
     to_String(): any {
 
         if (this.allElementsPrimitive()) {
-            return "[" + this.valueArray.map(o => "" + o.value).join(", ") + "]";
+            return "[" + this.valueArray.map(o => "" + o).join(", ") + "]";
         }
 
         let position: TextPosition = {
@@ -60,25 +61,26 @@ export class SetHelper {
         for (let i = 0; i < this.valueArray.length; i++) {
 
             let key = this.valueArray[i];
-            if (key.type instanceof PrimitiveType || key.type instanceof StringPrimitiveType) {
+            let type = getType(key);
+            if (type instanceof PrimitiveType || type instanceof StringPrimitiveType) {
                 statements.push({
                     type: TokenType.pushConstant,
                     dataType: stringPrimitiveType,
-                    value: key.type.castTo(key, stringPrimitiveType).value,
+                    value: type.castTo(key, stringPrimitiveType),
                     position: position,
                     stepFinished: false
                 });
             } else {
                 statements.push({
                     type: TokenType.pushConstant,
-                    dataType: key.type,
-                    value: key.value,
+                    dataType: type,
+                    value: key,
                     stepFinished: false,
                     position: position
                 });
                 statements.push({
                     type: TokenType.callMethod,
-                    method: (<Klass | Interface | Enum>key.type).getMethod("toString", toStringParameters),
+                    method: (<Klass | Interface | Enum>type).getMethod("toString", toStringParameters),
                     isSuperCall: false,
                     stackframeBegin: -1,
                     stepFinished: false,
@@ -182,11 +184,11 @@ export class SetHelper {
         return ret;
     }
 
-    addToSet(r: Value): boolean {
+    addToSet(r: NewValue): boolean {
         if (this.contains(r)) return false;
 
         this.valueArray.push(r);
-        this.map.set(r.value, true);
+        this.map.set(r, true);
         return true;
     }
 
@@ -198,21 +200,21 @@ export class SetHelper {
         return this.valueArray.length == 0;
     }
 
-    removeObject(object: Value) {
+    removeObject(object: NewValue) {
 
-        if(this.map.get(object.value) == null) return false;
+        if(this.map.get(object) == null) return false;
 
         for(let i = 0; i < this.valueArray.length; i++){
-            if(this.valueArray[i].value == object.value){
+            if(this.valueArray[i] == object){
                 this.valueArray.splice(i, 1);
             }
         }
 
-        this.map.delete(object.value);
+        this.map.delete(object);
     }
 
-    contains(object: Value): any {
-        return this.map.get(object.value) != null;
+    contains(object: NewValue): any {
+        return this.map.get(object) != null;
     }
 
     clear() {

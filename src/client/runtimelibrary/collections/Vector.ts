@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass, TypeVariable, Interface } from "../../compiler/types/Class.js";
 import { doublePrimitiveType, booleanPrimitiveType, intPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Method, NewValue, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ListHelper } from "./ArrayList.js";
@@ -43,7 +43,7 @@ export class VectorClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let ah = new ListHelper(o, module.main.getInterpreter(), module);
                 o.intrinsicData["ListHelper"] = ah;
@@ -54,10 +54,10 @@ export class VectorClass extends Klass {
             ]), iteratorType,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
                     let ah: ListHelper = o.intrinsicData["ListHelper"];
     
-                    return ListIteratorImplClass.getIterator(ah, ah.interpreter, module, "ascending").value;
+                    return ListIteratorImplClass.getIterator(ah, ah.interpreter, module, "ascending");
     
                 }, false, false, "Gibt einen Iterator über die Elemente dieser Collection zurück."));
     
@@ -67,8 +67,8 @@ export class VectorClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let r: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.add(r);
@@ -80,11 +80,11 @@ export class VectorClass extends Klass {
         ]), typeA,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let index: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let index: number = <number>parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
-                return ah.get(index).value;
+                return ah.get(index);
 
             }, false, false, "Gibt das i-te Element der Liste zurück."));
 
@@ -93,11 +93,11 @@ export class VectorClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let index: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let index: number = <number>parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
-                ah.remove(index).value;
+                ah.remove(index);
 
                 return null;
 
@@ -108,8 +108,8 @@ export class VectorClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.indexOf(object);
@@ -121,8 +121,8 @@ export class VectorClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: RuntimeObject = <RuntimeObject>parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.adAll(object);
@@ -134,7 +134,7 @@ export class VectorClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.clear();
@@ -147,8 +147,8 @@ export class VectorClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.contains(object);
@@ -161,8 +161,8 @@ export class VectorClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.removeObject(object);
@@ -174,7 +174,7 @@ export class VectorClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.isEmpty();
@@ -186,7 +186,7 @@ export class VectorClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.size();

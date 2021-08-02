@@ -26,11 +26,11 @@ export class EllipseClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let mx: number = parameters[1].value;
-                let my: number = parameters[2].value;
-                let rx: number = parameters[3].value;
-                let ry: number = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let mx: number = <number>parameters[1];
+                let my: number = <number>parameters[2];
+                let rx: number = <number>parameters[3];
+                let ry: number = <number>parameters[4];
 
                 let rh = new EllipseHelper(mx, my, rx, ry, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
@@ -42,8 +42,8 @@ export class EllipseClass extends Klass {
             ]), null,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
-                    let r: number = parameters[1].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
+                    let r: number = <number>parameters[1];
                     let sh: EllipseHelper = o.intrinsicData["Actor"];
     
                     sh.setRadiusX(r);
@@ -55,8 +55,8 @@ export class EllipseClass extends Klass {
             ]), null,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
-                    let r: number = parameters[1].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
+                    let r: number = <number>parameters[1];
                     let sh: EllipseHelper = o.intrinsicData["Actor"];
     
                     sh.setRadiusY(r);
@@ -67,7 +67,7 @@ export class EllipseClass extends Klass {
                 ]), this,
                     (parameters) => {
         
-                        let o: RuntimeObject = parameters[0].value;
+                        let o: RuntimeObject = <RuntimeObject>parameters[0];
                         let sh: EllipseHelper = o.intrinsicData["Actor"];
         
                         if (sh.testdestroyed("copy")) return;

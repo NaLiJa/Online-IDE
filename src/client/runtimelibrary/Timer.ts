@@ -57,8 +57,8 @@ export class TimerClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let tl: RuntimeObject = <RuntimeObject>parameters[1].value;
-                let dt: number = <number>parameters[2].value;
+                let tl: RuntimeObject = <RuntimeObject>parameters[1];
+                let dt: number = <number>parameters[2];
 
                 let timerEntry: TimerEntry = {
                     timerListener: tl,

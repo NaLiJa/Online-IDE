@@ -25,12 +25,12 @@ export class SectorClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let mx: number = parameters[1].value;
-                let my: number = parameters[2].value;
-                let r: number = parameters[3].value;
-                let startAngle: number = parameters[4].value;
-                let endAngle: number = parameters[5].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let mx: number = <number>parameters[1];
+                let my: number = <number>parameters[2];
+                let r: number = <number>parameters[3];
+                let startAngle: number = <number>parameters[4];
+                let endAngle: number = <number>parameters[5];
 
                 let rh = new SectorHelper(mx, my, r, startAngle/180*Math.PI, endAngle/180*Math.PI, true, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
@@ -42,8 +42,8 @@ export class SectorClass extends Klass {
             ]), null,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
-                    let r: boolean = parameters[1].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
+                    let r: boolean = <boolean>parameters[1];
                     let sh: SectorHelper = o.intrinsicData["Actor"];
     
                     if (sh.testdestroyed("drawRadii")) return;
@@ -59,8 +59,8 @@ export class SectorClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let r: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: number = <number>parameters[1];
                 let sh: SectorHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setRadius")) return;
@@ -74,8 +74,8 @@ export class SectorClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let angle: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let angle: number = <number>parameters[1];
                 let sh: SectorHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setStartAngle")) return;
@@ -98,8 +98,8 @@ export class SectorClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let angle: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let angle: number = <number>parameters[1];
                 let sh: SectorHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setEndAngle")) return;
@@ -121,7 +121,7 @@ export class SectorClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SectorHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getRadius")) return;
@@ -134,7 +134,7 @@ export class SectorClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SectorHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getStartAngle")) return;
@@ -147,7 +147,7 @@ export class SectorClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SectorHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getEndAngle")) return;
@@ -160,7 +160,7 @@ export class SectorClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SectorHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;

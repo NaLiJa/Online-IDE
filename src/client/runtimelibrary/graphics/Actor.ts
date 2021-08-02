@@ -47,7 +47,7 @@ export class Actor extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let actorHelper = new ActorHelper(module.main.getInterpreter(), o);
 
@@ -62,7 +62,7 @@ export class Actor extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ActorHelper = o.intrinsicData["Actor"];
                 sh.destroy();
 
@@ -73,8 +73,8 @@ export class Actor extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let key: string = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let key: string = <string>parameters[1];
                 let sh: ActorHelper = o.intrinsicData["Actor"];
 
                 return !sh.isKeyDown(key);
@@ -86,8 +86,8 @@ export class Actor extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let key: string = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let key: string = <string>parameters[1];
                 let sh: ActorHelper = o.intrinsicData["Actor"];
 
                 return sh.isKeyDown(key);
@@ -100,9 +100,9 @@ export class Actor extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let gamepadIndex: number = parameters[1].value;
-                let buttonIndex: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let gamepadIndex: number = <number>parameters[1];
+                let buttonIndex: number = <number>parameters[2];
 
                 return module.main.getInterpreter().gamepadTool.isGamepadButtonPressed(gamepadIndex, buttonIndex);
 
@@ -113,8 +113,8 @@ export class Actor extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let gamepadIndex: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let gamepadIndex: number = <number>parameters[1];
 
                 return module.main.getInterpreter().gamepadTool.isGamepadConnected(gamepadIndex);
 
@@ -126,9 +126,9 @@ export class Actor extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let gamepadIndex: number = parameters[1].value;
-                let axisIndex: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let gamepadIndex: number = <number>parameters[1];
+                let axisIndex: number = <number>parameters[2];
 
                 return module.main.getInterpreter().gamepadTool.getGamepadAxisValue(gamepadIndex, axisIndex);
 
@@ -138,7 +138,7 @@ export class Actor extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ActorHelper = o.intrinsicData["Actor"];
 
                 return sh.isDestroyed;
@@ -150,7 +150,7 @@ export class Actor extends Klass {
         ]), module.typeStore.getType("World"),
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ActorHelper = o.intrinsicData["Actor"];
 
                 let interpreter = module.main.getInterpreter();
@@ -167,7 +167,7 @@ export class Actor extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ActorHelper = o.intrinsicData["Actor"];
 
                 // ah.timerPaused = true;
@@ -181,7 +181,7 @@ export class Actor extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ActorHelper = o.intrinsicData["Actor"];
 
                 // sh.timerPaused = false;
@@ -193,7 +193,7 @@ export class Actor extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ActorHelper = o.intrinsicData["Actor"];
 
                 return !sh.timerPaused;

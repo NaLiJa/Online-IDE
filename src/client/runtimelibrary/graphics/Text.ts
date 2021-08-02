@@ -26,11 +26,11 @@ export class TextClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let fontsize: number = parameters[3].value;
-                let text: string = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let fontsize: number = <number>parameters[3];
+                let text: string = <string>parameters[4];
 
                 let sh = new TextHelper(x, y, fontsize, text, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = sh;
@@ -46,12 +46,12 @@ export class TextClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let fontsize: number = parameters[3].value;
-                let text: string = parameters[4].value;
-                let fontFamily: string = parameters[5].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let fontsize: number = <number>parameters[3];
+                let text: string = <string>parameters[4];
+                let fontFamily: string = <string>parameters[5];
 
                 let sh = new TextHelper(x, y, fontsize, text, module.main.getInterpreter(), o, fontFamily);
                 o.intrinsicData["Actor"] = sh;
@@ -63,8 +63,8 @@ export class TextClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let fontsize: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let fontsize: number = <number>parameters[1];
                 let sh: TextHelper = o.intrinsicData["Actor"];
 
                 sh.setFontsize(fontsize);
@@ -76,8 +76,8 @@ export class TextClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let alignment: EnumRuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let alignment: EnumRuntimeObject = <EnumRuntimeObject>parameters[1];
                 let sh: TextHelper = o.intrinsicData["Actor"];
 
                 sh.setAlignment(alignment.enumValue.identifier);
@@ -89,8 +89,8 @@ export class TextClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let text: string = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let text: string = <string>parameters[1];
                 let sh: TextHelper = o.intrinsicData["Actor"];
 
                 sh.setText(text);
@@ -101,7 +101,7 @@ export class TextClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TextHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;
@@ -114,7 +114,7 @@ export class TextClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TextHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getWidth")) return;
@@ -127,7 +127,7 @@ export class TextClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TextHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getHeight")) return;

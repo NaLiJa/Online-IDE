@@ -1,4 +1,4 @@
-import { Type, Method, Parameterlist, Value, Attribute } from "../compiler/types/Types.js";
+import { Type, Method, Parameterlist, Value, Attribute, NewValue } from "../compiler/types/Types.js";
 import { Klass, Visibility } from "../compiler/types/Class.js";
 import { stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, booleanPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { Module } from "../compiler/parser/Module.js";
@@ -34,14 +34,14 @@ export class MathToolsClass extends Klass {
         ]), vectorArrayClass,
             (parameters) => {
 
-                let mx: number = parameters[1].value;
-                let my: number = parameters[2].value;
-                let r: number = parameters[3].value;
-                let points: Value[] = parameters[4].value;
+                let mx: number = <number>parameters[1];
+                let my: number = <number>parameters[2];
+                let r: number = <number>parameters[3];
+                let points: RuntimeObject[] = <RuntimeObject[]>parameters[4];
 
                 let punkte: Punkt[] = [];
                 for(let p of points){
-                    punkte.push({x: p.value.attributes[xIndex].value, y: p.value.attributes[yIndex].value});
+                    punkte.push({x: p.attributes[xIndex], y: p.attributes[yIndex]});
                 }
 
                 let schnittpunkte: Punkt[] = [];
@@ -75,8 +75,8 @@ export class MathToolsClass extends Klass {
 
                 let p: Punkt[] = [];
                 for(let i = 0; i < 4; i++){
-                    let att = parameters[i].value.attributes;
-                    p.push({x: att[xIndex].value, y: att[yIndex].value})
+                    let att = (<RuntimeObject>parameters[i]).attributes;
+                    p.push({x: att[xIndex], y: att[yIndex]})
                 }
 
                 let ps: Punkt = {x: 0, y: 0};
@@ -97,14 +97,14 @@ export class MathToolsClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let points = parameters[1].value;
+                let points = <RuntimeObject[]>parameters[1];
                 let punkte: Punkt[] = [];
                 for(let p of points){
-                    punkte.push({x: p.value.attributes[xIndex].value, y: p.value.attributes[yIndex].value});
+                    punkte.push({x: p.attributes[xIndex], y: p.attributes[yIndex]});
                 }
 
-                let att = parameters[2].value.attributes;
-                let p: Punkt = {x: att[xIndex].value, y: att[yIndex].value}
+                let att = (<RuntimeObject>parameters[2]).attributes;
+                let p: Punkt = {x: att[xIndex], y: att[yIndex]}
 
                 return polygonEnthältPunkt(punkte, p);
 
@@ -119,8 +119,8 @@ export class MathToolsClass extends Klass {
     
                     let p: Punkt[] = [];
                     for(let i = 0; i < 3; i++){
-                        let att = parameters[i].value.attributes;
-                        p.push({x: att[xIndex].value, y: att[yIndex].value})
+                        let att = (<RuntimeObject>parameters[i]).attributes;
+                        p.push({x: att[xIndex], y: att[yIndex]})
                     }
     
                     return abstandPunktZuGerade(p[1], p[2], p[0]);
@@ -136,8 +136,8 @@ export class MathToolsClass extends Klass {
     
                     let p: Punkt[] = [];
                     for(let i = 0; i < 3; i++){
-                        let att = parameters[i].value.attributes;
-                        p.push({x: att[xIndex].value, y: att[yIndex].value})
+                        let att = (<RuntimeObject>parameters[i]).attributes;
+                        p.push({x: att[xIndex], y: att[yIndex]})
                     }
     
                     return abstandPunktZuStrecke(p[1], p[2], p[0]);

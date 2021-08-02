@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Method, NewValue, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ActorHelper } from "./Actor.js";
@@ -31,9 +31,9 @@ export class WorldClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let breite: number = parameters[1].value;
-                let höhe: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let breite: number = <number>parameters[1];
+                let höhe: number = <number>parameters[2];
                 let gh: WorldHelper = this.getWorldHelper(o, breite, höhe);  //new WorldHelper(breite, höhe, this.module, o);
                 o.intrinsicData["World"] = gh;
 
@@ -43,7 +43,7 @@ export class WorldClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let gh: WorldHelper = this.getWorldHelper(o); // new WorldHelper(800, 600, this.module, o);
                 o.intrinsicData["World"] = gh;
 
@@ -54,8 +54,8 @@ export class WorldClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: number = <number>parameters[1];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
                 wh.setBackgroundColor(color);
@@ -67,8 +67,8 @@ export class WorldClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: string = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: string = <string>parameters[1];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
                 wh.setBackgroundColor(color);
@@ -81,9 +81,9 @@ export class WorldClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
                 let matrix = new PIXI.Matrix().copyFrom(wh.stage.projectionTransform);
@@ -106,13 +106,13 @@ export class WorldClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shape: RuntimeObject = parameters[1].value;
-                let frameWidth: number = parameters[2].value;
-                let xMin: number = parameters[3].value;
-                let xMax: number = parameters[4].value;
-                let yMin: number = parameters[5].value;
-                let yMax: number = parameters[6].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shape: RuntimeObject = <RuntimeObject>parameters[1];
+                let frameWidth: number = <number>parameters[2];
+                let xMin: number = <number>parameters[3];
+                let xMax: number = <number>parameters[4];
+                let yMin: number = <number>parameters[5];
+                let yMax: number = <number>parameters[6];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
                 let shapeHelper: ShapeHelper = shape.intrinsicData["Actor"];
@@ -163,10 +163,10 @@ export class WorldClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let angle: number = parameters[1].value;
-                let x: number = parameters[2].value;
-                let y: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let angle: number = <number>parameters[1];
+                let x: number = <number>parameters[2];
+                let y: number = <number>parameters[3];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
 
@@ -194,10 +194,10 @@ export class WorldClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let factor: number = parameters[1].value;
-                let x: number = parameters[2].value;
-                let y: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let factor: number = <number>parameters[1];
+                let x: number = <number>parameters[2];
+                let y: number = <number>parameters[3];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
 
@@ -220,11 +220,11 @@ export class WorldClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let left: number = parameters[1].value;
-                let top: number = parameters[2].value;
-                let width: number = parameters[3].value;
-                let height: number = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let left: number = <number>parameters[1];
+                let top: number = <number>parameters[2];
+                let width: number = <number>parameters[3];
+                let height: number = <number>parameters[4];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
 
@@ -245,8 +245,8 @@ export class WorldClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let group: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let group: RuntimeObject = <RuntimeObject>parameters[1];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
                 wh.defaultGroup = group == null ? null : group.intrinsicData["Actor"];
@@ -258,8 +258,8 @@ export class WorldClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let listener: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let listener: RuntimeObject = <RuntimeObject>parameters[1];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
                 wh.addMouseListener(listener);
@@ -271,7 +271,7 @@ export class WorldClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
                 return Math.round(wh.currentWidth);
@@ -282,7 +282,7 @@ export class WorldClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
                 return Math.round(wh.currentHeight);
@@ -293,7 +293,7 @@ export class WorldClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
                 return Math.round(wh.currentTop);
@@ -304,7 +304,7 @@ export class WorldClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WorldHelper = o.intrinsicData["World"];
 
                 return Math.round(wh.currentLeft);
@@ -316,9 +316,9 @@ export class WorldClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WorldHelper = o.intrinsicData["World"];
-                let cursor: string = parameters[1].value;
+                let cursor: string = <string>parameters[1];
 
                 wh.setCursor(cursor);
 
@@ -797,15 +797,8 @@ export class WorldHelper {
 
         let rto = actorData.actorHelper.runtimeObject;
 
-        let stackElements: Value[] = [
-            {
-                type: rto.class,
-                value: rto
-            },
-            {
-                type: stringPrimitiveType,
-                value: key
-            }
+        let stackElements: NewValue[] = [
+            rto, key
         ];
 
         if (program != null) {
@@ -823,19 +816,13 @@ export class WorldHelper {
 
         let rto = actorData.actorHelper.runtimeObject;
 
-        let stackElements: Value[] = [
-            {
-                type: rto.class,
-                value: rto
-            },
+        let stackElements: NewValue[] = [
+            rto
         ];
 
         if (actorData.method.getParameterCount() > 0) {
             stackElements.push(
-                {
-                    type: doublePrimitiveType,
-                    value: delta
-                }
+                delta
 
             );
         }
@@ -989,27 +976,10 @@ export class WorldHelper {
 
         let rto = listener.shapeHelper.runtimeObject;
 
-        let stackElements: Value[] = [
-            {
-                type: rto.class,
-                value: rto
-            },
-            {
-                type: doublePrimitiveType,
-                value: x
-            },
-            {
-                type: doublePrimitiveType,
-                value: y
-            }
-        ];
+        let stackElements: NewValue[] = [rto, x, y];
 
         if (listenerType != "mousemove" && listenerType != "mouseenter" && listenerType != "mouseleave") {
-            stackElements.push(
-                {
-                    type: intPrimitiveType,
-                    value: button
-                });
+            stackElements.push(button);
         }
 
         if (program != null) {
@@ -1073,27 +1043,10 @@ export class WorldHelper {
 
         let rto = listener.listener;
 
-        let stackElements: Value[] = [
-            {
-                type: rto.class,
-                value: rto
-            },
-            {
-                type: doublePrimitiveType,
-                value: x
-            },
-            {
-                type: doublePrimitiveType,
-                value: y
-            }
-        ];
+        let stackElements: NewValue[] = [rto, x, y];
 
         if (listenerType != "mousemove" && listenerType != "mouseenter" && listenerType != "mouseleave") {
-            stackElements.push(
-                {
-                    type: intPrimitiveType,
-                    value: button
-                });
+            stackElements.push(button);
         }
 
         if (program != null) {

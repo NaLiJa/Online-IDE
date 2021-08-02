@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, intPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Method, NewValue, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ListHelper } from "./ArrayList.js";
 
@@ -23,13 +23,13 @@ export class StackClass extends Klass {
         ]), typeE,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let r: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 ah.add(r);
 
-                return r.value;
+                return r;
 
             }, false, false, "Pushed ein Element oben auf den Stack. Gibt das gerade gepushte Element zurück."));
 
@@ -37,7 +37,7 @@ export class StackClass extends Klass {
         ]), typeE,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.pop();
@@ -48,7 +48,7 @@ export class StackClass extends Klass {
         ]), typeE,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.peek();
@@ -59,7 +59,7 @@ export class StackClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.isEmpty();
@@ -72,12 +72,12 @@ export class StackClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let r: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 let index = ah.indexOf(r);
-                return index == -1 ? index : ah.objectArray.length - index;
+                return index == -1 ? index : ah.valueArray.length - index;
 
             },
             true, false, "Gibt die Position des Objekts auf dem Stack zurück. Dabei hat das oberste Element den Index 1, das nächstunterste den Index 2 usw. . Falls sich das Objekt nicht auf dem Stack befindet, wird -1 zurückgegeben."));

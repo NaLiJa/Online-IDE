@@ -3,13 +3,11 @@ import { WorldHelper } from "../../runtimelibrary/graphics/World.js";
 import { makeTabs } from "../../tools/HtmlTools.js";
 import { Main } from "../Main.js";
 import { ClassDiagram } from "./diagrams/classdiagram/ClassDiagram.js";
-import { ObjectDiagram } from "./diagrams/objectdiagram/ObjectDiagram.js";
 import { MainBase } from "../MainBase.js";
 
 export class RightDiv {
 
     classDiagram: ClassDiagram;
-    objectDiagram: ObjectDiagram;
     isWholePage: boolean = false;
 
     $tabs: JQuery<HTMLElement>;
@@ -21,16 +19,10 @@ export class RightDiv {
         this.$headings = $rightDiv.find('.jo_tabheadings');
         
         let withClassDiagram = this.$headings.find('.jo_classDiagramTabHeading').length > 0;
-        let withObjectDiagram = this.$headings.find('.jo_objectDiagramTabHeading').length > 0;
 
         if(withClassDiagram){
             this.classDiagram = new ClassDiagram(this.$tabs.find('.jo_classdiagram'), main);
             this.$headings.find('.jo_classDiagramTabHeading').on("click", () => { that.main.drawClassDiagrams(false) });
-        }
-
-        if(withObjectDiagram){
-            this.objectDiagram = new ObjectDiagram(this.main, this.$tabs.find('.jo_objectdiagram'));
-            this.$headings.find('.jo_objectDiagramTabHeading').on("click", () => { that.onObjectDiagramEnabled() });
         }
 
         let that = this;
@@ -100,18 +92,6 @@ export class RightDiv {
         return heading.hasClass("jo_active");
     }
 
-    updateObjectDiagramSettings() {
-        if (this.isObjectDiagramEnabled) {
-            this.objectDiagram.updateSettings();
-        }
-    }
-
-    onObjectDiagramEnabled() {
-        this.objectDiagram.updateSettings();
-        if (this.main.getInterpreter().state == InterpreterState.paused || this.main.getInterpreter().state == InterpreterState.running) {
-            this.objectDiagram.updateDiagram();
-        }
-    }
 
 
 }

@@ -1,7 +1,7 @@
 import { Module, ModuleStore } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { charPrimitiveType, intPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Method, NewValue, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 
 
@@ -23,7 +23,7 @@ export class GNGEreignisbehandlung extends Klass {
         this.addMethod(new Method("Ereignisbehandlung", new Parameterlist([]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let helper = GNGEreignisbehandlung.getHelper(module);
 
@@ -36,9 +36,9 @@ export class GNGEreignisbehandlung extends Klass {
         // ]), null,
         //     (parameters) => {
 
-        //         let o: RuntimeObject = parameters[0].value;
+        //         let o: RuntimeObject = <RuntimeObject>parameters[0];
         //         let sh: GroupHelper = o.intrinsicData["Actor"];
-        //         let groesse: number = parameters[1].value;
+        //         let groesse: number = <number>parameters[1];
 
 
         //     }, false, false, "Setzt die Größe der Figur.", false));
@@ -62,7 +62,7 @@ export class GNGEreignisbehandlung extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let dauer: number = parameters[1].value;
+                let dauer: number = <number>parameters[1];
                 GNGEreignisbehandlung.getHelper(module).taktdauer = dauer;
 
             }, false, true, 'Setzt die Taktdauer des Zeitgebers in Millisekunden', false));
@@ -209,13 +209,13 @@ export class GNGEreignisbehandlungHelper {
         this.onKeyDownMethod = (key: string) => {
             if (key.length == 1) {
                 for (let ae of this.aktionsempfaengerMap["taste"]) {
-                    this.invokeMethod(ae.method, ae.runtimeObject, [{ type: charPrimitiveType, value: key }]);
+                    this.invokeMethod(ae.method, ae.runtimeObject, [key]);
                 }
             } else {
                 let keyCode = this.keyToKeyCodeMap[key];
                 if (keyCode != null) {
                     for (let ae of this.aktionsempfaengerMap["sondertaste"]) {
-                        this.invokeMethod(ae.method, ae.runtimeObject, [{ type: charPrimitiveType, value: keyCode }]);
+                        this.invokeMethod(ae.method, ae.runtimeObject, [keyCode]);
                     }
                 }
             }
@@ -236,12 +236,12 @@ export class GNGEreignisbehandlungHelper {
     }
 
 
-    invokeMethod(method: Method, runtimeObject: RuntimeObject, parameters: Value[] = [], callback?: () => void) {
+    invokeMethod(method: Method, runtimeObject: RuntimeObject, parameters: NewValue[] = [], callback?: () => void) {
         let program = method.program;
         let invoke = method.invoke;
 
         parameters = parameters.slice(0);
-        parameters.unshift({ type: runtimeObject.class, value: runtimeObject });
+        parameters.unshift(runtimeObject);
 
         if (program != null) {
             this.module.main.getInterpreter().runTimer(method, parameters, callback, false);
@@ -291,10 +291,10 @@ export class GNGEreignisbehandlungHelper {
     }
 
     handleMouseClickedEvent(x: number, y: number) {
-        let parameters: Value[] = [
-            { type: intPrimitiveType, value: Math.round(x) },
-            { type: intPrimitiveType, value: Math.round(y) },
-            { type: intPrimitiveType, value: 1 }
+        let parameters: NewValue[] = [
+            Math.round(x),
+            Math.round(y),
+            1
         ]
 
         let liste = this.aktionsempfaengerMap["geklickt"];

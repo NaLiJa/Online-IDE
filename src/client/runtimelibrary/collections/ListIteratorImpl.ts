@@ -52,7 +52,7 @@ export class ListIteratorImplClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: IteratorHelper = o.intrinsicData["IteratorHelper"];
 
                 return ah.hasNext();
@@ -64,7 +64,7 @@ export class ListIteratorImplClass extends Klass {
         ]), typeE,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: IteratorHelper = o.intrinsicData["IteratorHelper"];
 
                 return ah.next();
@@ -76,7 +76,7 @@ export class ListIteratorImplClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: IteratorHelper = o.intrinsicData["IteratorHelper"];
 
                 return ah.remove();
@@ -96,7 +96,7 @@ class IteratorHelper {
     constructor(private listHelper: ListHelper, private interpreter: Interpreter, private kind: IteratorKind) {
         switch (kind) {
             case "ascending": this.nextPos = 0; break;
-            case "descending": this.nextPos = listHelper.objectArray.length - 1; break;
+            case "descending": this.nextPos = listHelper.valueArray.length - 1; break;
         }
     }
 
@@ -105,22 +105,22 @@ class IteratorHelper {
             case "ascending":
                 if (this.nextPos == 0) {
                     this.interpreter.throwException("Die Methode remove() des Iterators wurde aufgerufen, obwohl noch nie next() aufgerufen wurde.")
-                } else if (this.nextPos > this.listHelper.objectArray.length - 1) {
+                } else if (this.nextPos > this.listHelper.valueArray.length - 1) {
                     this.interpreter.throwException("Die Methode remove() des Iterators wurde aufgerufen, obwohl das letzte Element schon beim vorherigen Aufruf zurückgegeben worden war.")
                 } else {
                     this.listHelper.valueArray.splice(this.nextPos - 1, 1);
-                    this.listHelper.objectArray.splice(this.nextPos - 1, 1);
+                    this.listHelper.valueArray.splice(this.nextPos - 1, 1);
                     this.nextPos -= 1;
                 }
                 break;
             case "descending":
-                if (this.nextPos == this.listHelper.objectArray.length - 1) {
+                if (this.nextPos == this.listHelper.valueArray.length - 1) {
                     this.interpreter.throwException("Die Methode remove() des Iterators wurde aufgerufen, obwohl noch nie next() aufgerufen wurde.")
                 } else if (this.nextPos < 0) {
                     this.interpreter.throwException("Die Methode remove() des Iterators wurde aufgerufen, obwohl das letzte Element schon beim vorherigen Aufruf zurückgegeben worden war.")
                 } else {
                     this.listHelper.valueArray.splice(this.nextPos + 1, 1);
-                    this.listHelper.objectArray.splice(this.nextPos + 1, 1);
+                    this.listHelper.valueArray.splice(this.nextPos + 1, 1);
                     this.nextPos += 1;
                 }
                 break;
@@ -130,24 +130,24 @@ class IteratorHelper {
     next(): any {
         switch (this.kind) {
             case "ascending":
-                if (this.nextPos > this.listHelper.objectArray.length - 1) {
+                if (this.nextPos > this.listHelper.valueArray.length - 1) {
                     this.interpreter.throwException("Die Methode next() des Iterators wurde aufgerufen, obwohl das letzte Element schon beim vorherigen Aufruf zurückgegeben worden war.")
                     return null;
                 }
-                return this.listHelper.objectArray[this.nextPos++];
+                return this.listHelper.valueArray[this.nextPos++];
             case "descending":
                 if (this.nextPos < 0) {
                     this.interpreter.throwException("Die Methode next() des Iterators wurde aufgerufen, obwohl das letzte Element schon beim vorherigen Aufruf zurückgegeben worden war.")
                     return null;
                 }
-                return this.listHelper.objectArray[this.nextPos--];
+                return this.listHelper.valueArray[this.nextPos--];
         }
     }
 
     hasNext(): boolean {
         switch (this.kind) {
             case "ascending":
-                return this.nextPos < this.listHelper.objectArray.length;
+                return this.nextPos < this.listHelper.valueArray.length;
             case "descending":
                 return this.nextPos >= 0;
         }

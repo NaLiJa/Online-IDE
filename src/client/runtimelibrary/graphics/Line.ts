@@ -21,11 +21,11 @@ export class LineClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x1: number = parameters[1].value;
-                let y1: number = parameters[2].value;
-                let x2: number = parameters[3].value;
-                let y2: number = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x1: number = <number>parameters[1];
+                let y1: number = <number>parameters[2];
+                let x2: number = <number>parameters[3];
+                let y2: number = <number>parameters[4];
 
                 let pointsNumber: number[] = [x1, y1, x2, y2];
 
@@ -38,7 +38,7 @@ export class LineClass extends Klass {
             ]), this,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
                     let sh: PolygonHelper = o.intrinsicData["Actor"];
     
                     if (sh.testdestroyed("copy")) return;
@@ -54,10 +54,10 @@ export class LineClass extends Klass {
                 ]), null,
                     (parameters) => {
         
-                        let o: RuntimeObject = parameters[0].value;
-                        let x: number = parameters[1].value;
-                        let y: number = parameters[2].value;
-                        let index: number = parameters[3].value;
+                        let o: RuntimeObject = <RuntimeObject>parameters[0];
+                        let x: number = <number>parameters[1];
+                        let y: number = <number>parameters[2];
+                        let index: number = <number>parameters[3];
                         let sh: PolygonHelper = o.intrinsicData["Actor"];
         
                         if (sh.testdestroyed("setPoint")) return;
@@ -74,11 +74,11 @@ export class LineClass extends Klass {
                 ]), null,
                     (parameters) => {
         
-                        let o: RuntimeObject = parameters[0].value;
-                        let x1: number = parameters[1].value;
-                        let y1: number = parameters[2].value;
-                        let x2: number = parameters[3].value;
-                        let y2: number = parameters[4].value;
+                        let o: RuntimeObject = <RuntimeObject>parameters[0];
+                        let x1: number = <number>parameters[1];
+                        let y1: number = <number>parameters[2];
+                        let x2: number = <number>parameters[3];
+                        let y2: number = <number>parameters[4];
                                 let sh: PolygonHelper = o.intrinsicData["Actor"];
         
                         if (sh.testdestroyed("setPoints")) return;

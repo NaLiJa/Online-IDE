@@ -31,64 +31,61 @@ export class ShapeClass extends Klass {
         let vector2Class = <Klass>module.typeStore.getType("Vector2");
 
         this.addAttribute(new Attribute("angle", doublePrimitiveType,
-            (value) => {
+            (rto) => {
 
-                let rto: RuntimeObject = value.object;
+                
                 let helper: ShapeHelper = rto.intrinsicData["Actor"];
 
                 if (helper == null || helper.isDestroyed || helper.displayObject == null) {
-                    value.value = 0;
-                    return;
+                    return 0
                 }
 
-                value.value = helper.angle;
+                return helper.angle;
 
             }, false, Visibility.protected, true, "Richtung"));
 
         this.addAttribute(new Attribute("centerX", doublePrimitiveType,
-            (value) => {
+            (rto) => {
 
-                let rto: RuntimeObject = value.object;
+                
                 let helper: ShapeHelper = rto.intrinsicData["Actor"];
                 if (helper == null || helper.isDestroyed || helper.displayObject == null) {
-                    value.value = 0;
-                    return;
+                    return 0;
                 }
 
-                value.value = helper.getCenterX();
+                return helper.getCenterX();
 
             }, false, Visibility.protected, true, "X-Koordinate des Diagonalenschnittpunkts der BoundingBox des Objekts"));
 
         this.addAttribute(new Attribute("centerY", doublePrimitiveType,
-            (value) => {
+            (rto) => {
 
-                let rto: RuntimeObject = value.object;
+                
                 let helper: ShapeHelper = rto.intrinsicData["Actor"];
                 if (helper == null || helper.isDestroyed || helper.displayObject == null) {
-                    value.value = 0;
-                    return;
+                    return 0;
                 }
 
-                value.value = helper.getCenterY();
+                return helper.getCenterY();
 
             }, false, Visibility.protected, true, "Y-Koordinate des Diagonalenschnittpunkts der BoundingBox des Objekts"));
 
         this.setupAttributeIndicesRecursive();
 
         // this.addAttribute(new Attribute("transformation", matrixType,
-        //     (value) => {
+        //     (rto) => {
 
-        //         let rto: RuntimeObject = value.object;
+        //         
         //         let helper: ShapeHelper = rto.intrinsicData["Actor"];
         //         if (helper == null || helper.isDestroyed || helper.displayObject.transform == null) {
-        //             value.value = null;
+        //             return null;
         //             return;
         //         }
 
         //         let matrix = helper.displayObject.localTransform.toArray(false);
 
         //         if (value.value == null) {
-        //             value.value = [];
+        //             return [];
 
         //             for (let n of matrix) {
         //                 value.value.push({
@@ -111,9 +108,9 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let dx: number = parameters[1].value;
-                let dy: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let dx: number = <number>parameters[1];
+                let dy: number = <number>parameters[2];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("move")) return;
@@ -129,10 +126,10 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let angleInDeg: number = parameters[1].value;
-                let centerX: number = parameters[2].value;
-                let centerY: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let angleInDeg: number = <number>parameters[1];
+                let centerX: number = <number>parameters[2];
+                let centerY: number = <number>parameters[3];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("rotate")) return;
@@ -146,8 +143,8 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let angleInDeg: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let angleInDeg: number = <number>parameters[1];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("rotate")) return;
@@ -163,10 +160,10 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let factor: number = parameters[1].value;
-                let centerX: number = parameters[2].value;
-                let centerY: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let factor: number = <number>parameters[1];
+                let centerX: number = <number>parameters[2];
+                let centerY: number = <number>parameters[3];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("scale")) return;
@@ -180,8 +177,8 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let factor: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let factor: number = <number>parameters[1];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("scale")) return;
@@ -194,7 +191,7 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("mirrorX")) return;
@@ -207,7 +204,7 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("mirrorX")) return;
@@ -220,7 +217,7 @@ export class ShapeClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("isOutsideView")) return;
@@ -233,7 +230,7 @@ export class ShapeClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getCenterX")) return;
@@ -246,7 +243,7 @@ export class ShapeClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getCenterY")) return;
@@ -259,7 +256,7 @@ export class ShapeClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getAngle")) return;
@@ -274,9 +271,9 @@ export class ShapeClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("containsPoint")) return;
@@ -290,8 +287,8 @@ export class ShapeClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shape: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shape: RuntimeObject = <RuntimeObject>parameters[1];
 
                 if (shape == null) {
                     module.main.getInterpreter().throwException("Der Parameter der Methode collidesWith darf nicht null sein.");
@@ -317,9 +314,9 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shape: RuntimeObject = parameters[1].value;
-                let keepColliding: boolean = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shape: RuntimeObject = <RuntimeObject>parameters[1];
+                let keepColliding: boolean = <boolean>parameters[2];
 
                 if (shape == null) {
                     module.main.getInterpreter().throwException("Der erste Parameter der Methode moveBackFrom darf nicht null sein.");
@@ -344,8 +341,8 @@ export class ShapeClass extends Klass {
         ]), directionType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shape: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shape: RuntimeObject = <RuntimeObject>parameters[1];
 
                 if (shape == null) {
                     module.main.getInterpreter().throwException("Der erste Parameter der Methode directionRelativeTo darf nicht null sein.");
@@ -371,10 +368,10 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
 
                 if (sh.testdestroyed("moveTo")) return;
 
@@ -388,10 +385,10 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
 
                 if (sh.testdestroyed("defineCenter")) return;
 
@@ -405,10 +402,10 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
 
                 if (sh.testdestroyed("defineCenterRelative")) return;
 
@@ -421,9 +418,9 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
-                let angleDeg: number = parameters[1].value;
+                let angleDeg: number = <number>parameters[1];
 
                 if (sh.testdestroyed("setAngle")) return;
 
@@ -436,9 +433,9 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
-                let visible: boolean = parameters[1].value;
+                let visible: boolean = <boolean>parameters[1];
 
                 if (sh.testdestroyed("setVisible")) return;
 
@@ -451,9 +448,9 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
-                let isStatic: boolean = parameters[1].value;
+                let isStatic: boolean = <boolean>parameters[1];
 
                 if (sh.testdestroyed("setStatic")) return;
 
@@ -503,8 +500,8 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: string = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: string = <string>parameters[1];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("tint")) return;
@@ -518,8 +515,8 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: number = <number>parameters[1];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("tint")) return;
@@ -532,7 +529,7 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 sh.trackMouseMove = true;
@@ -543,7 +540,7 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 sh.trackMouseMove = false;
@@ -555,8 +552,8 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let react: boolean = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let react: boolean = <boolean>parameters[1];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 sh.reactToMouseEventsWhenInvisible = react;
@@ -568,8 +565,8 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: string = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: string = <string>parameters[1];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("tint")) return;
@@ -583,8 +580,8 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let direction: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let direction: number = <number>parameters[1];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("defineDirection")) return;
@@ -598,8 +595,8 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let distance: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let distance: number = <number>parameters[1];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("forward")) return;
@@ -612,7 +609,7 @@ export class ShapeClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;
@@ -626,7 +623,7 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("bringToFront")) return;
@@ -639,7 +636,7 @@ export class ShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("sendToBack")) return;
@@ -652,7 +649,7 @@ export class ShapeClass extends Klass {
         ]), new ArrayType(vector2Class),
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getHitPolygon")) return;

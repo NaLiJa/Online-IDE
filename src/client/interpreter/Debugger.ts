@@ -1,6 +1,6 @@
 import { Interpreter, ProgramStackElement, InterpreterState } from "./Interpreter.js";
 import { Main } from "../main/Main.js";
-import { Value, Heap } from "../compiler/types/Types.js";
+import { Value, Heap, NewValue } from "../compiler/types/Types.js";
 import { Module } from "../compiler/parser/Module.js";
 import { TextPosition } from "../compiler/lexer/Token.js";
 import { Program } from "../compiler/parser/Program.js";
@@ -72,7 +72,7 @@ export class Debugger {
     }
 
     showData(currentProgram: Program, textPosition: TextPosition,
-        stack: Value[], stackframe: number, heap: Heap) {
+        stack: NewValue[], stackframe: number, heap: Heap) {
 
         if (currentProgram.module.file == null) return; // inside command line
 

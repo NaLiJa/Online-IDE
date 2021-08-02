@@ -14,14 +14,14 @@ export class GNGTextClass extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
-        this.addAttribute(new Attribute("text", stringPrimitiveType, (value: Value) => { 
-            let text = value.intrinsicData["Actor"].text;
-            value.value = text; 
+        this.addAttribute(new Attribute("text", stringPrimitiveType, (ro) => { 
+            let text = ro.intrinsicData["Actor"].text;
+            return text; 
         }, false, Visibility.private, false, "Angezeigter Text"));
 
-        this.addAttribute(new Attribute("textgröße", intPrimitiveType, (value: Value) => { 
-            let fontsize = value.intrinsicData["Actor"].fontsize;
-            value.value = Math.round(fontsize); 
+        this.addAttribute(new Attribute("textgröße", intPrimitiveType, (ro) => { 
+            let fontsize = ro.intrinsicData["Actor"].fontsize;
+            return Math.round(fontsize); 
         }, false, Visibility.private, false, "Textgröße"));
 
         this.setupAttributeIndicesRecursive();
@@ -29,7 +29,7 @@ export class GNGTextClass extends Klass {
         this.addMethod(new Method("Text", new Parameterlist([]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 o.intrinsicData["isGNG"] = true;
 
                 let rh = new TextHelper(10, 10, 12, "Text", module.main.getInterpreter(), o);
@@ -44,9 +44,9 @@ export class GNGTextClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TextHelper = o.intrinsicData["Actor"];
-                let text: string = parameters[1].value;
+                let text: string = <string>parameters[1];
 
                 if (sh.testdestroyed("TextSetzen")) return;
 
@@ -59,9 +59,9 @@ export class GNGTextClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TextHelper = o.intrinsicData["Actor"];
-                let größe: number = parameters[1].value;
+                let größe: number = <number>parameters[1];
 
                 if (sh.testdestroyed("TextGrößeSetzen")) return;
 
@@ -73,7 +73,7 @@ export class GNGTextClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TextHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("TextVergrößern")) return;
@@ -97,7 +97,7 @@ export class GNGTextClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TextHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("TextVerkleinern")) return;

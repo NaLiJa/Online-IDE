@@ -106,17 +106,17 @@ export class Attribute {
     isFinal: boolean;
     isTransient: boolean;
     visibility: Visibility;
-    updateValue: (value: Value) => void;
+    getter: (ro: RuntimeObject) => void;
     usagePositions: UsagePositions;
     declaration: TextPositionWithModule;
     documentation: string;
     annotation?: string;
 
-    constructor(name: string, type: Type, updateValue: (value: Value) => void,
+    constructor(name: string, type: Type, getter: (ro: RuntimeObject) => NewValue,
         isStatic: boolean, visibility: Visibility, isFinal: boolean, documentation?: string) {
         this.identifier = name;
         this.type = type;
-        this.updateValue = updateValue;
+        this.getter = getter;
         this.isStatic = isStatic;
         this.visibility = visibility;
         this.isFinal = isFinal;
@@ -387,7 +387,7 @@ export type NewValue = RuntimeObject | string | number | boolean | NewValue[];
 export type Value = {
     type: Type;
     value: any;
-    updateValue?: (value: Value) => void;
+    updateValue?: () => void;
     // object?: RuntimeObject;
 }
 

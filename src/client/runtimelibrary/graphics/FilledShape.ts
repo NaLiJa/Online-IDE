@@ -26,7 +26,7 @@ export class FilledShapeClass extends Klass {
         ]), colorType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 return sh.getFarbeAsObject(sh.fillColor, sh.fillColor, colorType);
@@ -37,7 +37,7 @@ export class FilledShapeClass extends Klass {
         ]), colorType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 return sh.getFarbeAsObject(sh.borderColor, sh.borderColor, colorType);
@@ -45,16 +45,14 @@ export class FilledShapeClass extends Klass {
             }, false, false, 'Gibt die Randfarbe des Objekts zurück.', false));
 
         this.addAttribute(new Attribute("borderWidth", doublePrimitiveType,
-            (value) => {
+            (rto) => {
 
-                let rto: RuntimeObject = value.object;
                 let helper: FilledShapeHelper = rto.intrinsicData["Actor"];
                 if (helper == null) {
-                    value.value = Number.NaN;
-                    return;
+                    return Number.NaN;
                 }
 
-                value.value = helper.borderWidth;
+                return helper.borderWidth;
 
             }, false, Visibility.protected, true, "Randbreite in Pixeln"));
 
@@ -63,8 +61,8 @@ export class FilledShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let alpha: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let alpha: number = <number>parameters[1];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setAlpha")) return;
@@ -77,7 +75,7 @@ export class FilledShapeClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getAlpha")) return;
@@ -91,8 +89,8 @@ export class FilledShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: number = <number>parameters[1];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setFillColor")) return;
@@ -107,9 +105,9 @@ export class FilledShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: number = parameters[1].value;
-                let alpha: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: number = <number>parameters[1];
+                let alpha: number = <number>parameters[2];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setFillColor")) return;
@@ -123,8 +121,8 @@ export class FilledShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: string = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: string = <string>parameters[1];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setFillColor")) return;
@@ -139,9 +137,9 @@ export class FilledShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: string = parameters[1].value;
-                let alpha: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: string = <string>parameters[1];
+                let alpha: number = <number>parameters[2];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setFillColor")) return;
@@ -155,8 +153,8 @@ export class FilledShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: number = <number>parameters[1];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setBorderColor")) return;
@@ -171,9 +169,9 @@ export class FilledShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: number = parameters[1].value;
-                let alpha: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: number = <number>parameters[1];
+                let alpha: number = <number>parameters[2];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setBorderColor")) return;
@@ -188,9 +186,9 @@ export class FilledShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: string = parameters[1].value;
-                let alpha: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: string = <string>parameters[1];
+                let alpha: number = <number>parameters[2];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setBorderColor")) return;
@@ -204,8 +202,8 @@ export class FilledShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: string = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: string = <string>parameters[1];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setBorderColor")) return;
@@ -219,8 +217,8 @@ export class FilledShapeClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let width: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let width: number = <number>parameters[1];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setBorderWidth")) return;

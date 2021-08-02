@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Interface, Klass, TypeVariable } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, StringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value, PrimitiveType } from "../../compiler/types/Types.js";
+import { Method, Parameterlist, Value, PrimitiveType, NewValue } from "../../compiler/types/Types.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { Program, Statement } from "../../compiler/parser/Program.js";
@@ -46,7 +46,7 @@ export class LinkedListClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let ah = new ListHelper(o, module.main.getInterpreter(), module);
                 o.intrinsicData["ListHelper"] = ah;
@@ -57,7 +57,7 @@ export class LinkedListClass extends Klass {
         ]), iteratorType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ListIteratorImplClass.getIterator(ah, ah.interpreter, module, "ascending").value;
@@ -68,7 +68,7 @@ export class LinkedListClass extends Klass {
         ]), iteratorType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ListIteratorImplClass.getIterator(ah, ah.interpreter, module, "descending").value;
@@ -80,8 +80,8 @@ export class LinkedListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let r: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.add(r);
@@ -93,8 +93,8 @@ export class LinkedListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: RuntimeObject = <RuntimeObject>parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.adAll(object);
@@ -106,7 +106,7 @@ export class LinkedListClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.clear();
@@ -119,8 +119,8 @@ export class LinkedListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.contains(object);
@@ -133,8 +133,8 @@ export class LinkedListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.removeObject(object);
@@ -146,7 +146,7 @@ export class LinkedListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.isEmpty();
@@ -158,7 +158,7 @@ export class LinkedListClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.size();
@@ -169,7 +169,7 @@ export class LinkedListClass extends Klass {
         this.addMethod(new Method("toString", new Parameterlist([]), stringPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.to_String();
@@ -181,7 +181,7 @@ export class LinkedListClass extends Klass {
         ]), typeA,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.removeFirst_or_error();
@@ -193,8 +193,8 @@ export class LinkedListClass extends Klass {
         ]), typeA,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.poll_or_null();
@@ -206,7 +206,7 @@ export class LinkedListClass extends Klass {
         ]), typeA,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.peek_or_null();
@@ -219,8 +219,8 @@ export class LinkedListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.removeFirstOccurrence(object);
@@ -233,8 +233,8 @@ export class LinkedListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.removeFirstOccurrence(object);
@@ -247,8 +247,8 @@ export class LinkedListClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.addFirst(object);
@@ -261,8 +261,8 @@ export class LinkedListClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.addLast(object);
@@ -274,7 +274,7 @@ export class LinkedListClass extends Klass {
         ]), typeA,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.removeFirst_or_error();
@@ -286,7 +286,7 @@ export class LinkedListClass extends Klass {
         ]), typeA,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.removeLast_or_error();
@@ -298,7 +298,7 @@ export class LinkedListClass extends Klass {
         ]), typeA,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.peek_first_or_null();
@@ -310,7 +310,7 @@ export class LinkedListClass extends Klass {
         ]), typeA,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.peek_last_or_null();
@@ -323,8 +323,8 @@ export class LinkedListClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.add(object);
@@ -336,7 +336,7 @@ export class LinkedListClass extends Klass {
         ]), typeA,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.pop();

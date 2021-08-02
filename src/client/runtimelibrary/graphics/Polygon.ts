@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { doublePrimitiveType, intPrimitiveType, booleanPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Method, NewValue, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { ArrayType } from "../../compiler/types/Array.js";
@@ -27,12 +27,12 @@ export class PolygonClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let closeAndFill: boolean = parameters[1].value;
-                let points: Value[] = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let closeAndFill: boolean = <boolean>parameters[1];
+                let points: number[] = <number[]>parameters[2];
 
                 let pointsNumber: number[] = [];
-                points.forEach(v => pointsNumber.push(v.value));
+                points.forEach(v => pointsNumber.push(v));
 
                 let ph = new PolygonHelper(pointsNumber, closeAndFill, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = ph;
@@ -45,12 +45,12 @@ export class PolygonClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let closeAndFill: boolean = parameters[1].value;
-                let points: Value[] = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let closeAndFill: boolean = <boolean>parameters[1];
+                let points: number[] = <number[]>parameters[2];
 
                 let pointsNumber: number[] = [];
-                points.forEach(v => pointsNumber.push(v.value));
+                points.forEach(v => pointsNumber.push(v));
 
                 let ph = new PolygonHelper(pointsNumber, closeAndFill, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = ph;
@@ -62,8 +62,8 @@ export class PolygonClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let closeAndFill: boolean = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let closeAndFill: boolean = <boolean>parameters[1];
 
                 let pointsNumber: number[] = [];
 
@@ -77,8 +77,8 @@ export class PolygonClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shape: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shape: RuntimeObject = <RuntimeObject>parameters[1];
 
                 if(shape == null){
                     module.main.getInterpreter().throwException("Die übergebene Figur ist null.");
@@ -115,9 +115,9 @@ export class PolygonClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
                 let sh: PolygonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("addPoint")) return;
@@ -131,8 +131,8 @@ export class PolygonClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let points: Value[] = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let points: number[] = <number[]>parameters[1];
                 let sh: PolygonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("addPoints")) return;
@@ -140,7 +140,7 @@ export class PolygonClass extends Klass {
                 let p: { x: number, y: number }[];
 
                 for (let i = 0; i < points.length - 1; i += 2) {
-                    sh.addPoint(points[i].value, points[i + 1].value, i >= points.length - 2);
+                    sh.addPoint(points[i], points[i + 1], i >= points.length - 2);
                 }
 
             }, false, false, 'Fügt dem Polygon mehrere Punkte hinzu. Diese werden in einem double[] übergeben, das abwechselnd die x- und y-Koordinaten enthält."', false));
@@ -152,10 +152,10 @@ export class PolygonClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let index: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let index: number = <number>parameters[3];
                 let sh: PolygonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("insertPoint")) return;
@@ -171,10 +171,10 @@ export class PolygonClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let index: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let index: number = <number>parameters[3];
                 let sh: PolygonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("insertPoint")) return;
@@ -187,7 +187,7 @@ export class PolygonClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: PolygonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("close")) return;
@@ -201,7 +201,7 @@ export class PolygonClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: PolygonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("open")) return;
@@ -215,7 +215,7 @@ export class PolygonClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: PolygonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;

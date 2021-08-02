@@ -38,7 +38,7 @@ export class SystemClass extends Klass {
         //     { identifier: "keyListener", type: module.typeStore.getType("KeyListener"), declaration: null, usagePositions: null, isFinal: true }
         // ]), null,
         // (parameters) => {
-        //     let r: RuntimeObject = parameters[1].value;
+        //     let r: RuntimeObject = <RuntimeObject>parameters[1];
         //     let method = (<Klass>r.class).getMethodBySignature("onKeyTyped(String)");
 
         //     if (method != null) {
@@ -75,7 +75,7 @@ export class SystemClass extends Klass {
         //     { identifier: "sound", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         // ]), null,
         // (parameters) => {
-        //     let sound: string = parameters[1].value;
+        //     let sound: string = <string>parameters[1];
         //     SoundTools.play(sound);
         // }    
         // , false, true, "Spielt einen Sound ab. Die Möglichen Sounds sind als statische Variablen der Klasse Sound hinterlegt. Tippe als Parameter also Sound gefolgt von einem Punkt ein, um eine Auswahl zu sehen!"));
@@ -102,14 +102,14 @@ export class PrintStreamClass extends Klass {
             { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             (parameters) => {
-                module.main.getInterpreter().printManager.print(parameters[1].value);
+                module.main.getInterpreter().printManager.print(parameters[1]);
             }, false, true, "Gibt den Text aus."));
 
         this.addMethod(new Method("println", new Parameterlist([
             { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             (parameters) => {
-                module.main.getInterpreter().printManager.println(parameters[1].value);
+                module.main.getInterpreter().printManager.println(parameters[1]);
             }, false, true, "Gibt den Text aus, gefolgt von einem Zeilensprung."));
 
         this.addMethod(new Method("println", new Parameterlist([

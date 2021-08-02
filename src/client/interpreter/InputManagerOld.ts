@@ -1,4 +1,4 @@
-import { Type, Method, Value } from "../compiler/types/Types.js";
+import { Type, Method, Value, NewValue } from "../compiler/types/Types.js";
 import { stringPrimitiveType, charPrimitiveType, intPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 
 export class InputManagerOld {
@@ -7,17 +7,17 @@ export class InputManagerOld {
 
     }
 
-    public readInput(method: Method, parameters: Value[], callback: (value: Value) => void){
+    public readInput(method: Method, parameters: NewValue[], callback: () => void){
 
         let returnType = method.getReturnType();
-        let message = parameters[1].value;
-        let defaultValue = parameters.length == 3 ? parameters[2].value : null;
+        let message = parameters[1];
+        let defaultValue = parameters.length == 3 ? parameters[2] : null;
 
-        this.$runDiv.find('.jo_run-input-message').html(message);
+        this.$runDiv.find('.jo_run-input-message').html("" + message);
         this.$runDiv.find('.jo_run-input-error').html("");
 
         let dvt = defaultValue == null ? "" : defaultValue;
-        this.$runDiv.find('.jo_run-input-input').val(dvt);
+        this.$runDiv.find('.jo_run-input-input').val("" + dvt);
         this.$runDiv.find('.jo_run-input').css('display', 'flex');
 
         let that = this;
@@ -35,7 +35,7 @@ export class InputManagerOld {
 
     }
 
-    onSubmit(type: Type, callback: (value: Value) => void){
+    onSubmit(type: Type, callback: (value: NewValue) => void){
         let v: string = <string>(this.$runDiv.find('.jo_run-input-input').val());
 
         let valueAndError = this.parse(v, type);
@@ -51,12 +51,12 @@ export class InputManagerOld {
 
     }
 
-    parse(v: string, type: Type):{value: Value, error: string} {
+    parse(v: string, type: Type):{value: NewValue, error: string} {
 
         if(type == stringPrimitiveType){
             return {
                 error: null,
-                value: {value: v, type: type}
+                value: v
             }
         }
 
@@ -65,7 +65,7 @@ export class InputManagerOld {
             if(v.length > 1) return {error: "Zu lange Eingabe. Erwartet wird ein Zeichen.", value: null};
             return {
                 error: null,
-                value: {value: v, type: type}
+                value: v
             }
         }
 
@@ -73,7 +73,7 @@ export class InputManagerOld {
             if(v != "true" && v != "false") return {error: "Erwartet wird true oder false.", value: null};
             return {
                 error: null,
-                value: {value: v == "true", type: type}
+                value: v == "true"
             }
         }
 
@@ -89,13 +89,13 @@ export class InputManagerOld {
             if(n != Math.round(n)) return {error: "Erwartet wird eine ganze Zahl.", value: null};
             return {
                 error: null,
-                value: {value: Math.round(n), type: type}
+                value: Math.round(n)
             }
         }
 
         return {
             error: null,
-            value: {value: n, type: type}
+            value: n
         }
 
     }

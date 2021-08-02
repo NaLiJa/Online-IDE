@@ -1,4 +1,4 @@
-import { Value, Type, Variable } from "../compiler/types/Types.js";
+import { Value, Type, Variable, NewValue } from "../compiler/types/Types.js";
 import { booleanPrimitiveType, doublePrimitiveType, getType, intPrimitiveType, StringPrimitiveType, stringPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { ArrayType } from "../compiler/types/Array.js";
 import { Klass, Visibility, StaticClass, Interface } from "../compiler/types/Class.js";
@@ -17,7 +17,7 @@ export class DebuggerElement {
     canOpen: boolean;
     isOpen: boolean = false;
 
-    value: Value;
+    value: NewValue;
     variable: Variable;
 
     type: Type;
@@ -25,7 +25,7 @@ export class DebuggerElement {
 
     $debuggerElement: JQuery<HTMLElement>;
 
-    constructor(caption: string, parent: DebuggerElement, identifier: string, value: Value, type: Type, variable: Variable) {
+    constructor(caption: string, parent: DebuggerElement, identifier: string, value: NewValue, type: Type, variable: Variable) {
         this.caption = caption;
         this.parent = parent;
         if (parent != null) {
@@ -69,7 +69,7 @@ export class DebuggerElement {
                 this.$debuggerElement.append(jQuery('<div class="jo_deChildContainer"></div>'));
 
                 this.$debuggerElement.find('.jo_deFirstline').on('mousedown', (event) => {
-                    if (this.value != null && this.value.value != null) {
+                    if (this.value != null) {
                         if (this.children.length == 0) {
                             this.onFirstOpening();
                         }
@@ -96,13 +96,13 @@ export class DebuggerElement {
 
         if (this.type instanceof Klass) {
 
-            let ro: RuntimeObject = this.value.value;
+            let ro: RuntimeObject = <RuntimeObject>this.value;
             let listHelper: ListHelper = ro.intrinsicData == null ? null : ro.intrinsicData["ListHelper"];
             if (listHelper != null) {
                 this.renderListElements(listHelper);
             } else {
-                if(this.value.value != null){
-                    let type = (<RuntimeObject>this.value.value).class;
+                if(this.value != null){
+                    let type = (<RuntimeObject>this.value).class;
                     // for (let a of (<Klass>this.value.type).getAttributes(Visibility.private)) {
                     for (let a of (<Klass>type).getAttributes(Visibility.private)) {
                         let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.index), a.type, null);
@@ -115,7 +115,7 @@ export class DebuggerElement {
 
         } else if (this.type instanceof ArrayType) {
 
-            let a = <Value[]>this.value.value;
+            let a = <NewValue[]>this.value;
 
             let $childContainer = this.$debuggerElement.find('.jo_deChildContainer');
             for (let i = 0; i < a.length && i < 100; i++) {
@@ -137,8 +137,8 @@ export class DebuggerElement {
 
         } else if (this.type instanceof Interface) {
 
-            if (this.value.value != null && this.value.value instanceof RuntimeObject) {
-                let ro: RuntimeObject = this.value.value;
+            if (this.value != null && this.value instanceof RuntimeObject) {
+                let ro: RuntimeObject = this.value;
 
                 for (let a of (<Klass>ro.class).getAttributes(Visibility.private)) {
                     let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.index), a.type, null);
@@ -167,14 +167,14 @@ export class DebuggerElement {
 
         if (this.children.length < valueArray.length && this.children.length < 100) {
             for (let i = this.children.length; i < valueArray.length && i <= 100; i++) {
-                let v: Value = valueArray[i];
+                let v: NewValue = valueArray[i];
                 let title = "" + i;
                 if (i == 100) {
-                    v = { type: stringPrimitiveType, value: "" + (listHelper.valueArray.length - 100) + " weitere..." };
+                    v = "" + (listHelper.valueArray.length - 100) + " weitere..." ;
                     title = "...";
                 }
                 // let de = new DebuggerElement(null, this, title, v, v.type, null);
-                let de = new DebuggerElement(null, this, title, v, getType(v.value), null);
+                let de = new DebuggerElement(null, this, title, v, getType(v), null);
                 de.render();
                 this.$debuggerElement.find('.jo_deChildContainer').first().append(de.$debuggerElement);
             }
@@ -192,28 +192,24 @@ export class DebuggerElement {
         }
 
         this.$debuggerElement.show();
-        if (v.value == null) {
+        if (v == null) {
             s = "null";
             this.removeAllChildren();
         } else {
 
-            if (v.updateValue != null) {
-                v.updateValue(v);
-            }
-
-            s = v.type.debugOutput(v);
+            s = getType(v).debugOutput(v);
 
             if (this.type instanceof Klass) {
 
-                let ro: RuntimeObject = this.value.value;
+                let ro: RuntimeObject = <RuntimeObject>this.value;
                 let listHelper: ListHelper = ro.intrinsicData == null ? null : ro.intrinsicData["ListHelper"];
                 if (listHelper != null) {
                     this.renderListElements(listHelper);
                     if(listHelper.allElementsPrimitive()){
                         s = "" +listHelper.valueArray.length + " El: "
-                        s += "[" + listHelper.objectArray.slice(0, 20).map(o => "" + o).join(", ") + "]"
+                        s += "[" + listHelper.valueArray.slice(0, 20).map(o => "" + o).join(", ") + "]"
                     } else {
-                        s = v.type.identifier + " (" +listHelper.valueArray.length + " Elemente)";
+                        s = getType(v).identifier + " (" +listHelper.valueArray.length + " Elemente)";
                     }
                 }
             } 

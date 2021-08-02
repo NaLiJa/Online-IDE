@@ -24,7 +24,7 @@ export class ObjectClass extends Klass {
         this.addMethod(new Method("toString", new Parameterlist([]), stringPrimitiveType,
             (parameters) => {
 
-                return "(" + (<RuntimeObject><unknown>parameters[0].value).class.identifier + ")";
+                return "(" + (<RuntimeObject><unknown>parameters[0]).class.identifier + ")";
 
             }, false, false));
 

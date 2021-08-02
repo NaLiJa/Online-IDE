@@ -2,6 +2,7 @@ import { Method, Attribute, Value, Type, Parameterlist, PrimitiveType, NewValue 
 import { TokenType } from "../lexer/Token.js";
 import { intPrimitiveType } from "./PrimitiveTypes.js";
 import { Visibility } from "./Class.js";
+import { RuntimeObject } from "src/client/interpreter/RuntimeObject.js";
 
 export class ArrayType extends Type {
 
@@ -17,8 +18,9 @@ export class ArrayType extends Type {
             this.identifier = arrayOfType.identifier + "[]";
         }
 
-        this.lengthAttribute = new Attribute("length", intPrimitiveType, (object: Value) => {
-            return (<any[]>object.value).length;
+        this.lengthAttribute = new Attribute("length", intPrimitiveType, (ro: RuntimeObject) => {
+            //@ts-ignore
+            return (<any[]>ro).length;
         }, false, Visibility.public, true);
     }   
 

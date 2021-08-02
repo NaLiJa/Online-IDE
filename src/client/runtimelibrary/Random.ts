@@ -20,8 +20,8 @@ export class RandomClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let bound: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let bound: number = <number>parameters[1];
 
                 return Math.floor(Math.random()*bound);
 
@@ -33,8 +33,8 @@ export class RandomClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let from: number = parameters[1].value;
-                let to: number = parameters[2].value;
+                let from: number = <number>parameters[1];
+                let to: number = <number>parameters[2];
 
                 return Math.floor(Math.random()*(to - from + 1) + from);
 
@@ -46,8 +46,8 @@ export class RandomClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let from: number = parameters[1].value;
-                let to: number = parameters[2].value;
+                let from: number = <number>parameters[1];
+                let to: number = <number>parameters[2];
 
                 return Math.random()*(to - from) + from;
 

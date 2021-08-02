@@ -1,9 +1,9 @@
-import { Value } from "../../../compiler/types/Types.js";
+import { NewValue, Type, Value } from "../../../compiler/types/Types.js";
 import { ArrayType } from "../../../compiler/types/Array.js";
 import { Klass, Visibility, StaticClass, Interface } from "../../../compiler/types/Class.js";
 import { Enum } from "../../../compiler/types/Enum.js";
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
-import { stringPrimitiveType } from "../../../compiler/types/PrimitiveTypes.js";
+import { getType, stringPrimitiveType } from "../../../compiler/types/PrimitiveTypes.js";
 
 export class ConsoleEntry {
 
@@ -17,11 +17,12 @@ export class ConsoleEntry {
     isOpen: boolean = false;
 
     identifier: string;
-    value: Value;
+    value: NewValue;
+    type: Type;
 
     $consoleEntry: JQuery<HTMLElement>;
 
-    constructor(caption: string|JQuery<HTMLElement>, value: Value, identifier: string, parent: ConsoleEntry, 
+    constructor(caption: string|JQuery<HTMLElement>, value: NewValue, identifier: string, parent: ConsoleEntry, 
         private withBottomBorder: boolean, private color: string = null ) {
         this.caption = caption;
         this.parent = parent;
@@ -29,6 +30,7 @@ export class ConsoleEntry {
             parent.children.push(this);
         }
         this.value = value;
+        this.type = getType(value);
 
         this.identifier = identifier;
 
@@ -63,16 +65,16 @@ export class ConsoleEntry {
         this.$consoleEntry.append($deFirstLine);
 
 
-        if (this.value != null && this.value.type != null && (this.value.type instanceof ArrayType ||
-            (this.value.type instanceof Klass && !(this.value.type instanceof Enum) && !(this.value.type == stringPrimitiveType))
-            || this.value.type instanceof Interface
+        if (this.value != null && this.type != null && (this.type instanceof ArrayType ||
+            (this.type instanceof Klass && !(this.type instanceof Enum) && !(this.type == stringPrimitiveType))
+            || this.type instanceof Interface
             )) {
             this.canOpen = true;
             this.$consoleEntry.addClass('jo_canOpen');
             this.$consoleEntry.append(jQuery('<div class="jo_ceChildContainer"></div>'));
 
             this.$consoleEntry.find('.jo_ceFirstline').on('mousedown', (event) => {
-                if (this.value != null && this.value.value != null) {
+                if (this.value != null && this.value != null) {
                     if (this.children == null) {
                         this.onFirstOpening();
                     }
@@ -100,12 +102,12 @@ export class ConsoleEntry {
 
         this.children = [];
 
-        let type = this.value.type;
+        let type = this.type;
 
         if (type instanceof Klass) {
 
-            for (let a of (<Klass>this.value.type).getAttributes(Visibility.private)) {
-                let ro = <RuntimeObject>this.value.value;
+            for (let a of (<Klass>this.type).getAttributes(Visibility.private)) {
+                let ro = <RuntimeObject>this.value;
                 let de = new ConsoleEntry(null, ro.getValue(a.index), a.identifier, this, false);
                 de.render();
                 this.$consoleEntry.find('.jo_ceChildContainer').append(de.$consoleEntry);
@@ -113,7 +115,7 @@ export class ConsoleEntry {
 
         } else if (type instanceof ArrayType) {
 
-            let a = <Value[]>this.value.value;
+            let a = <NewValue[]>this.value;
 
             let $childContainer = this.$consoleEntry.find('.jo_ceChildContainer');
             for (let i = 0; i < a.length && i < 100; i++) {
@@ -136,11 +138,11 @@ export class ConsoleEntry {
 
         } else if (type instanceof Interface) {
 
-            if(this.value.value != null && this.value.value instanceof RuntimeObject){
+            if(this.value != null && this.value instanceof RuntimeObject){
 
                 let $childContainer = this.$consoleEntry.find('.jo_ceChildContainer');
 
-                let ro: RuntimeObject = this.value.value;
+                let ro: RuntimeObject = this.value;
 
                 for (let a of (<Klass>ro.class).getAttributes(Visibility.private)) {
                     let de = new ConsoleEntry(null, ro.getValue(a.index), a.identifier, this, false);
@@ -178,10 +180,10 @@ export class ConsoleEntry {
         }
         
         let valueString = "";
-        if (v.value == null) {
+        if (v == null) {
             valueString = "null";
         } else {
-            valueString = v.type.debugOutput(v, 400);
+            valueString = getType(v).debugOutput(v, 400);
         }
         
         if(this.identifier != null){

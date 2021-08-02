@@ -1,6 +1,6 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Interface, Klass, TypeVariable } from "../../compiler/types/Class.js";
-import { booleanPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, StringPrimitiveType, DoubleType } from "../../compiler/types/PrimitiveTypes.js";
+import { booleanPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, StringPrimitiveType, DoubleType, getType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist, Value, PrimitiveType, NewValue } from "../../compiler/types/Types.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
@@ -46,7 +46,7 @@ export class ArrayListClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let ah = new ListHelper(o, module.main.getInterpreter(), module);
                 o.intrinsicData["ListHelper"] = ah;
@@ -57,7 +57,7 @@ export class ArrayListClass extends Klass {
         ]), iteratorType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ListIteratorImplClass.getIterator(ah, ah.interpreter, module, "ascending").value;
@@ -69,8 +69,8 @@ export class ArrayListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let r: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.add(r);
@@ -83,9 +83,9 @@ export class ArrayListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let index: number = parameters[1].value;
-                let r: Value = parameters[2];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let index: number = <number>parameters[1];
+                let r: NewValue = parameters[2];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.add(r, index);
@@ -97,11 +97,11 @@ export class ArrayListClass extends Klass {
         ]), typeA,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let index: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let index: number = <number>parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
                 
-                return ah.get(index)?.value;
+                return ah.get(index);
 
             }, false, false, "Gibt das i-te Element der Liste zurück."));
 
@@ -110,8 +110,8 @@ export class ArrayListClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let index: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let index: number = <number>parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 ah.remove(index);
@@ -125,8 +125,8 @@ export class ArrayListClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.indexOf(object);
@@ -138,8 +138,8 @@ export class ArrayListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: RuntimeObject = <RuntimeObject>parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.adAll(object);
@@ -151,7 +151,7 @@ export class ArrayListClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.clear();
@@ -164,8 +164,8 @@ export class ArrayListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.contains(object);
@@ -178,8 +178,8 @@ export class ArrayListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.removeObject(object);
@@ -191,7 +191,7 @@ export class ArrayListClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.isEmpty();
@@ -203,7 +203,7 @@ export class ArrayListClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.size();
@@ -214,7 +214,7 @@ export class ArrayListClass extends Klass {
         this.addMethod(new Method("toString", new Parameterlist([]), stringPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
                 return ah.to_String();
@@ -228,14 +228,14 @@ export class ArrayListClass extends Klass {
 export class ListHelper {
 
     valueArray: NewValue[] = [];
-    objectArray: any[] = []; // wird mitgeführt, um schnelle indexOf-Operationen zu ermöglichen
 
     constructor(private runtimeObject: RuntimeObject, public interpreter: Interpreter, private module: Module) {
     }
 
     allElementsPrimitive(): boolean {
         for (let v of this.valueArray) {
-            if (!(v.type instanceof PrimitiveType || ["String", "_Double", "Integer", "Boolean" ,"Character"].indexOf(v.type.identifier) >= 0)) {
+            let type = getType(v);
+            if (!(type instanceof PrimitiveType || ["String", "_Double", "Integer", "Boolean" ,"Character"].indexOf(type.identifier) >= 0)) {
                 return false;
                 break;
             }
@@ -246,7 +246,7 @@ export class ListHelper {
     to_String(): any {
 
         if (this.allElementsPrimitive()) {
-            return "[" + this.objectArray.map(o => "" + o).join(", ") + "]";
+            return "[" + this.valueArray.map(o => "" + o).join(", ") + "]";
         }
 
         let position: TextPosition = {
@@ -274,25 +274,26 @@ export class ListHelper {
 
         for (let i = 0; i < this.valueArray.length; i++) {
             let value = this.valueArray[i];
-            if (value.value == null || value.type instanceof PrimitiveType || value.type instanceof StringPrimitiveType) {
+            let type = getType(value);
+            if (value == null || type instanceof PrimitiveType || type instanceof StringPrimitiveType) {
                 statements.push({
                     type: TokenType.pushConstant,
                     dataType: stringPrimitiveType,
-                    value: value.value == null ? "null" : value.type.castTo(value, stringPrimitiveType).value,
+                    value: value == null ? "null" : type.castTo(value, stringPrimitiveType),
                     position: position,
                     stepFinished: false
                 });
             } else {
                 statements.push({
                     type: TokenType.pushConstant,
-                    dataType: value.type,
-                    value: value.value,
+                    dataType: type,
+                    value: value,
                     stepFinished: false,
                     position: position
                 });
                 statements.push({
                     type: TokenType.callMethod,
-                    method: (<Klass | Interface | Enum>value.type).getMethod("toString", toStringParameters),
+                    method: (<Klass | Interface | Enum>type).getMethod("toString", toStringParameters),
                     isSuperCall: false,
                     stackframeBegin: -1,
                     stepFinished: false,
@@ -379,14 +380,13 @@ export class ListHelper {
         let ah: ListHelper = object.intrinsicData["ListHelper"];
         if (ah != null) {
             this.valueArray = this.valueArray.concat(ah.valueArray);
-            this.objectArray = this.objectArray.concat(ah.objectArray);
         }
 
         return true;
     }
 
 
-    get(index: number): Value {
+    get(index: number): NewValue {
         if (index >= 0 && index < this.valueArray.length) {
             return this.valueArray[index];
         }
@@ -394,11 +394,10 @@ export class ListHelper {
         return null;
     }
 
-    remove(index: number): Value {
+    remove(index: number): NewValue {
 
         if (index >= 0 && index < this.valueArray.length) {
             this.valueArray.splice(index, 1);
-            this.objectArray.splice(index, 1);
             return null;
         }
 
@@ -407,14 +406,12 @@ export class ListHelper {
         return null;
     }
 
-    add(r: Value, index?): boolean {
+    add(r: NewValue, index?): boolean {
         if(index == null){
             this.valueArray.push(r);
-            this.objectArray.push(r.value);
         } else {
-            if(index <= this.objectArray.length && index >= 0){
+            if(index <= this.valueArray.length && index >= 0){
                 this.valueArray.splice(index, 0, r);
-                this.objectArray.splice(index, 0, r.value);
             } else {
                 this.interpreter.throwException("Der ArrayList-Index ist außerhalb des Intervalls von 0 bis " + (this.valueArray.length - 1) + ". ")
             }
@@ -423,120 +420,111 @@ export class ListHelper {
     }
 
     pop(): any {
-        if (this.objectArray.length == 0) {
+        if (this.valueArray.length == 0) {
             this.interpreter.throwException("Der ArrayList-Index ist außerhalb des Intervalls von 0 bis " + (this.valueArray.length - 1) + ". ")
             return null;
         } else {
-            this.valueArray.pop();
-            return this.objectArray.pop();
+            return this.valueArray.pop();
         }
     }
 
     peek(): any {
-        if (this.objectArray.length == 0) {
+        if (this.valueArray.length == 0) {
             this.interpreter.throwException("Der ArrayList-Index ist außerhalb des Intervalls von 0 bis " + (this.valueArray.length - 1) + ". ")
             return null;
         } else {
-            return this.objectArray[this.objectArray.length - 1];
+            return this.valueArray[this.valueArray.length - 1];
         }
     }
 
-    indexOf(o: Value): number {
-        return this.objectArray.indexOf(o.value);
+    indexOf(o: NewValue): number {
+        return this.valueArray.indexOf(o);
     }
 
     size(): number {
-        return this.objectArray.length;
+        return this.valueArray.length;
     }
 
     isEmpty(): boolean {
         return this.valueArray.length == 0;
     }
 
-    removeObject(object: Value) {
-        let index = this.objectArray.indexOf(object.value);
+    removeObject(object: NewValue) {
+        let index = this.valueArray.indexOf(object);
         if (index >= 0) {
-            this.objectArray.splice(index, 1);
             this.valueArray.splice(index, 1);
         }
     }
 
-    contains(object: Value): any {
-        return this.objectArray.indexOf(object.value) >= 0;
+    contains(object: NewValue): any {
+        return this.valueArray.indexOf(object) >= 0;
     }
 
     clear() {
         this.valueArray = [];
-        this.objectArray = [];
     }
 
     peek_last_or_null(): any {
-        if (this.objectArray.length == 0) {
+        if (this.valueArray.length == 0) {
             return null;
         } else {
-            return this.objectArray[this.objectArray.length - 1];
+            return this.valueArray[this.valueArray.length - 1];
         }
     }
     peek_first_or_null(): any {
-        if (this.objectArray.length == 0) {
+        if (this.valueArray.length == 0) {
             return null;
         } else {
-            return this.objectArray[0];
+            return this.valueArray[0];
         }
     }
     
     removeLast_or_error(){
-        if (this.objectArray.length == 0) {
+        if (this.valueArray.length == 0) {
             return null;
         } else {
-            this.valueArray.pop();
-            return this.objectArray.pop();
+            return this.valueArray.pop();
         }
     };
 
-    addLast(object: Value) {
+    addLast(object: NewValue) {
         this.valueArray.push(object);
-        this.objectArray.push(object.value);
         return true;
     }
-    addFirst(object: Value): any {
+    addFirst(object: NewValue): any {
         this.valueArray.splice(0, 0, object);
-        this.objectArray.splice(0, 0, object.value);
         return true;
     }
-    removeFirstOccurrence(object: Value): boolean {
-        let index = this.objectArray.indexOf(object.value);
+    removeFirstOccurrence(object: NewValue): boolean {
+        let index = this.valueArray.indexOf(object);
         if(index >= 0){
             this.valueArray.splice(index, 1);
-            this.objectArray.splice(index, 1);
             return true;
         }
         return false;
     }
 
     peek_or_null(): any {
-        if (this.objectArray.length == 0) {
+        if (this.valueArray.length == 0) {
             return null;
         } else {
-            return this.objectArray[this.objectArray.length - 1];
+            return this.valueArray[this.valueArray.length - 1];
         }
     }
 
     poll_or_null(): any {
-        if (this.objectArray.length == 0) {
+        if (this.valueArray.length == 0) {
             return null;
         } else {
-            this.valueArray.pop();
-            return this.objectArray.pop();
+            return this.valueArray.pop();
         }
     }
 
     removeFirst_or_error(): any {
-        if(this.objectArray.length == 0){
+        if(this.valueArray.length == 0){
             this.interpreter.throwException("Der ArrayList-Index ist außerhalb des Intervalls von 0 bis " + (this.valueArray.length - 1) + ". ")
         } else {
-            let object = this.objectArray[0];
-            this.objectArray.splice(0, 1);
+            let object = this.valueArray[0];
             this.valueArray.splice(0, 1);
             return object;
         }

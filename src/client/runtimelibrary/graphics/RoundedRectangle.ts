@@ -24,12 +24,12 @@ export class RoundedRectangleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let left: number = parameters[1].value;
-                let top: number = parameters[2].value;
-                let width: number = parameters[3].value;
-                let height: number = parameters[4].value;
-                let radius: number = parameters[5].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let left: number = <number>parameters[1];
+                let top: number = <number>parameters[2];
+                let width: number = <number>parameters[3];
+                let height: number = <number>parameters[4];
+                let radius: number = <number>parameters[5];
 
                 let rh = new RoundedRectangleHelper(left, top, width, height, radius, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
@@ -40,7 +40,7 @@ export class RoundedRectangleClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: RoundedRectangleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getWidth")) return;
@@ -53,7 +53,7 @@ export class RoundedRectangleClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: RoundedRectangleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getHeight")) return;
@@ -66,7 +66,7 @@ export class RoundedRectangleClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: RoundedRectangleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getHeight")) return;
@@ -79,7 +79,7 @@ export class RoundedRectangleClass extends Klass {
             ]), this,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
                     let sh: RoundedRectangleHelper = o.intrinsicData["Actor"];
     
                     if (sh.testdestroyed("copy")) return;

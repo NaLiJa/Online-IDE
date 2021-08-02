@@ -2,7 +2,7 @@ import { TokenType } from "../../compiler/lexer/Token.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass, Visibility } from "../../compiler/types/Class.js";
 import { charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Type, Value, Variable, Attribute } from "../../compiler/types/Types.js";
+import { Method, Parameterlist, Type, Value, Variable, Attribute, NewValue } from "../../compiler/types/Types.js";
 import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 
@@ -18,10 +18,10 @@ export class ProcessingClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
         this.documentation = "Wenn Du Deine Klasse von PApplet ableitest (class Test extends PApplet{...}), kannst Du auf diese Weise ein Processing-Applet erstellen (siehe https://processing.org), indem Du ihre Methoden draw(), mousePressed(), usw. überschreibst und mit Inhalt füllst. Du startest das Applet, indem Du ein Objekt Deiner Klasse instanzierst und davon die main-Methode aufrufst: new Test().main();"
 
-        // this.addAttribute(new Attribute("mouseX", intPrimitiveType, (object) => { object.value = Math.round(module.main.getInterpreter().processingHelper.p5o.mouseX) },
+        // this.addAttribute(new Attribute("mouseX", intPrimitiveType, (ro) => { object.value = Math.round(module.main.getInterpreter().processingHelper.p5o.mouseX) },
         //     false, Visibility.public, true, "aktuelle x-Koordinate des Mauszeigers"));
 
-        // this.addAttribute(new Attribute("mouseY", intPrimitiveType, (object) => { object.value = Math.round(module.main.getInterpreter().processingHelper.p5o.mouseY) },
+        // this.addAttribute(new Attribute("mouseY", intPrimitiveType, (ro) => { object.value = Math.round(module.main.getInterpreter().processingHelper.p5o.mouseY) },
         //     false, Visibility.public, true, "aktuelle y-Koordinate des Mauszeigers"));
 
         let intConstants: string[][] = [["mouseX", "aktuelle x-Koordinate des Mauszeigers"], ["mouseY", "aktuelle y-Koordinate des Mauszeigers"],
@@ -47,7 +47,7 @@ export class ProcessingClass extends Klass {
         ];
 
         intConstants.forEach(constant => {
-            this.addAttribute(new Attribute(constant[0], intPrimitiveType, (object) => { object.value = module.main.getInterpreter().processingHelper.p5o[constant[0]] },
+            this.addAttribute(new Attribute(constant[0], intPrimitiveType, (ro) => { return module.main.getInterpreter().processingHelper.p5o[constant[0]] },
                 false, Visibility.public, true, constant[1]));
         });
 
@@ -56,11 +56,11 @@ export class ProcessingClass extends Klass {
         ];
 
         stringConstants.forEach(constant => {
-            this.addAttribute(new Attribute(constant[0], stringPrimitiveType, (object) => { object.value = module.main.getInterpreter().processingHelper.p5o[constant[0]] },
+            this.addAttribute(new Attribute(constant[0], stringPrimitiveType, (ro) => { return module.main.getInterpreter().processingHelper.p5o[constant[0]] },
                 false, Visibility.public, true, constant[1]));
         });
 
-        this.addAttribute(new Attribute("key", charPrimitiveType, (object) => { object.value = module.main.getInterpreter().processingHelper.p5o.key },
+        this.addAttribute(new Attribute("key", charPrimitiveType, (ro) => { return module.main.getInterpreter().processingHelper.p5o.key },
             false, Visibility.public, true, "letzte gedrückte Taste"));
 
 
@@ -68,7 +68,7 @@ export class ProcessingClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ph: ProcessingHelper = this.getProcessingHelper(o);
                 o.intrinsicData["Processing"] = ph;
 
@@ -79,7 +79,7 @@ export class ProcessingClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ph: ProcessingHelper = o.intrinsicData["Processing"];
 
                 // ph.main legt das aktuelle Programm (a) des Interpreters auf den programStack
@@ -100,7 +100,7 @@ export class ProcessingClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ph: ProcessingHelper = o.intrinsicData["Processing"];
 
                 let interpreter = module.main.getInterpreter();
@@ -114,7 +114,7 @@ export class ProcessingClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ph: ProcessingHelper = o.intrinsicData["Processing"];
 
                 ph.loop();
@@ -125,7 +125,7 @@ export class ProcessingClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ph: ProcessingHelper = o.intrinsicData["Processing"];
 
                 ph.noLoop();
@@ -138,10 +138,10 @@ export class ProcessingClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ph: ProcessingHelper = o.intrinsicData["Processing"];
-                let width: number = parameters[1].value;
-                let height: number = parameters[2].value;
+                let width: number = <number>parameters[1];
+                let height: number = <number>parameters[2];
 
                 ph.createCanvas(width, height)
 
@@ -153,10 +153,10 @@ export class ProcessingClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ph: ProcessingHelper = o.intrinsicData["Processing"];
-                let width: number = parameters[1].value;
-                let height: number = parameters[2].value;
+                let width: number = <number>parameters[1];
+                let height: number = <number>parameters[2];
 
                 ph.createCanvas(width, height)
 
@@ -169,11 +169,11 @@ export class ProcessingClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ph: ProcessingHelper = o.intrinsicData["Processing"];
-                let width: number = parameters[1].value;
-                let height: number = parameters[2].value;
-                let renderer: string = parameters[3].value;
+                let width: number = <number>parameters[1];
+                let height: number = <number>parameters[2];
+                let renderer: string = <string>parameters[3];
 
                 ph.renderer = renderer;
                 ph.createCanvas(width, height);
@@ -238,12 +238,12 @@ export class ProcessingClass extends Klass {
         // ]), voidPrimitiveType,
         //     (parameters) => {
 
-        //         let o: RuntimeObject = parameters[0].value;
+        //         let o: RuntimeObject = <RuntimeObject>parameters[0];
         //         let ph: ProcessingHelper = o.intrinsicData["Processing"];
-        //         let left: number = parameters[1].value;
-        //         let top: number = parameters[2].value;
-        //         let width: number = parameters[3].value;
-        //         let height: number = parameters[4].value;
+        //         let left: number = <number>parameters[1];
+        //         let top: number = <number>parameters[2];
+        //         let width: number = <number>parameters[3];
+        //         let height: number = <number>parameters[4];
 
         //         ph.addStatement((p5o) => p5o.rect(left, top, width, height));
 
@@ -671,9 +671,9 @@ export class ProcessingClass extends Klass {
         if (returnType == null) {
             this.addMethod(new Method(identifier, new Parameterlist(parameters), null,
                 (parameters) => {
-                    let o: RuntimeObject = parameters[0].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
                     let ph: ProcessingHelper = o.intrinsicData["Processing"];
-                    let pList = parameters.slice(1).map(p => p.value);
+                    let pList = parameters.slice(1);
 
                     ph.p5o[identifier](...pList);
 
@@ -681,9 +681,9 @@ export class ProcessingClass extends Klass {
         } else {
             this.addMethod(new Method(identifier, new Parameterlist(parameters), returnType,
                 (parameters) => {
-                    let o: RuntimeObject = parameters[0].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
                     let ph: ProcessingHelper = o.intrinsicData["Processing"];
-                    let pList = parameters.slice(1).map(p => p.value);
+                    let pList = parameters.slice(1);
 
                     return ph.p5o[identifier](...pList);
 
@@ -932,11 +932,8 @@ export class ProcessingHelper {
             return;
         }
 
-        let stackElements: Value[] = [
-            {
-                type: klass,
-                value: this.runtimeObject
-            },
+        let stackElements: NewValue[] = [
+            this.runtimeObject
         ];
 
         this.interpreter.runTimer(method, stackElements, (interpreter) => {

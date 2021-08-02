@@ -8,6 +8,7 @@ import { nullType, intPrimitiveType, booleanPrimitiveType, floatPrimitiveType, d
 import { Enum } from "../types/Enum.js";
 import { JsonTool } from "../types/TypeTools.js";
 import { MainBase } from "../../main/MainBase.js";
+import { RuntimeObject } from "src/client/interpreter/RuntimeObject.js";
 
 type GenericTypeList = { typeNode: TypeNode, module: Module }[];
 
@@ -562,7 +563,7 @@ export class TypeResolver {
             { identifier: "jsonString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), klass,
             (parameters) => {
-                let json: string = parameters[1].value;
+                let json: string = <string>parameters[1];
                 return new JsonTool().fromJson(json, klass, this.moduleStore, interpreter);
             }, false, true, `Konvertiert eine Json-Zeichenkette in ein ${klass.identifier}-Objekt ("deserialisieren"). Vor dem Deserialisieren eines Objekts werden die Attributinitialisierer angewandt und - falls vorhanden - ein parameterloser Konstruktor ausgeführt. Der Algorithmus kommt auch mit zyklischen Objektreferenzen zurecht.`, false));
 
@@ -571,7 +572,7 @@ export class TypeResolver {
     addToJsonMethod(klass: Klass) {
         klass.addMethod(new Method("toJson", new Parameterlist([]), stringPrimitiveType,
             (parameters) => {
-                return new JsonTool().toJson(parameters[0]);
+                return new JsonTool().toJson(<RuntimeObject>parameters[0]);
             }, false, false, `Konvertiert ein Objekt (rekursiv mitsamt referenzierter Objekte) in eine Json-Zeichenkette. Nicht konvertiert werden Systemklassen (außer: ArrayList) sowie mit dem Schlüsselwort transient ausgezeichnete Attribute.`));
 
     }

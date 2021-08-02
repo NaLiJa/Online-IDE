@@ -52,7 +52,7 @@ export class SetIteratorImplClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: SetIteratorHelper = o.intrinsicData["SetIteratorHelper"];
 
                 return ah.hasNext();
@@ -64,7 +64,7 @@ export class SetIteratorImplClass extends Klass {
         ]), typeE,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: SetIteratorHelper = o.intrinsicData["SetIteratorHelper"];
 
                 return ah.next();
@@ -76,7 +76,7 @@ export class SetIteratorImplClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: SetIteratorHelper = o.intrinsicData["SetIteratorHelper"];
 
                 return ah.remove();
@@ -108,7 +108,7 @@ class SetIteratorHelper {
                 } else if (this.nextPos > this.MapHelper.valueArray.length - 1) {
                     this.interpreter.throwException("Die Methode remove() des Iterators wurde aufgerufen, obwohl das letzte Element schon beim vorherigen Aufruf zurückgegeben worden war.")
                 } else {
-                    this.MapHelper.removeObject(this.MapHelper.valueArray[this.nextPos - 1].value);
+                    this.MapHelper.removeObject(this.MapHelper.valueArray[this.nextPos - 1]);
                     this.nextPos -= 1;
                 }
                 break;
@@ -118,7 +118,7 @@ class SetIteratorHelper {
                 } else if (this.nextPos < 0) {
                     this.interpreter.throwException("Die Methode remove() des Iterators wurde aufgerufen, obwohl das letzte Element schon beim vorherigen Aufruf zurückgegeben worden war.")
                 } else {
-                    this.MapHelper.removeObject(this.MapHelper.valueArray[this.nextPos + 1].value);
+                    this.MapHelper.removeObject(this.MapHelper.valueArray[this.nextPos + 1]);
                     this.nextPos += 1;
                 }
                 break;

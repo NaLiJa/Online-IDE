@@ -14,14 +14,14 @@ export class GNGRechteckClass extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
-        this.addAttribute(new Attribute("breite", intPrimitiveType, (value: Value) => { 
-            let sh = value.intrinsicData["Actor"];
-            value.value = Math.round(Math.abs(sh.width * sh.displayObject.scale.x)); 
+        this.addAttribute(new Attribute("breite", intPrimitiveType, (ro) => { 
+            let sh = ro.intrinsicData["Actor"];
+            return Math.round(Math.abs(sh.width * sh.displayObject.scale.x)); 
         }, false, Visibility.private, false, "Breite des Rechtecks"));
 
-        this.addAttribute(new Attribute("höhe", intPrimitiveType, (value: Value) => { 
-            let sh = value.intrinsicData["Actor"];
-            value.value = Math.round(Math.abs(sh.height * sh.displayObject.scale.x)); 
+        this.addAttribute(new Attribute("höhe", intPrimitiveType, (ro) => { 
+            let sh = ro.intrinsicData["Actor"];
+            return Math.round(Math.abs(sh.height * sh.displayObject.scale.x)); 
         }, false, Visibility.private, false, "Höhe des Rechtecks"));
 
 
@@ -31,7 +31,7 @@ export class GNGRechteckClass extends Klass {
         this.addMethod(new Method("Rechteck", new Parameterlist([]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 o.intrinsicData["isGNG"] = true;
 
                 let rh = new RectangleHelper(10, 10, 100, 100, module.main.getInterpreter(), o);
@@ -48,10 +48,10 @@ export class GNGRechteckClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: RectangleHelper = o.intrinsicData["Actor"];
-                let breite: number = parameters[1].value;
-                let höhe: number = parameters[2].value;
+                let breite: number = <number>parameters[1];
+                let höhe: number = <number>parameters[2];
 
                 if (sh.testdestroyed("GrößeSetzen")) return;
 

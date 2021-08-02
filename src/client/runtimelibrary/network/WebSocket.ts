@@ -23,7 +23,7 @@ export class WebSocketClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let interpreter = this.module?.main?.getInterpreter();
 
@@ -39,9 +39,9 @@ export class WebSocketClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let sessionCode: string = parameters[1].value;
-                let nickName: string = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let sessionCode: string = <string>parameters[1];
+                let nickName: string = <string>parameters[2];
 
                 let wh: WebSocketHelper = o.intrinsicData["Helper"];
                 wh.connect(sessionCode, nickName);
@@ -57,10 +57,10 @@ export class WebSocketClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WebSocketHelper = o.intrinsicData["Helper"];
-                let message: string = parameters[1].value;
-                let messageType: string = parameters[2].value;
+                let message: string = <string>parameters[1];
+                let messageType: string = <string>parameters[2];
 
                 wh.sendToAll(message, messageType);
 
@@ -71,9 +71,9 @@ export class WebSocketClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WebSocketHelper = o.intrinsicData["Helper"];
-                let count: number = parameters[1].value;
+                let count: number = <number>parameters[1];
 
                 wh.findClientsFromCount(count);
 
@@ -84,9 +84,9 @@ export class WebSocketClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WebSocketHelper = o.intrinsicData["Helper"];
-                let nickNamesValues: Value[] = parameters[1].value;
+                let nickNamesValues: NewValue[] = <NewValue[]>parameters[1];
 
                 let nicknames: string[] = nickNamesValues.map((nnv) => nnv.value);
 
@@ -99,9 +99,9 @@ export class WebSocketClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WebSocketHelper = o.intrinsicData["Helper"];
-                let nickName: string = parameters[1].value;
+                let nickName: string = <string>parameters[1];
 
                 wh.findClientsFromNicknames([nickName]);
 
@@ -111,7 +111,7 @@ export class WebSocketClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WebSocketHelper = o.intrinsicData["Helper"];
 
                 wh.disconnect();
@@ -159,7 +159,7 @@ export class WebSocketClass extends Klass {
             new ArrayType(webSocketClientType),
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WebSocketHelper = o.intrinsicData["Helper"];
 
                 let ret = wh.clientList.map(client => {return {type: webSocketClientType, value: client.runtimeObject}});
@@ -358,7 +358,7 @@ export class WebSocketHelper {
             }
         }
 
-        let arrayValue: Value = {
+        let arrayValue: NewValue = {
             type: new ArrayType(this.webSocketClientType),
             value: otherClients
         }

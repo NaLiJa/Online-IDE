@@ -22,18 +22,16 @@ export class CollisionPairClass extends Klass {
         let shapeType = module.typeStore.getType("Shape");
 
         this.addAttribute(new Attribute("shapeA", shapeType,
-            (value) => {
+            (rto) => {
 
-                let rto: RuntimeObject = value.object;
-                value.value = rto.intrinsicData["ShapeA"];
+                return rto.intrinsicData["ShapeA"];
 
             }, false, Visibility.public, true, "Erstes an der Kollision beteiligtes Shape"));
 
         this.addAttribute(new Attribute("shapeB", shapeType,
-            (value) => {
+            (rto) => {
 
-                let rto: RuntimeObject = value.object;
-                value.value = rto.intrinsicData["ShapeB"];
+                return rto.intrinsicData["ShapeB"];
 
             }, false, Visibility.public, true, "Zweites an der Kollision beteiligtes Shape"));
 
@@ -61,7 +59,7 @@ export class GroupClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let rh = new GroupHelper(module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
@@ -73,14 +71,14 @@ export class GroupClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shapes: Value[] = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shapes: RuntimeObject[] = <RuntimeObject[]>parameters[1];
 
                 let rh = new GroupHelper(module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
 
                 for (let s of shapes) {
-                    rh.add(s.value);
+                    rh.add(s);
                 }
 
             }, false, false, 'Instanziert eine neue Gruppe und fügt die übergebenen Grafikobjekte der Gruppe hinzu. Der Gruppe können mit der Methode add weitere Grafikobjekte hinzugefügt werden, die dann mit der Gruppe verschoben, gedreht, ... werden.', true));
@@ -91,14 +89,14 @@ export class GroupClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shapes: Value[] = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shapes: RuntimeObject[] = <RuntimeObject[]>parameters[1];
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("add")) return;
 
                 for (let s of shapes) {
-                    sh.add(s.value);
+                    sh.add(s);
                 }
 
             }, false, false, 'Fügt die Grafikobjekte der Gruppe hinzu.', false));
@@ -109,8 +107,8 @@ export class GroupClass extends Klass {
         ]), shapeType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let index: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let index: number = <number>parameters[1];
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("get")) return;
@@ -125,8 +123,8 @@ export class GroupClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let index: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let index: number = <number>parameters[1];
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
                 sh.removeElementAt(index);
@@ -139,8 +137,8 @@ export class GroupClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shape: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shape: RuntimeObject = <RuntimeObject>parameters[1];
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("remove")) return;
@@ -159,8 +157,8 @@ export class GroupClass extends Klass {
         ]), shapeArrayType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shape: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shape: RuntimeObject = <RuntimeObject>parameters[1];
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getCollidingShapes") || shape == null) return [];
@@ -186,9 +184,9 @@ export class GroupClass extends Klass {
         ]), collisionPairArrayType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let group2: RuntimeObject = parameters[1].value;
-                let maxOneCollisionPerShape: boolean = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let group2: RuntimeObject = <RuntimeObject>parameters[1];
+                let maxOneCollisionPerShape: boolean = <boolean>parameters[2];
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
                 let groupHelper2: GroupHelper = <GroupHelper>group2.intrinsicData["Actor"];
 
@@ -205,7 +203,7 @@ export class GroupClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("size")) return;
@@ -218,7 +216,7 @@ export class GroupClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("empty")) return;
@@ -231,7 +229,7 @@ export class GroupClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("destroyAllChildren")) return;
@@ -246,8 +244,8 @@ export class GroupClass extends Klass {
         ]), shapeArrayType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let group: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let group: RuntimeObject = <RuntimeObject>parameters[1];
                 let groupHelper: GroupHelper = group.intrinsicData["Actor"];
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
@@ -261,7 +259,7 @@ export class GroupClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;
@@ -275,9 +273,9 @@ export class GroupClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
-                let doCache: boolean = parameters[1].value;
+                let doCache: boolean = <boolean>parameters[1];
 
                 if (sh.testdestroyed("renderAsStaticBitmap")) return;
 

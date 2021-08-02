@@ -1,5 +1,5 @@
 import { Klass, Visibility } from "../Class.js";
-import { Method, Parameterlist, Attribute, Value, Type, PrimitiveType } from "../Types.js";
+import { Method, Parameterlist, Attribute, Value, Type, PrimitiveType, NewValue } from "../Types.js";
 import { intPrimitiveType, stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, booleanPrimitiveType } from "../PrimitiveTypes.js";
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
 
@@ -12,8 +12,8 @@ export class IntegerClass extends Klass {
         super("Integer", null, "Wrapper-Klasse, um int-Werte in Collections verenden zu können.");
         this.baseClass = baseClass;
 
-        this.addAttribute(new Attribute("MAX_VALUE", intPrimitiveType, (value) => { value.value = Number.MAX_SAFE_INTEGER }, true, Visibility.public, true, "Der größte Wert, den eine Variable vom Typ int annehmen kann"));
-        this.addAttribute(new Attribute("MIN_VALUE", intPrimitiveType, (value) => { value.value = Number.MIN_SAFE_INTEGER }, true, Visibility.public, true, "Der kleinste Wert, den eine Variable vom Typ int annehmen kann"));
+        this.addAttribute(new Attribute("MAX_VALUE", intPrimitiveType, (ro) => {return Number.MAX_SAFE_INTEGER }, true, Visibility.public, true, "Der größte Wert, den eine Variable vom Typ int annehmen kann"));
+        this.addAttribute(new Attribute("MIN_VALUE", intPrimitiveType, (ro) => {return Number.MIN_SAFE_INTEGER }, true, Visibility.public, true, "Der kleinste Wert, den eine Variable vom Typ int annehmen kann"));
 
         this.staticClass.setupAttributeIndicesRecursive();
 
@@ -34,7 +34,7 @@ export class IntegerClass extends Klass {
         ]), null,
             (parameters) => {
 
-                parameters[0].value = parameters[1].value;
+                parameters[0] = parameters[1];
 
             }, false, false, "Instanziert ein neues Integer-Objekt", true));
 
@@ -43,24 +43,24 @@ export class IntegerClass extends Klass {
         ]), null,
             (parameters) => {
 
-                parameters[0].value = Number.parseInt(parameters[1].value);
+                parameters[0] = Number.parseInt(<string>parameters[1]);
 
             }, false, false, "Instanziert ein neues Integer-Objekt, indem die übergebene Zeichenkette in einen int-Wert umgewandelt wird.", true));
 
 
         this.addMethod(new Method("doubleValue", new Parameterlist([]), doublePrimitiveType,
-            (parameters) => { return parameters[0].value; }, false, false, "Wandelt das Integer-Objekt in einen double-Wert um"));
+            (parameters) => { return parameters[0]; }, false, false, "Wandelt das Integer-Objekt in einen double-Wert um"));
         this.addMethod(new Method("floatValue", new Parameterlist([]), floatPrimitiveType,
-            (parameters) => { return parameters[0].value; }, false, false, "Wandelt das Integer-Objekt in einen float-Wert um"));
+            (parameters) => { return parameters[0]; }, false, false, "Wandelt das Integer-Objekt in einen float-Wert um"));
         this.addMethod(new Method("intValue", new Parameterlist([]), intPrimitiveType,
-            (parameters) => { return parameters[0].value; }, false, false, "Wandelt das Integer-Objekt in einen int-Wert um"));
+            (parameters) => { return parameters[0]; }, false, false, "Wandelt das Integer-Objekt in einen int-Wert um"));
 
         this.addMethod(new Method("compareTo", new Parameterlist([
             { identifier: "anotherInteger", type: this, declaration: null, usagePositions: null, isFinal: true }
         ]), intPrimitiveType,
             (parameters) => {
-                let v0 = parameters[0].value;
-                let v1 = parameters[1].value;
+                let v0 = parameters[0];
+                let v1 = parameters[1];
                 if (v0 > v1) return 1;
                 if (v0 < v1) return -1;
                 return 0;
@@ -70,26 +70,26 @@ export class IntegerClass extends Klass {
             { identifier: "anotherInteger", type: this, declaration: null, usagePositions: null, isFinal: true }
         ]), booleanPrimitiveType,
             (parameters) => {
-                return parameters[0].value == parameters[1].value;
+                return parameters[0] == parameters[1];
             }, false, false, "Gibt genau dann true zurück, wenn der Wert gleich dem übergebenen Wert ist."));
 
         this.addMethod(new Method("toString", new Parameterlist([
         ]), stringPrimitiveType,
             (parameters) => {
-                return "" + parameters[0].value;
+                return "" + parameters[0];
             }, false, false, "Gibt den Wert des Objekts als String-Wert zur Basis 10 zurück."));
 
         this.addMethod(new Method("hashCode", new Parameterlist([
         ]), intPrimitiveType,
             (parameters) => {
-                return parameters[0].value;
+                return parameters[0];
             }, false, false, "Gibt den hashCode des Objekts zurück."));
 
         this.addMethod(new Method("parseInt", new Parameterlist([
             { identifier: "s", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), intPrimitiveType,
             (parameters) => {
-                return Number.parseInt(parameters[1].value);
+                return Number.parseInt(<string>parameters[1]);
             }, false, true, "Wandelt die Zeichenkette in einen int-Wert um"));
 
         this.addMethod(new Method("parseInt", new Parameterlist([
@@ -97,42 +97,42 @@ export class IntegerClass extends Klass {
             { identifier: "radix", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), intPrimitiveType,
             (parameters) => {
-                return Number.parseInt(parameters[1].value, parameters[2].value);
+                return Number.parseInt(<string>parameters[1], <number>parameters[2]);
             }, false, true, "Wandelt die Zeichenkette s in einen int-Wert um. Dabei wird s als Zahl im Zahlensystem mit der Basis radix interpretiert."));
 
         this.addMethod(new Method("signum", new Parameterlist([
             { identifier: "i", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), intPrimitiveType,
             (parameters) => {
-                return Math.sign(parameters[1].value);
+                return Math.sign(<number>parameters[1]);
             }, false, true, "Gibt das Signum der übergebenen Zahl zurück, also -1 falls negativ, 0 falls 0 und +1 falls positiv."));
 
         this.addMethod(new Method("toBinary", new Parameterlist([
             { identifier: "i", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), stringPrimitiveType,
             (parameters) => {
-                return (parameters[1].value >>> 0).toString(2);
+                return (<number>parameters[1] >>> 0).toString(2);
             }, false, true, "Gibt die übergebene Zahl als Binärrepräsentation zurück."));
 
         this.addMethod(new Method("toHex", new Parameterlist([
             { identifier: "i", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), stringPrimitiveType,
             (parameters) => {
-                return (parameters[1].value >>> 0).toString(16);
+                return (<number>parameters[1] >>> 0).toString(16);
             }, false, true, "Gibt die übergebene Zahl als Hexadezimalrepräsentation zurück."));
 
         this.addMethod(new Method("toOctal", new Parameterlist([
             { identifier: "i", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), stringPrimitiveType,
             (parameters) => {
-                return (parameters[1].value >>> 0).toString(8);
+                return (<number>parameters[1] >>> 0).toString(8);
             }, false, true, "Gibt die übergebene Zahl als Oktalrepräsentation zurück."));
 
         this.addMethod(new Method("toString", new Parameterlist([
             { identifier: "i", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), stringPrimitiveType,
             (parameters) => {
-                return (parameters[1].value).toString();
+                return (parameters[1]).toString();
             }, false, true, "Gibt die übergebene Zahl als String-Wert zur Basis 10 zurück."));
 
         this.addMethod(new Method("toString", new Parameterlist([
@@ -140,21 +140,21 @@ export class IntegerClass extends Klass {
             { identifier: "radix", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), stringPrimitiveType,
             (parameters) => {
-                return (parameters[1].value >>> 0).toString(parameters[1].value);
+                return (<number>parameters[1] >>> 0).toString(<number>parameters[1]);
             }, false, true, "Gibt die übergebene Zahl als String-Wert zur Basis radix zurück."));
 
         this.addMethod(new Method("valueOf", new Parameterlist([
             { identifier: "i", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), this,
             (parameters) => {
-                return parameters[1].value;
+                return parameters[1];
             }, false, true, "Gibt die übergebene Zahl als Integer-Objekt zurück."));
 
         this.addMethod(new Method("valueOf", new Parameterlist([
             { identifier: "s", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), this,
             (parameters) => {
-                return Number.parseInt(parameters[1].value);
+                return Number.parseInt(<string>parameters[1]);
             }, false, true, "Interpretiert die übergebene Zeichenkette als Dezimalzahl und gib sie als Integer-Objekt zurück."));
 
         this.addMethod(new Method("valueOf", new Parameterlist([
@@ -162,16 +162,16 @@ export class IntegerClass extends Klass {
             { identifier: "radix", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), this,
             (parameters) => {
-                return Number.parseInt(parameters[1].value, parameters[2].value);
+                return Number.parseInt(<string>parameters[1], <number>parameters[2]);
             }, false, true, "Interpretiert die übergebene Zeichenkette als Zahl zur Basis radix und gib sie als Integer-Objekt zurück."));
 
         // this.addMethod(new Method("charAt", new Parameterlist([{ identifier: "Position", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), charPrimitiveType,
-        //     (parameters) => { return (<string>parameters[0].value).charAt(<number>(parameters[1].value)); }, false, false, "Zeichen an der gegebenen Position.\n**Bem.: ** Position == 0 bedeutet das erste Zeichen in der Zeichenkette, Position == 1 das zweite usw. ."));
+        //     (parameters) => { return (<string>parameters[0]).charAt(<number>(parameters[1])); }, false, false, "Zeichen an der gegebenen Position.\n**Bem.: ** Position == 0 bedeutet das erste Zeichen in der Zeichenkette, Position == 1 das zweite usw. ."));
 
     }
 
-    public debugOutput(value: Value): string {
-        return "" + <number>value.value;
+    public debugOutput(value: NewValue): string {
+        return "" + <number>value;
     }
 
 

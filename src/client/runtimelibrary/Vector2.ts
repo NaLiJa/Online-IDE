@@ -30,9 +30,9 @@ export class Vector2Class extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
 
                 o.attributes[xIndex] = { type: doublePrimitiveType, value: x };
                 o.attributes[yIndex] = { type: doublePrimitiveType, value: y };
@@ -46,8 +46,8 @@ export class Vector2Class extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = new RuntimeObject(this);
-                let r: number = parameters[1].value;
-                let alphaDeg: number = parameters[2].value;
+                let r: number = <number>parameters[1];
+                let alphaDeg: number = <number>parameters[2];
 
                 alphaDeg *= Math.PI / 180.0;
 
@@ -62,7 +62,7 @@ export class Vector2Class extends Klass {
         ]), stringPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
@@ -75,7 +75,7 @@ export class Vector2Class extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
@@ -90,7 +90,7 @@ export class Vector2Class extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
@@ -105,7 +105,7 @@ export class Vector2Class extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
@@ -118,7 +118,7 @@ export class Vector2Class extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
@@ -146,12 +146,12 @@ export class Vector2Class extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
 
-                let length: number = parameters[1].value;
+                let length: number = <number>parameters[1];
 
                 let l = Math.sqrt(x * x + y * y);
                 if (l > 0) {
@@ -168,8 +168,8 @@ export class Vector2Class extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let o1: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let o1: RuntimeObject = <RuntimeObject>parameters[1];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
@@ -191,8 +191,8 @@ export class Vector2Class extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let o1: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let o1: RuntimeObject = <RuntimeObject>parameters[1];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
@@ -215,8 +215,8 @@ export class Vector2Class extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[1].value;
-                let o1: RuntimeObject = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[1];
+                let o1: RuntimeObject = <RuntimeObject>parameters[2];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
@@ -234,12 +234,12 @@ export class Vector2Class extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
 
-                let s: number = parameters[1].value;
+                let s: number = <number>parameters[1];
 
                 let oRet: RuntimeObject = new RuntimeObject(this);
                 oRet.attributes[xIndex] = { type: doublePrimitiveType, value: x * s };
@@ -254,12 +254,12 @@ export class Vector2Class extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;
 
-                let angle: number = -parameters[1].value * Math.PI / 180;
+                let angle: number = -parameters[1] * Math.PI / 180;
                 let sin: number = Math.sin(angle);
                 let cos: number = Math.cos(angle);
 
@@ -279,10 +279,10 @@ export class Vector2Class extends Klass {
             { identifier: "y2", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), doublePrimitiveType,
             (parameters) => {
-                let x1: number = <number>parameters[1].value;
-                let y1: number = <number>parameters[2].value;
-                let x2: number = <number>parameters[3].value;
-                let y2: number = <number>parameters[4].value;
+                let x1: number = <number>parameters[1];
+                let y1: number = <number>parameters[2];
+                let x2: number = <number>parameters[3];
+                let y2: number = <number>parameters[4];
                 let dx = x2 - x1;
                 let dy = y2 - y1;
                 return Math.sqrt(dx * dx + dy * dy);

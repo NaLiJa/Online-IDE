@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Interface, Klass, TypeVariable } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, intPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Method, NewValue, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { MapHelper } from "./MapHelper.js";
 
@@ -50,7 +50,7 @@ export class HashMapClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let mh = new MapHelper(o, module.main.getInterpreter(), module);
                 o.intrinsicData["MapHelper"] = mh;
@@ -63,9 +63,9 @@ export class HashMapClass extends Klass {
             { identifier: "value", type: typeV, declaration: null, usagePositions: null, isFinal: true }
         ]), typeV,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
-                let key: Value = parameters[1];
-                let value: Value = parameters[2];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let key: NewValue = parameters[1];
+                let value: NewValue = parameters[2];
                 let ah: MapHelper = o.intrinsicData["MapHelper"];
 
                 return ah.set(key, value);
@@ -76,7 +76,7 @@ export class HashMapClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: MapHelper = o.intrinsicData["MapHelper"];
 
                 return ah.clear();
@@ -89,8 +89,8 @@ export class HashMapClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let key: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let key: NewValue = parameters[1];
                 let ah: MapHelper = o.intrinsicData["MapHelper"];
 
                 return ah.containsKey(key);
@@ -103,8 +103,8 @@ export class HashMapClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let value: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let value: NewValue = parameters[1];
                 let ah: MapHelper = o.intrinsicData["MapHelper"];
 
                 return ah.containsValue(value);
@@ -117,12 +117,12 @@ export class HashMapClass extends Klass {
         ]), typeV,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let key: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let key: NewValue = parameters[1];
                 let ah: MapHelper = o.intrinsicData["MapHelper"];
 
-                let v: Value = ah.get(key);
-                return v == null ? null : v.value;
+                let v: NewValue = ah.get(key);
+                return v == null ? null : v;
 
             },  // no implementation!
             false, false, "Gibt den Wert zum Schlüssel key zurück. Gibt null zurück, falls die Map zum Schlüssel key keinen Wert enthält."));
@@ -132,7 +132,7 @@ export class HashMapClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: MapHelper = o.intrinsicData["MapHelper"];
 
                 return ah.isEmpty();
@@ -144,7 +144,7 @@ export class HashMapClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: MapHelper = o.intrinsicData["MapHelper"];
 
                 return ah.size();
@@ -155,7 +155,7 @@ export class HashMapClass extends Klass {
         this.addMethod(new Method("toString", new Parameterlist([]), stringPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: MapHelper = o.intrinsicData["MapHelper"];
 
                 return ah.to_String();

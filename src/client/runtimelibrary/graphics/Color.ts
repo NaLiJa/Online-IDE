@@ -44,7 +44,7 @@ export class ColorClass extends Klass {
             r.intrinsicData = id;
 
             this.addAttribute(new Attribute(colorName, this,
-                (value) => { value.value = r }, true, Visibility.public, true,
+                (ro) => { return r }, true, Visibility.public, true,
                 "Die Farbe " + colorName + " (" + ColorHelper.intColorToHexRGB(intColor) + ") oder " + ColorHelper.intColorToRGB(intColor)));
         }
 
@@ -59,10 +59,10 @@ export class ColorClass extends Klass {
             { identifier: "blue", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
-                let red: number = Math.trunc(parameters[1].value);
-                let green: number = Math.trunc(parameters[2].value);
-                let blue: number = Math.trunc(parameters[3].value);
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let red: number = Math.trunc(<number>parameters[1]);
+                let green: number = Math.trunc(<number>parameters[2]);
+                let blue: number = Math.trunc(<number>parameters[3]);
 
 
                 let intrinsicData: ColorClassIntrinsicData = {
@@ -80,7 +80,7 @@ export class ColorClass extends Klass {
         this.addMethod(new Method("randomColor", new Parameterlist([
         ]), intPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 return Math.floor(Math.random() * 0xffffff);
 
@@ -91,8 +91,8 @@ export class ColorClass extends Klass {
             { identifier: "minimumRGBValue", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), intPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
-                let min: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let min: number = <number>parameters[1];
                 if (min < 0) min = 0;
                 if (min > 255) min = 255;
 
@@ -110,9 +110,9 @@ export class ColorClass extends Klass {
             { identifier: "maximumRGBValue", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), intPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
-                let min: number = parameters[1].value;
-                let max: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let min: number = <number>parameters[1];
+                let max: number = <number>parameters[1];
                 if (min < 0) min = 0;
                 if (min > 255) min = 255;
                 if (max < 0) max = 0;
@@ -136,7 +136,7 @@ export class ColorClass extends Klass {
         this.addMethod(new Method("toString", new Parameterlist([
         ]), stringPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 return (<ColorClassIntrinsicData>(o.intrinsicData)).hex;
 
@@ -145,7 +145,7 @@ export class ColorClass extends Klass {
         this.addMethod(new Method("toInt", new Parameterlist([
         ]), intPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let cid = <ColorClassIntrinsicData>(o.intrinsicData);
 
                 return 0x10000 * cid.red + 0x100 * cid.green + cid.blue;
@@ -156,8 +156,8 @@ export class ColorClass extends Klass {
             { identifier: "otherColor", type: this, declaration: null, usagePositions: null, isFinal: true },
         ]), booleanPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
-                let o1: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let o1: RuntimeObject = <RuntimeObject>parameters[1];
 
                 let d = <ColorClassIntrinsicData>(o.intrinsicData);
                 let d1 = <ColorClassIntrinsicData>(o1.intrinsicData);
@@ -169,7 +169,7 @@ export class ColorClass extends Klass {
         this.addMethod(new Method("getRed", new Parameterlist([
         ]), intPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 return (<ColorClassIntrinsicData>(o.intrinsicData)).red;
 
@@ -178,7 +178,7 @@ export class ColorClass extends Klass {
         this.addMethod(new Method("getGreen", new Parameterlist([
         ]), intPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 return (<ColorClassIntrinsicData>(o.intrinsicData)).green;
 
@@ -187,7 +187,7 @@ export class ColorClass extends Klass {
         this.addMethod(new Method("getBlue", new Parameterlist([
         ]), intPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 return (<ColorClassIntrinsicData>(o.intrinsicData)).blue;
 
@@ -199,10 +199,10 @@ export class ColorClass extends Klass {
             { identifier: "blue", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), intPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
-                let r: number = parameters[1].value;
-                let g: number = parameters[2].value;
-                let b: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: number = <number>parameters[1];
+                let g: number = <number>parameters[2];
+                let b: number = <number>parameters[3];
 
                 r = Math.min(r, 255); r = Math.max(0, r);
                 g = Math.min(g, 255); g = Math.max(0, g);
@@ -219,11 +219,11 @@ export class ColorClass extends Klass {
             { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), stringPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
-                let r: number = parameters[1].value;
-                let g: number = parameters[2].value;
-                let b: number = parameters[3].value;
-                let a: number = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: number = <number>parameters[1];
+                let g: number = <number>parameters[2];
+                let b: number = <number>parameters[3];
+                let a: number = <number>parameters[4];
 
                 r = Math.min(r, 255); r = Math.max(0, r);
                 g = Math.min(g, 255); g = Math.max(0, g);
@@ -245,11 +245,11 @@ export class ColorClass extends Klass {
             { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), stringPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
-                let h: number = parameters[1].value;
-                let s: number = parameters[2].value;
-                let l: number = parameters[3].value;
-                let a: number = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let h: number = <number>parameters[1];
+                let s: number = <number>parameters[2];
+                let l: number = <number>parameters[3];
+                let a: number = <number>parameters[4];
 
                 h = Math.min(h, 360); h = Math.max(0, h);
                 s = Math.min(s, 100); s = Math.max(0, s);
@@ -271,10 +271,10 @@ export class ColorClass extends Klass {
             { identifier: "luminance", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), intPrimitiveType,
             (parameters) => {
-                let o: RuntimeObject = parameters[0].value;
-                let h: number = parameters[1].value;
-                let s: number = parameters[2].value;
-                let l: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let h: number = <number>parameters[1];
+                let s: number = <number>parameters[2];
+                let l: number = <number>parameters[3];
 
                 h = Math.min(h, 360); h = Math.max(0, h);
                 s = Math.min(s, 100); s = Math.max(0, s);

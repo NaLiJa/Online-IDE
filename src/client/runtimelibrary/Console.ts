@@ -13,8 +13,8 @@ export class ConsoleClass extends Klass {
 
         this.addMethod( new Method("log", new Parameterlist([{identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false}]), null, 
                 (parameters) => { 
-                    // console.log(<string>(parameters[0].value)); 
-                    module.main.getBottomDiv()?.console.$consoleTab.find('.jo_console-top').append("<div>" + <string>(parameters[1].value) + "</div>"); 
+                    // console.log(<string>(parameters[0])); 
+                    module.main.getBottomDiv()?.console.$consoleTab.find('.jo_console-top').append("<div>" + <string>(parameters[1]) + "</div>"); 
                 }, false, true));
 
     }

@@ -25,11 +25,11 @@ export class RectangleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let left: number = parameters[1].value;
-                let top: number = parameters[2].value;
-                let width: number = parameters[3].value;
-                let height: number = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let left: number = <number>parameters[1];
+                let top: number = <number>parameters[2];
+                let width: number = <number>parameters[3];
+                let height: number = <number>parameters[4];
                 
                 let rh = new RectangleHelper(left, top, width, height, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
@@ -41,9 +41,9 @@ export class RectangleClass extends Klass {
             ]), null,
             (parameters) => {
                 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: RectangleHelper = o.intrinsicData["Actor"];
-                let width: number = parameters[1].value;
+                let width: number = <number>parameters[1];
                 
                 if (sh.testdestroyed("setWidth")) return;
 
@@ -59,9 +59,9 @@ export class RectangleClass extends Klass {
             ]), null,
             (parameters) => {
                 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: RectangleHelper = o.intrinsicData["Actor"];
-                let height: number = parameters[1].value;
+                let height: number = <number>parameters[1];
                 
                 if (sh.testdestroyed("setHeight")) return;
 
@@ -76,7 +76,7 @@ export class RectangleClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: RectangleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getWidth")) return;
@@ -89,7 +89,7 @@ export class RectangleClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: RectangleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getHeight")) return;
@@ -102,7 +102,7 @@ export class RectangleClass extends Klass {
             ]), this,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
                     let sh: RectangleHelper = o.intrinsicData["Actor"];
     
                     if (sh.testdestroyed("copy")) return;

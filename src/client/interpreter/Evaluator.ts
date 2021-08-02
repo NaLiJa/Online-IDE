@@ -1,7 +1,7 @@
 import { AdhocCompiler } from "../compiler/AdhocCompiler.js";
 import { Program } from "../compiler/parser/Program.js";
 import { SymbolTable } from "../compiler/parser/SymbolTable.js";
-import { Heap, Value } from "../compiler/types/Types.js";
+import { Heap, NewValue, Value } from "../compiler/types/Types.js";
 import { Main } from "../main/Main.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { MainBase } from "../main/MainBase.js";
@@ -53,7 +53,7 @@ export class Evaluator {
         }
     }
 
-    evaluate(expression: string, symbolTable?: SymbolTable): { error: string, value: Value } {
+    evaluate(expression: string, symbolTable?: SymbolTable): { error: string, value: NewValue } {
 
         if(symbolTable == null) symbolTable = this.main.getDebugger().lastSymboltable;
 
@@ -70,10 +70,6 @@ export class Evaluator {
         let interpreter = this.main.getInterpreter();
 
         let ret = interpreter.evaluate(c.program);
-
-        if(ret.value != null){
-            ret.value.type = getType(ret.value.value);
-        }
 
         return ret;
     }

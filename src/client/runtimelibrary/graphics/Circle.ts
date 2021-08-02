@@ -25,10 +25,10 @@ export class CircleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let mx: number = parameters[1].value;
-                let my: number = parameters[2].value;
-                let r: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let mx: number = <number>parameters[1];
+                let my: number = <number>parameters[2];
+                let r: number = <number>parameters[3];
 
                 let rh = new CircleHelper(mx, my, r, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
@@ -40,8 +40,8 @@ export class CircleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let r: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: number = <number>parameters[1];
                 let sh: CircleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setRadius")) return;
@@ -54,7 +54,7 @@ export class CircleClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: CircleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getRadius")) return;
@@ -67,7 +67,7 @@ export class CircleClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: CircleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;

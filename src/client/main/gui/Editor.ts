@@ -13,6 +13,7 @@ import { MyCodeActionProvider } from "./MyCodeActionProvider.js";
 import { MyReferenceProvider } from "./MyReferenceProvider.js";
 import { Enum } from "../../compiler/types/Enum.js";
 import { Workspace } from "../../workspace/Workspace.js";
+import { getType } from "src/client/compiler/types/PrimitiveTypes.js";
 
 export type HistoryEntry = {
     module_id: number,
@@ -527,7 +528,7 @@ export class Editor implements monaco.languages.RenameProvider {
                 let evaluator = this.main.getCurrentWorkspace().evaluator;
                 let result = evaluator.evaluate(text);
                 if (result.error == null && result.value != null) {
-                    let v = result.value.type.debugOutput(result.value);
+                    let v = getType(result.value).debugOutput(result.value);
 
                     monaco.editor.colorize(text + ": ", 'myJava', { tabSize: 3 }).then((text) => {
                         if (text.endsWith("<br/>")) text = text.substr(0, text.length - 5);

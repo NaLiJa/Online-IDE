@@ -4,7 +4,8 @@ import { ModuleStore } from "../parser/Module.js";
 import { ArrayType } from "./Array.js";
 import { Interface, Klass } from "./Class.js";
 import { Enum, EnumRuntimeObject } from "./Enum.js";
-import { PrimitiveType, Type, Value } from "./Types.js";
+import { getType } from "./PrimitiveTypes.js";
+import { NewValue, PrimitiveType, Type, Value } from "./Types.js";
 
 type SerializedObject = {
     "!k"?: string, // Class identifier or object index
@@ -13,8 +14,8 @@ type SerializedObject = {
 
 export class JsonTool {
     // to deserialize:
-    indexToObjectMap: { [index: number]: Value };
-    valuesToResolve: { v: Value, i: number }[];
+    indexToObjectMap: { [index: number]: NewValue };
+    valuesToResolve: { v: NewValue, i: number }[];
 
     // to serialize:
     objectToIndexMap: Map<RuntimeObject, number>;
@@ -22,7 +23,7 @@ export class JsonTool {
 
     primitiveTypes: String[] = ["String", "Integer", "Double", "Boolean", "Float", "Character"];
 
-    toJson(value: Value): string {
+    toJson(value: RuntimeObject): string {
         this.objectToIndexMap = new Map();
         this.nextIndex = 0;
         let json = JSON.stringify(this.toJsonObj(value));
@@ -30,26 +31,25 @@ export class JsonTool {
         return json;
     }
 
-    toJsonObj(value: Value): any {
-        let type = value.type;
-        let v = value.value;
-        if (v == null) return null;
+    toJsonObj(value: NewValue): any {
+        let type = getType(value);
+        if (value == null) return null;
 
         if ((type instanceof Klass || type instanceof Interface) && this.primitiveTypes.indexOf(type.identifier) < 0) {
 
             if (type instanceof Enum) {
-                let enumObj = <EnumRuntimeObject>v;
+                let enumObj = <EnumRuntimeObject>value;
                 return enumObj.enumValue.ordinal;
             }
 
-            let rto = <RuntimeObject>v;
+            let rto = <RuntimeObject>value;
             return this.objectToJsonObj(rto);
         } else if (type instanceof ArrayType) {
-            let arrayValues: Value[] = v;
+            let arrayValues: NewValue[] = <NewValue[]>value;
             return arrayValues.map(value => this.toJsonObj(value));
         } else {
             // primitive Type
-            return value.value;
+            return value;
         }
     }
 
@@ -100,26 +100,22 @@ export class JsonTool {
         for (let vtr of this.valuesToResolve) {
             let value = this.indexToObjectMap[vtr.i];
             if (value != null) {
-                vtr.v.type = value.type;
-                vtr.v.value = value.value;
+                vtr.v = value;
             }
         }
 
         this.indexToObjectMap = null; // free memory
         this.valuesToResolve = null;
-        return ret.value;
+        return ret;
     }
 
-    fromJsonObj(obj: any, type: Type, moduleStore: ModuleStore, interpreter: Interpreter): Value {
-        if (obj == null) return { type: type, value: null };
+    fromJsonObj(obj: any, type: Type, moduleStore: ModuleStore, interpreter: Interpreter): NewValue {
+        if (obj == null) return null;
 
         if ((type instanceof Klass || type instanceof Interface) && this.primitiveTypes.indexOf(type.identifier) < 0) {
 
             if (type instanceof Enum) {
-                return {
-                    type: type,
-                    value: type.indexToInfoMap[obj].object
-                }
+                return type.indexToInfoMap[obj].object
             }
 
             let serializedObject = <SerializedObject>obj;
@@ -127,19 +123,16 @@ export class JsonTool {
 
         } else if (type instanceof ArrayType) {
             let jsonArray: any[] = obj;
-            return {
-                type: type,
-                value: jsonArray.map(v => this.fromJsonObj(v, type.arrayOfType, moduleStore, interpreter))
-            }
+            return jsonArray.map(v => this.fromJsonObj(v, type.arrayOfType, moduleStore, interpreter))
         } else {
             // primitive Type
-            return { type: type, value: obj }
+            return obj 
         }
 
     }
 
     objectFromJsonObj(serializedObject: SerializedObject, type: Klass | Interface, moduleStore: ModuleStore,
-        interpreter: Interpreter): Value {
+        interpreter: Interpreter): NewValue {
 
         let identifier: string = serializedObject["!k"];
         let index = serializedObject["!i"];
@@ -164,7 +157,7 @@ export class JsonTool {
                 klass = klass.baseClass;
             }
 
-            let value: Value = { type: klass1, value: rto };
+            let value: NewValue = rto;
             this.indexToObjectMap[index] = value;
             return value;
 
@@ -172,11 +165,10 @@ export class JsonTool {
             let index = serializedObject["!i"];
             let value = this.indexToObjectMap[index];
             if (value == null) {
-                value = { type: type, value: null };
                 this.valuesToResolve.push({ v: value, i: index });
                 return value;
             } else {
-                return { type: value.type, value: value.value }; // return copy
+                return value; // return copy
             }
         }
 

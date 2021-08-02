@@ -818,7 +818,7 @@ export class Interpreter {
                 // check for errors
                 switch (node.target) {
                     case AssignTarget.arrayElement:
-                        index1 = stack.pop();
+                        index1 = <number>stack.pop();
                         array1 = <any[]>stack.pop();
 
                         if (array1 == null) return "Zugriff auf ein Element eines null-Feldes";
@@ -828,7 +828,7 @@ export class Interpreter {
                         }
                         break;
                     case AssignTarget.attribute:
-                        object2 = node.useThisObject ? stack[stackframeBegin] : stack.pop();
+                        object2 = <RuntimeObject>(node.useThisObject ? stack[stackframeBegin] : stack.pop());
                         if (object2 == null) return "Zugriff auf ein Attribut (" + node.attributeIdentifier + ") des null-Objekts";
                         break;
                     case AssignTarget.heap:
@@ -1141,7 +1141,7 @@ export class Interpreter {
                 this.showProgramPointerAndVariables();
 
                 let that = this;
-                this.inputManager.readInput(method1, parameters, (value: NewValue) => {
+                this.inputManager.readInput(method1, parameters, () => {
                     stack.push(value);
                     this.main.hideProgramPointerPosition();
                     that.setState(InterpreterState.paused);

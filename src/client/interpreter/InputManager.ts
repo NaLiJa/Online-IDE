@@ -11,7 +11,7 @@ export class InputManager {
 
     }
 
-    public readInput(method: Method, parameters: NewValue[], callback: (value: NewValue) => void){
+    public readInput(method: Method, parameters: NewValue[], callback: () => void){
 
         let returnType = method.getReturnType();
         let message = parameters[1];

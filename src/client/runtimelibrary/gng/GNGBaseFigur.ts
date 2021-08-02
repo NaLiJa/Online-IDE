@@ -1,7 +1,7 @@
 import { Module, ModuleStore } from "../../compiler/parser/Module.js";
 import { Klass, Visibility } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Attribute, Method, NewValue, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RectangleHelper } from "../graphics/Rectangle.js";
@@ -14,30 +14,30 @@ export class GNGBaseFigurClass extends Klass {
 
         super("GNGBaseFigur", module, "Oberklasse der graphischen Elemente in der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
 
-        this.addAttribute(new Attribute("farbe", stringPrimitiveType, (value: Value) => { 
-            let farbe = value.intrinsicData["Farbe"];
-            value.value = farbe == null ? "schwarz" : farbe;
+        this.addAttribute(new Attribute("farbe", stringPrimitiveType, (ro: RuntimeObject) => { 
+            let farbe = ro.intrinsicData["Farbe"];
+            return farbe == null ? "schwarz" : farbe;
         }, false, Visibility.protected, false, "Farbe des Grafikobjekts"));
 
-        this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { 
-            let sh = value.intrinsicData["Actor"];
-            value.value = Math.round(sh.getCenterX()); 
+        this.addAttribute(new Attribute("x", intPrimitiveType, (ro: RuntimeObject) => { 
+            let sh = ro.intrinsicData["Actor"];
+            return Math.round(sh.getCenterX()); 
         }, false, Visibility.protected, false, "x-Position des Grafikobjekts"));
-        this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { 
-            let sh = value.intrinsicData["Actor"];
-            value.value = Math.round(sh.getCenterY()); 
+        this.addAttribute(new Attribute("y", intPrimitiveType, (ro: RuntimeObject) => { 
+            let sh = ro.intrinsicData["Actor"];
+            return Math.round(sh.getCenterY()); 
         }, false, Visibility.protected, false, "y-Position des Grafikobjekts"));
 
-        this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
-            value.value = value.intrinsicData["Actor"].angle 
+        this.addAttribute(new Attribute("winkel", intPrimitiveType, (ro: RuntimeObject) => { 
+            return ro.intrinsicData["Actor"].angle 
         }, false, Visibility.protected, false, "Blickrichtung des Grafikobjekts in Grad"));
 
-        this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
-            value.value = Math.round(value.intrinsicData["Actor"].scaleFactor*100) 
+        this.addAttribute(new Attribute("größe", intPrimitiveType, (ro: RuntimeObject) => { 
+            return Math.round(ro.intrinsicData["Actor"].scaleFactor*100) 
         }, false, Visibility.protected, false, "Größe des Grafikobjekts (100 entspricht 'normalgroß')"));
 
-        this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (value: Value) => { 
-            value.value = value.intrinsicData["Actor"].displayObject?.visible 
+        this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (ro: RuntimeObject) => { 
+            return ro.intrinsicData["Actor"].displayObject?.visible 
         }, false, Visibility.protected, false, "true, wenn das Grafikobjekt sichtbar ist"));
 
         this.setupAttributeIndicesRecursive();
@@ -48,10 +48,10 @@ export class GNGBaseFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
 
                 if (sh.testdestroyed("PositionSetzen")) return;
 
@@ -70,10 +70,10 @@ export class GNGBaseFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
 
                 if (sh.testdestroyed("Verschieben")) return;
 
@@ -86,9 +86,9 @@ export class GNGBaseFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
-                let grad: number = parameters[1].value;
+                let grad: number = <number>parameters[1];
 
                 if (sh.testdestroyed("Drehen")) return;
 
@@ -102,9 +102,9 @@ export class GNGBaseFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
-                let farbe: string = parameters[1].value;
+                let farbe: string = <string>parameters[1];
 
                 o.intrinsicData["Farbe"] = farbe;
 
@@ -123,9 +123,9 @@ export class GNGBaseFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
-                let winkel: number = parameters[1].value;
+                let winkel: number = <number>parameters[1];
 
                 if (sh.testdestroyed("WinkelSetzen")) return;
 
@@ -138,9 +138,9 @@ export class GNGBaseFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
-                let sichtbarkeit: boolean = parameters[1].value;
+                let sichtbarkeit: boolean = <boolean>parameters[1];
 
                 if (sh.testdestroyed("SichtbarkeitSetzen")) return;
 
@@ -151,7 +151,7 @@ export class GNGBaseFigurClass extends Klass {
         this.addMethod(new Method("Entfernen", new Parameterlist([]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("Entfernen")) return;
@@ -164,7 +164,7 @@ export class GNGBaseFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("GanzNachVornBringen")) return;
@@ -177,7 +177,7 @@ export class GNGBaseFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("GanzNachHintenBringen")) return;
@@ -190,7 +190,7 @@ export class GNGBaseFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("NachVornBringen")) return;
@@ -203,7 +203,7 @@ export class GNGBaseFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("NachHintenBringen")) return;

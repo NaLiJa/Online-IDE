@@ -3,8 +3,8 @@ import { Module } from "../../compiler/parser/Module.js";
 import { Program, Statement } from "../../compiler/parser/Program.js";
 import { Interface, Klass } from "../../compiler/types/Class.js";
 import { Enum } from "../../compiler/types/Enum.js";
-import { booleanPrimitiveType, stringPrimitiveType, StringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, PrimitiveType, Value } from "../../compiler/types/Types.js";
+import { booleanPrimitiveType, getType, stringPrimitiveType, StringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { Method, NewValue, Parameterlist, PrimitiveType, Value } from "../../compiler/types/Types.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ListHelper } from "./ArrayList.js";
@@ -12,21 +12,21 @@ import { ListHelper } from "./ArrayList.js";
 
 export class MapHelper {
 
-    keyArray: Value[] = [];
-    valueArray: Value[] = [];
+    keyArray: NewValue[] = [];
+    valueArray: NewValue[] = [];
 
-    map: Map<any, Value> = new Map(); // Maps key objects to value-Values
+    map: Map<any, NewValue> = new Map(); // Maps key objects to value-Values
 
     constructor(private runtimeObject: RuntimeObject, public interpreter: Interpreter, private module: Module) {
     }
 
-    get(key: Value){
-        return this.map.get(key.value);
+    get(key: NewValue){
+        return this.map.get(key);
     }
 
-    set(key: Value, value: Value): Value {
+    set(key: NewValue, value: NewValue): NewValue {
 
-        let old = this.map.get(key.value);
+        let old = this.map.get(key);
 
         if(old == null){
             this.keyArray.push(key);
@@ -36,7 +36,7 @@ export class MapHelper {
 
         this.valueArray.push(value);
         
-        this.map.set(key.value, value);
+        this.map.set(key, value);
 
         return old;
 
@@ -44,12 +44,14 @@ export class MapHelper {
 
     allElementsPrimitive(): boolean {
         for (let v of this.keyArray) {
-            if (!(v.type instanceof PrimitiveType || ["String", "_Double", "Integer", "Boolean" ,"Character"].indexOf(v.type.identifier) >= 0)) {
+            let type = getType(v);
+            if (!(type instanceof PrimitiveType || ["String", "_Double", "Integer", "Boolean" ,"Character"].indexOf(type.identifier) >= 0)) {
                 return false;
             }
         }
         for (let v of this.valueArray) {
-            if (!(v.type instanceof PrimitiveType || ["String", "_Double", "Integer", "Boolean" ,"Character"].indexOf(v.type.identifier) >= 0)) {
+            let type = getType(v);
+            if (!(type instanceof PrimitiveType || ["String", "_Double", "Integer", "Boolean" ,"Character"].indexOf(type.identifier) >= 0)) {
                 return false;
             }
         }
@@ -61,7 +63,7 @@ export class MapHelper {
         if (this.allElementsPrimitive()) {
             let s = "[";
             for (let i = 0; i < this.keyArray.length; i++) {
-                s += "" + this.keyArray[i].value + " => " + this.valueArray[i].value;
+                s += "" + this.keyArray[i] + " => " + this.valueArray[i];
                 if (i < this.keyArray.length - 1) s += ", ";
             }
 
@@ -94,25 +96,26 @@ export class MapHelper {
         for (let i = 0; i < this.valueArray.length; i++) {
 
             let key = this.keyArray[i];
-            if (key.type instanceof PrimitiveType || key.type instanceof StringPrimitiveType) {
+            let type = getType(key);
+            if (type instanceof PrimitiveType || type instanceof StringPrimitiveType) {
                 statements.push({
                     type: TokenType.pushConstant,
                     dataType: stringPrimitiveType,
-                    value: key.type.castTo(key, stringPrimitiveType).value,
+                    value: type.castTo(key, stringPrimitiveType),
                     position: position,
                     stepFinished: false
                 });
             } else {
                 statements.push({
                     type: TokenType.pushConstant,
-                    dataType: key.type,
-                    value: key.value,
+                    dataType: type,
+                    value: key,
                     stepFinished: false,
                     position: position
                 });
                 statements.push({
                     type: TokenType.callMethod,
-                    method: (<Klass | Interface | Enum>key.type).getMethod("toString", toStringParameters),
+                    method: (<Klass | Interface | Enum>type).getMethod("toString", toStringParameters),
                     isSuperCall: false,
                     stackframeBegin: -1,
                     stepFinished: false,
@@ -146,25 +149,26 @@ export class MapHelper {
 
 
             let value = this.valueArray[i];
-            if (value.value == null || value.type instanceof PrimitiveType || value.type instanceof StringPrimitiveType) {
+            type = getType(value);
+            if (value == null || type instanceof PrimitiveType || type instanceof StringPrimitiveType) {
                 statements.push({
                     type: TokenType.pushConstant,
                     dataType: stringPrimitiveType,
-                    value: value.value == null ? "null" : value.type.castTo(value, stringPrimitiveType).value,
+                    value: value == null ? "null" : type.castTo(value, stringPrimitiveType),
                     position: position,
                     stepFinished: false
                 });
             } else {
                 statements.push({
                     type: TokenType.pushConstant,
-                    dataType: value.type,
-                    value: value.value,
+                    dataType: type,
+                    value: value,
                     stepFinished: false,
                     position: position
                 });
                 statements.push({
                     type: TokenType.callMethod,
-                    method: (<Klass | Interface | Enum>value.type).getMethod("toString", toStringParameters),
+                    method: (<Klass | Interface | Enum>type).getMethod("toString", toStringParameters),
                     isSuperCall: false,
                     stackframeBegin: -1,
                     stepFinished: false,
@@ -254,13 +258,13 @@ export class MapHelper {
         return this.valueArray.length == 0;
     }
 
-    containsKey(key: Value): any {
-        return this.map.get(key.value) != null;
+    containsKey(key: NewValue): any {
+        return this.map.get(key) != null;
     }
 
-    containsValue(value: Value): any {
+    containsValue(value: NewValue): any {
         for(let v of this.valueArray){
-            if(v.value == value.value) return true;
+            if(v == value) return true;
         }
         return false;
     }

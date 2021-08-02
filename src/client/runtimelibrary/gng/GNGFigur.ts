@@ -32,18 +32,18 @@ export class GNGFigurClass extends Klass {
         let ellipseClass: Klass = <Klass>moduleStore.getType("Ellipse").type;
         let rectangleClass: Klass = <Klass>moduleStore.getType("Rectangle").type;
 
-        this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { value.value = Math.round(value.intrinsicData["Center"].x) }, false, Visibility.private, false, "x-Position der Figur"));
-        this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { value.value = Math.round(value.intrinsicData["Center"].y) }, false, Visibility.private, false, "y-Position der Figur"));
-        this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
-            value.value = value.intrinsicData["Actor"].angle 
+        this.addAttribute(new Attribute("x", intPrimitiveType, (ro) => { return Math.round(ro.intrinsicData["Center"].x) }, false, Visibility.private, false, "x-Position der Figur"));
+        this.addAttribute(new Attribute("y", intPrimitiveType, (ro) => { return Math.round(ro.intrinsicData["Center"].y) }, false, Visibility.private, false, "y-Position der Figur"));
+        this.addAttribute(new Attribute("winkel", intPrimitiveType, (ro) => { 
+            return ro.intrinsicData["Actor"].angle 
         }, false, Visibility.private, false, "Blickrichtung der Figur in Grad"));
 
-        this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
-            value.value = Math.round(value.intrinsicData["Actor"].scaleFactor*100) 
+        this.addAttribute(new Attribute("größe", intPrimitiveType, (ro) => { 
+            return Math.round(ro.intrinsicData["Actor"].scaleFactor*100) 
         }, false, Visibility.private, false, "Größe der Figur (100 entspricht 'normalgroß')"));
 
-        this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (value: Value) => { 
-            value.value = value.intrinsicData["Actor"].displayObject?.visible 
+        this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (ro) => { 
+            return ro.intrinsicData["Actor"].displayObject?.visible 
         }, false, Visibility.private, false, "true, wenn die Figur sichtbar ist"));
 
         this.setupAttributeIndicesRecursive();
@@ -51,7 +51,7 @@ export class GNGFigurClass extends Klass {
         this.addMethod(new Method("Figur", new Parameterlist([]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 o.intrinsicData["isGNG"] = true;
 
                 let interpreter = module.main.getInterpreter();
@@ -82,9 +82,9 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
-                let groesse: number = parameters[1].value;
+                let groesse: number = <number>parameters[1];
 
                 if (sh.testdestroyed("GrößeSetzen")) return;
 
@@ -101,9 +101,9 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
-                let grad: number = parameters[1].value;
+                let grad: number = <number>parameters[1];
 
                 if (sh.testdestroyed("Drehen")) return;
                 let center: GNGPoint = o.intrinsicData["Center"];
@@ -118,9 +118,9 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
-                let länge: number = parameters[1].value;
+                let länge: number = <number>parameters[1];
 
                 if (sh.testdestroyed("Gehen")) return;
                 let center: GNGPoint = o.intrinsicData["Center"];
@@ -142,10 +142,10 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
 
                 if (sh.testdestroyed("PositionSetzen")) return;
                 let center: GNGPoint = o.intrinsicData["Center"];
@@ -161,7 +161,7 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("ZumStartpunktGehen")) return;
@@ -180,9 +180,9 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
-                let winkel: number = parameters[1].value;
+                let winkel: number = <number>parameters[1];
 
                 if (sh.testdestroyed("WinkelSetzen")) return;
 
@@ -195,7 +195,7 @@ export class GNGFigurClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("WinkelGeben")) return;
@@ -210,7 +210,7 @@ export class GNGFigurClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("XPositionGeben")) return;
@@ -224,7 +224,7 @@ export class GNGFigurClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("YPositionGeben")) return;
@@ -239,9 +239,9 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
-                let sichtbarkeit: boolean = parameters[1].value;
+                let sichtbarkeit: boolean = <boolean>parameters[1];
 
                 if (sh.testdestroyed("SichtbarkeitSetzen")) return;
 
@@ -252,7 +252,7 @@ export class GNGFigurClass extends Klass {
         this.addMethod(new Method("Entfernen", new Parameterlist([]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FigurHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("Entfernen")) return;
@@ -265,7 +265,7 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("GanzNachVornBringen")) return;
@@ -278,7 +278,7 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("GanzNachHintenBringen")) return;
@@ -291,7 +291,7 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("NachVornBringen")) return;
@@ -304,7 +304,7 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("NachHintenBringen")) return;
@@ -317,7 +317,7 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("EigeneFigurLöschen")) return;
@@ -335,7 +335,7 @@ export class GNGFigurClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("Berührt")) return;
@@ -353,8 +353,8 @@ export class GNGFigurClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let farbeString: string = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let farbeString: string = <string>parameters[1];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("Berührt")) return;
@@ -392,8 +392,8 @@ export class GNGFigurClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: RuntimeObject = <RuntimeObject>parameters[1];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
                 let objectShapeHelper = object.intrinsicData["Actor"];
 
@@ -416,14 +416,14 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x1: number = parameters[1].value;
-                let y1: number = parameters[2].value;
-                let x2: number = parameters[3].value;
-                let y2: number = parameters[4].value;
-                let x3: number = parameters[5].value;
-                let y3: number = parameters[6].value;
-                let farbeString: string = parameters[7].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x1: number = <number>parameters[1];
+                let y1: number = <number>parameters[2];
+                let x2: number = <number>parameters[3];
+                let y2: number = <number>parameters[4];
+                let x3: number = <number>parameters[5];
+                let y3: number = <number>parameters[6];
+                let farbeString: string = <string>parameters[7];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("FigurteilFestlegenDreieck")) return;
@@ -461,12 +461,12 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let breite: number = parameters[3].value;
-                let höhe: number = parameters[4].value;
-                let farbeString: string = parameters[5].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let breite: number = <number>parameters[3];
+                let höhe: number = <number>parameters[4];
+                let farbeString: string = <string>parameters[5];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("FigurteilFestlegenRechteck")) return;
@@ -504,12 +504,12 @@ export class GNGFigurClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let breite: number = parameters[3].value;
-                let höhe: number = parameters[4].value;
-                let farbeString: string = parameters[5].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let breite: number = <number>parameters[3];
+                let höhe: number = <number>parameters[4];
+                let farbeString: string = <string>parameters[5];
                 let sh: GroupHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("FigurteilFestlegenEllipse")) return;

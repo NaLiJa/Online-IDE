@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { doublePrimitiveType, intPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Method, NewValue, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { WorldHelper } from "./World.js";
@@ -37,12 +37,12 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let spriteLibraryEntry: EnumRuntimeObject = parameters[3].value;
-                let index: number = parameters[4].value;
-                let scaleMode: EnumRuntimeObject = parameters[5].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let spriteLibraryEntry: EnumRuntimeObject = <EnumRuntimeObject>parameters[3];
+                let index: number = <number>parameters[4];
+                let scaleMode: EnumRuntimeObject = <EnumRuntimeObject>parameters[5];
 
                 let rh = new SpriteHelper(x, y, spriteLibraryEntry.enumValue.identifier, index, module.main.getInterpreter(), o, null, scaleMode.enumValue.identifier);
                 o.intrinsicData["Actor"] = rh;
@@ -56,9 +56,9 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shape: RuntimeObject = parameters[1].value;
-                let scaleMode: EnumRuntimeObject = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shape: RuntimeObject = <RuntimeObject>parameters[1];
+                let scaleMode: EnumRuntimeObject = <EnumRuntimeObject>parameters[2];
 
                 if (shape == null) {
                     module.main.getInterpreter().throwException("Die übergebene Figur ist null.");
@@ -75,8 +75,8 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let shape: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let shape: RuntimeObject = <RuntimeObject>parameters[1];
 
                 if (shape == null) {
                     module.main.getInterpreter().throwException("Die übergebene Figur ist null.");
@@ -97,11 +97,11 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let spriteLibraryEntry: EnumRuntimeObject = parameters[3].value;
-                let index: number = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let spriteLibraryEntry: EnumRuntimeObject = <EnumRuntimeObject>parameters[3];
+                let index: number = <number>parameters[4];
 
                 let rh = new SpriteHelper(x, y, spriteLibraryEntry.enumValue.identifier, index, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
@@ -116,10 +116,10 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let spriteLibraryEntry: EnumRuntimeObject = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let spriteLibraryEntry: EnumRuntimeObject = <EnumRuntimeObject>parameters[3];
 
                 let rh = new SpriteHelper(x, y, spriteLibraryEntry.enumValue.identifier, null, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
@@ -132,8 +132,8 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let spriteLibraryEntry: EnumRuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let spriteLibraryEntry: EnumRuntimeObject = <EnumRuntimeObject>parameters[1];
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
                 if (sh.isDestroyed) return;
@@ -149,9 +149,9 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let spriteLibraryEntry: EnumRuntimeObject = parameters[1].value;
-                let index: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let spriteLibraryEntry: EnumRuntimeObject = <EnumRuntimeObject>parameters[1];
+                let index: number = <number>parameters[2];
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
                 if (sh.isDestroyed) return;
@@ -165,8 +165,8 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let index: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let index: number = <number>parameters[1];
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
                 if (sh.isDestroyed) return;
@@ -184,15 +184,15 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let indexArray: Value[] = parameters[1].value;
-                let repeatType: EnumRuntimeObject = parameters[2].value;
-                let imagesPerSecond: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let indexArray: number[] = <number[]>parameters[1];
+                let repeatType: EnumRuntimeObject = <EnumRuntimeObject>parameters[2];
+                let imagesPerSecond: number = <number>parameters[3];
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
                 let indices: number[] = [];
                 for (let v of indexArray) {
-                    indices.push(v.value);
+                    indices.push(v);
                 }
 
                 if (sh.testdestroyed("playAnimation")) return;
@@ -210,11 +210,11 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let fromIndex: number = parameters[1].value;
-                let toIndex: number = parameters[2].value;
-                let repeatType: EnumRuntimeObject = parameters[3].value;
-                let imagesPerSecond: number = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let fromIndex: number = <number>parameters[1];
+                let toIndex: number = <number>parameters[2];
+                let repeatType: EnumRuntimeObject = <EnumRuntimeObject>parameters[3];
+                let imagesPerSecond: number = <number>parameters[4];
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("playAnimation")) return;
@@ -233,7 +233,7 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
                 if (sh.isDestroyed) return;
@@ -246,7 +246,7 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("pauseAnimation")) return;
@@ -259,7 +259,7 @@ export class SpriteClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("resumeAnimation")) return;
@@ -273,8 +273,8 @@ export class SpriteClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let alpha: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let alpha: number = <number>parameters[1];
                 let sh: SpriteHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setAlpha")) return;
@@ -287,7 +287,7 @@ export class SpriteClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SpriteHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;
@@ -301,7 +301,7 @@ export class SpriteClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SpriteHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getWidth")) return;
@@ -314,7 +314,7 @@ export class SpriteClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SpriteHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getHeight")) return;
@@ -329,9 +329,9 @@ export class SpriteClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let width: number = parameters[1].value;
-                let height: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let width: number = <number>parameters[1];
+                let height: number = <number>parameters[2];
                 let sh: SpriteHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("makeTiling")) return;
@@ -344,7 +344,7 @@ export class SpriteClass extends Klass {
         ]), <Klass>module.typeStore.getType("Tile"),
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: SpriteHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getTileImage")) return;
@@ -706,9 +706,9 @@ export class TileClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let dx: number = parameters[1].value;
-                let dy: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let dx: number = <number>parameters[1];
+                let dy: number = <number>parameters[2];
                 let sh: TileHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("move")) return;
@@ -722,8 +722,8 @@ export class TileClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let factor: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let factor: number = <number>parameters[1];
                 let sh: TileHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("scale")) return;
@@ -736,7 +736,7 @@ export class TileClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TileHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("mirrorX")) return;
@@ -749,7 +749,7 @@ export class TileClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TileHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("mirrorX")) return;

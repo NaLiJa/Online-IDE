@@ -35,13 +35,13 @@ export class BitmapClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let pointsX: number = parameters[1].value;
-                let pointsY: number = parameters[2].value;
-                let left: number = parameters[3].value;
-                let top: number = parameters[4].value;
-                let width: number = parameters[5].value;
-                let height: number = parameters[6].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let pointsX: number = <number>parameters[1];
+                let pointsY: number = <number>parameters[2];
+                let left: number = <number>parameters[3];
+                let top: number = <number>parameters[4];
+                let width: number = <number>parameters[5];
+                let height: number = <number>parameters[6];
 
                 let rh = new BitmapHelperNew(pointsX, pointsY, left, top, width, height, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
@@ -54,9 +54,9 @@ export class BitmapClass extends Klass {
         ]), colorType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 return sh.getFarbeAsObject(x, y, colorType);
@@ -71,11 +71,11 @@ export class BitmapClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let color: number = parameters[3].value;
-                let alpha: number = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let color: number = <number>parameters[3];
+                let alpha: number = <number>parameters[4];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.setzeFarbe(x, y, color, alpha);
@@ -89,10 +89,10 @@ export class BitmapClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let color: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let color: number = <number>parameters[3];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.setzeFarbe(x, y, color);
@@ -106,10 +106,10 @@ export class BitmapClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let color: string = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let color: string = <string>parameters[3];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.setzeFarbe(x, y, color);
@@ -124,11 +124,11 @@ export class BitmapClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let color: string = parameters[3].value;
-                let alpha: number = parameters[4].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let color: string = <string>parameters[3];
+                let alpha: number = <number>parameters[4];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.setzeFarbe(x, y, color, alpha);
@@ -142,10 +142,10 @@ export class BitmapClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let color: string = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let color: string = <string>parameters[3];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 return sh.istFarbe(x, y, color);
@@ -159,10 +159,10 @@ export class BitmapClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let color: number = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let color: number = <number>parameters[3];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 return sh.istFarbe(x, y, color, 1);
@@ -176,9 +176,9 @@ export class BitmapClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: number = parameters[1].value;
-                let alpha: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: number = <number>parameters[1];
+                let alpha: number = <number>parameters[2];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.fillAll(color, alpha);
@@ -190,8 +190,8 @@ export class BitmapClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let color: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let color: number = <number>parameters[1];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.fillAll(color);
@@ -202,7 +202,7 @@ export class BitmapClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;
@@ -215,7 +215,7 @@ export class BitmapClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("clone")) return;

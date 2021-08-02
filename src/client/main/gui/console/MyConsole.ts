@@ -1,6 +1,6 @@
 import { AdhocCompiler } from "../../../compiler/AdhocCompiler.js";
 import { Error } from "../../../compiler/lexer/Lexer.js";
-import { Heap, Value } from "../../../compiler/types/Types.js";
+import { Heap, NewValue, Value } from "../../../compiler/types/Types.js";
 import { InterpreterState, Interpreter } from "../../../interpreter/Interpreter.js";
 import { ConsoleEntry } from "./ConsoleEntry.js";
 import { Main } from "../../Main.js";
@@ -304,7 +304,7 @@ export class MyConsole {
 
         interpreter.start(() => {
 
-            let stackTop: Value;
+            let stackTop: NewValue;
             if (interpreter.stack.length > stacksizeBefore) {
                 stackTop = interpreter.stack.pop();
 
@@ -350,7 +350,7 @@ export class MyConsole {
         this.$consoleTabHeading.trigger(mousePointer + "down");
     }
 
-    writeConsoleEntry(command: string|JQuery<HTMLElement>, stackTop: Value, color: string = null) {
+    writeConsoleEntry(command: string|JQuery<HTMLElement>, stackTop: NewValue, color: string = null) {
 
         if(this.$consoleTab == null){
             return;

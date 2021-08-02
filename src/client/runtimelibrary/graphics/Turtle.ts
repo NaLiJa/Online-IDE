@@ -22,9 +22,9 @@ export class TurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
 
                 let ph = new TurtleHelper(x, y, false, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = ph;
@@ -39,10 +39,10 @@ export class TurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let showTurtle: boolean = parameters[3].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let x: number = <number>parameters[1];
+                let y: number = <number>parameters[2];
+                let showTurtle: boolean = <boolean>parameters[3];
 
                 let ph = new TurtleHelper(x, y, showTurtle, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = ph;
@@ -55,8 +55,8 @@ export class TurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let length: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let length: number = <number>parameters[1];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("forward")) return;
@@ -70,8 +70,8 @@ export class TurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let angle: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let angle: number = <number>parameters[1];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("turn")) return;
@@ -84,7 +84,7 @@ export class TurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("penUp")) return;
@@ -97,7 +97,7 @@ export class TurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("penDown")) return;
@@ -111,8 +111,8 @@ export class TurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let closeAndFill: boolean = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let closeAndFill: boolean = <boolean>parameters[1];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("closeAndFill")) return;
@@ -126,8 +126,8 @@ export class TurtleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let showTurtle: boolean = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let showTurtle: boolean = <boolean>parameters[1];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("showTurtle")) return;
@@ -140,7 +140,7 @@ export class TurtleClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;

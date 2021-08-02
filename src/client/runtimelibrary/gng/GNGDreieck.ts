@@ -15,14 +15,14 @@ export class GNGDreieckClass extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
-        this.addAttribute(new Attribute("breite", intPrimitiveType, (value: Value) => { 
-            let breite = value.intrinsicData["Breite"];
-            value.value = Math.round(breite); 
+        this.addAttribute(new Attribute("breite", intPrimitiveType, (ro) => { 
+            let breite = ro.intrinsicData["Breite"];
+            return Math.round(breite); 
         }, false, Visibility.private, false, "Breite des Dreiecks"));
 
-        this.addAttribute(new Attribute("höhe", intPrimitiveType, (value: Value) => { 
-            let höhe = value.intrinsicData["Höhe"];
-            value.value = Math.round(höhe); 
+        this.addAttribute(new Attribute("höhe", intPrimitiveType, (ro) => { 
+            let höhe = ro.intrinsicData["Höhe"];
+            return Math.round(höhe); 
         }, false, Visibility.private, false, "Höhe des Dreiecks"));
 
         this.setupAttributeIndicesRecursive();
@@ -30,7 +30,7 @@ export class GNGDreieckClass extends Klass {
         this.addMethod(new Method("Dreieck", new Parameterlist([]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 o.intrinsicData["isGNG"] = true;
 
 
@@ -51,10 +51,10 @@ export class GNGDreieckClass extends Klass {
             ]), null,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
                     let sh: PolygonHelper = o.intrinsicData["Actor"];
-                    let breite: number = parameters[1].value;
-                    let höhe: number = parameters[2].value;
+                    let breite: number = <number>parameters[1];
+                    let höhe: number = <number>parameters[2];
 
                     o.intrinsicData["Breite"] = breite;
                     o.intrinsicData["Höhe"] = höhe;    

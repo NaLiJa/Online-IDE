@@ -14,9 +14,9 @@ export class GNGKreisClass extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
-        this.addAttribute(new Attribute("radius", intPrimitiveType, (value: Value) => { 
-            let sh = value.intrinsicData["Actor"];
-            value.value = Math.round(sh.r * sh.displayObject.scale.x); 
+        this.addAttribute(new Attribute("radius", intPrimitiveType, (ro) => { 
+            let sh = ro.intrinsicData["Actor"];
+            return Math.round(sh.r * sh.displayObject.scale.x); 
         }, false, Visibility.private, false, "Radius des Kreises"));
 
         this.setupAttributeIndicesRecursive();
@@ -24,7 +24,7 @@ export class GNGKreisClass extends Klass {
         this.addMethod(new Method("Kreis", new Parameterlist([]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 o.intrinsicData["isGNG"] = true;
 
                 let rh = new CircleHelper(60, 60, 50, module.main.getInterpreter(), o);
@@ -40,9 +40,9 @@ export class GNGKreisClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: CircleHelper = o.intrinsicData["Actor"];
-                let radius: number = parameters[1].value;
+                let radius: number = <number>parameters[1];
 
                 if (sh.testdestroyed("radiusSetzen")) return;
 

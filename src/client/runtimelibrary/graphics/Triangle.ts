@@ -23,11 +23,11 @@ export class TriangleClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let pointsNumber: number[] = [];
                 for(let i = 1; i <= 6; i++){
-                    pointsNumber.push(parameters[i].value);
+                    pointsNumber.push(<number>parameters[i]);
                 }
 
                 let ph = new PolygonHelper(pointsNumber, true, module.main.getInterpreter(), o);
@@ -39,7 +39,7 @@ export class TriangleClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: PolygonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;

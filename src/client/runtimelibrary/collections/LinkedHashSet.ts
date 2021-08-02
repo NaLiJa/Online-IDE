@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Interface, Klass, TypeVariable } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, intPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Method, NewValue, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { SetIteratorImplClass } from "./SetIteratorImpl.js";
 import { SetHelper } from "./SetHelper.js";
@@ -42,7 +42,7 @@ export class LinkedHashSetClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
 
                 let mh = new SetHelper(o, module.main.getInterpreter(), module);
                 o.intrinsicData["MapHelper"] = mh;
@@ -53,7 +53,7 @@ export class LinkedHashSetClass extends Klass {
         ]), iteratorType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: SetHelper = o.intrinsicData["ListHelper"];
 
                 return SetIteratorImplClass.getIterator(ah, ah.interpreter, module, "ascending").value;
@@ -65,8 +65,8 @@ export class LinkedHashSetClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let r: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: NewValue = parameters[1];
                 let ah: SetHelper = o.intrinsicData["ListHelper"];
 
                 return ah.addToSet(r);
@@ -78,8 +78,8 @@ export class LinkedHashSetClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: RuntimeObject = <RuntimeObject>parameters[1];
                 let ah: SetHelper = o.intrinsicData["ListHelper"];
 
                 return ah.adAll(object);
@@ -91,7 +91,7 @@ export class LinkedHashSetClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: SetHelper = o.intrinsicData["ListHelper"];
 
                 return ah.clear();
@@ -104,8 +104,8 @@ export class LinkedHashSetClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: SetHelper = o.intrinsicData["ListHelper"];
 
                 return ah.contains(object);
@@ -118,8 +118,8 @@ export class LinkedHashSetClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let object: Value = parameters[1];
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let object: NewValue = parameters[1];
                 let ah: SetHelper = o.intrinsicData["ListHelper"];
 
                 return ah.removeObject(object);
@@ -131,7 +131,7 @@ export class LinkedHashSetClass extends Klass {
         ]), booleanPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: SetHelper = o.intrinsicData["ListHelper"];
 
                 return ah.isEmpty();
@@ -143,7 +143,7 @@ export class LinkedHashSetClass extends Klass {
         ]), intPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: SetHelper = o.intrinsicData["ListHelper"];
 
                 return ah.size();
@@ -154,7 +154,7 @@ export class LinkedHashSetClass extends Klass {
         this.addMethod(new Method("toString", new Parameterlist([]), stringPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let ah: SetHelper = o.intrinsicData["ListHelper"];
 
                 return ah.to_String();

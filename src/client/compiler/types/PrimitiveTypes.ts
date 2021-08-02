@@ -900,6 +900,16 @@ export function getType(v: any): Type {
         case "object": 
             if(v.klass){
                 return v.klass;
+            } else if(Array.isArray(v)){
+                let a = <any[]>v;
+                let firstNotNull = a.find(e => e != null);
+                if(firstNotNull == null){
+                    return new ArrayType(objectType);
+                } else {
+                    return new ArrayType(getType(firstNotNull));
+                }
+            } else {
+                return stringPrimitiveType;
             }
         default: return stringPrimitiveType;
     }

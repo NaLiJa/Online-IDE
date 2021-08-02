@@ -4,6 +4,7 @@ import { Klass, Interface } from "../../compiler/types/Class.js";
 import { Method, Attribute, PrimitiveType } from "../../compiler/types/Types.js";
 import { getDeclarationAsString, getGenericParameterDefinition } from "../../compiler/types/DeclarationHelper.js";
 import { InterpreterState } from "../../interpreter/Interpreter.js";
+import { getType } from "src/client/compiler/types/PrimitiveTypes.js";
 
 
 
@@ -144,7 +145,7 @@ export class MyHoverProvider {
 
             let result = evaluator.evaluate(identifier);
             if (result.error == null && result.value != null) {
-                value = result.value.type.debugOutput(result.value);
+                value = getType(result.value).debugOutput(result.value);
                 declarationAsString = identifier;
             }
 

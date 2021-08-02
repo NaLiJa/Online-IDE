@@ -26,13 +26,13 @@ export class ArcClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let mx: number = parameters[1].value;
-                let my: number = parameters[2].value;
-                let ri: number = parameters[3].value;
-                let ra: number = parameters[4].value;
-                let startAngle: number = parameters[5].value;
-                let endAngle: number = parameters[6].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let mx: number = <number>parameters[1];
+                let my: number = <number>parameters[2];
+                let ri: number = <number>parameters[3];
+                let ra: number = <number>parameters[4];
+                let startAngle: number = <number>parameters[5];
+                let endAngle: number = <number>parameters[6];
 
                 let rh = new ArcHelper(mx, my, ri, ra, startAngle / 180 * Math.PI, endAngle / 180 * Math.PI, true, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
@@ -44,8 +44,8 @@ export class ArcClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let r: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: number = <number>parameters[1];
                 let sh: ArcHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setRadius")) return;
@@ -59,8 +59,8 @@ export class ArcClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let r: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let r: number = <number>parameters[1];
                 let sh: ArcHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setRadius")) return;
@@ -74,8 +74,8 @@ export class ArcClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let angle: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let angle: number = <number>parameters[1];
                 let sh: ArcHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setStartAngle")) return;
@@ -98,8 +98,8 @@ export class ArcClass extends Klass {
         ]), null,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let angle: number = parameters[1].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
+                let angle: number = <number>parameters[1];
                 let sh: ArcHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setEndAngle")) return;
@@ -121,7 +121,7 @@ export class ArcClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ArcHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getRadius")) return;
@@ -134,7 +134,7 @@ export class ArcClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ArcHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getOuterRadius")) return;
@@ -147,7 +147,7 @@ export class ArcClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ArcHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getStartAngle")) return;
@@ -160,7 +160,7 @@ export class ArcClass extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ArcHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getEndAngle")) return;
@@ -173,7 +173,7 @@ export class ArcClass extends Klass {
         ]), this,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let sh: ArcHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;

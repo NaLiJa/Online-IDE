@@ -966,8 +966,8 @@ export class Parser {
                     let resultType = typeLeft.getResultType(operator, typeRight);
                     if (resultType != null) {
                         constantFolding = true;
-                        let result = typeLeft.compute(operator, { type: typeLeft, value: pcLeft.constant },
-                            { type: typeRight, value: pcRight.constant });
+                        let result = typeLeft.compute(operator, pcLeft.constant,
+                            pcRight.constant );
 
                         this.considerIntDivisionWarning(operator, typeLeft, pcLeft.constant, typeRight, pcRight.constant, position);
 
@@ -1075,7 +1075,7 @@ export class Parser {
                     let typeTerm = TokenTypeToDataTypeMap[pcTerm.constantType];
                     let resultType = typeTerm.getResultType(tt1);
                     if (resultType != null) {
-                        let result = typeTerm.compute(tt1, { type: typeTerm, value: pcTerm.constant });
+                        let result = typeTerm.compute(tt1, pcTerm.constant);
                         pcTerm.constantType = (<PrimitiveType>resultType).toTokenType();
                         pcTerm.constant = result;
                         position.length = pcTerm.position.column - position.column + 1;

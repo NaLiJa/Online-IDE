@@ -21,10 +21,10 @@ export class WebSocketClientClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
+                let o: RuntimeObject = <RuntimeObject>parameters[0];
                 let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
-                let message: string = parameters[1].value;
-                let messageType: string = parameters[2].value;
+                let message: string = <string>parameters[1];
+                let messageType: string = <string>parameters[2];
 
                 wh.send(message, messageType);
 
@@ -36,10 +36,10 @@ export class WebSocketClientClass extends Klass {
             ]), voidPrimitiveType,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
                     let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
-                    let key: string = parameters[1].value;
-                    let value: RuntimeObject = parameters[2].value;
+                    let key: string = <string>parameters[1];
+                    let value: RuntimeObject = <RuntimeObject>parameters[2];
     
                     wh.setUserData(key, value);
     
@@ -50,9 +50,9 @@ export class WebSocketClientClass extends Klass {
             ]), objectType,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
                     let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
-                    let key: string = parameters[1].value;
+                    let key: string = <string>parameters[1];
     
                     return wh.getUserData(key);
     
@@ -67,7 +67,7 @@ export class WebSocketClientClass extends Klass {
                 ]), stringPrimitiveType,
                     (parameters) => {
         
-                        let o: RuntimeObject = parameters[0].value;
+                        let o: RuntimeObject = <RuntimeObject>parameters[0];
                         let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
         
                         return wh[getter.att];
@@ -80,7 +80,7 @@ export class WebSocketClientClass extends Klass {
             ]), intPrimitiveType,
                 (parameters) => {
     
-                    let o: RuntimeObject = parameters[0].value;
+                    let o: RuntimeObject = <RuntimeObject>parameters[0];
                     let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
     
                     return wh.index;

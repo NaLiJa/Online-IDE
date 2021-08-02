@@ -1,3 +1,4 @@
+import { getType } from "../compiler/types/PrimitiveTypes.js";
 import { AccordionElement } from "../main/gui/Accordion.js";
 import { Main } from "../main/Main.js";
 import { MainBase } from "../main/MainBase.js";
@@ -24,7 +25,7 @@ export class WatcherElement {
 
             let v = "---";
             if (result.value != null) {
-                v = result.value.type.debugOutput(result.value);
+                v = getType(result.value).debugOutput(result.value);
             }
 
             this.$secondLine.empty();

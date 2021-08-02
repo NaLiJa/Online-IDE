@@ -39,7 +39,7 @@ export class GNGZeichenfensterClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let aktionsempfaenger: RuntimeObject = parameters[1].value;
+                let aktionsempfaenger: RuntimeObject = <RuntimeObject>parameters[1];
 
                 let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
                 helper.registerEvents(aktionsempfaenger);
@@ -51,7 +51,7 @@ export class GNGZeichenfensterClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let aktionsempfaenger: RuntimeObject = parameters[1].value;
+                let aktionsempfaenger: RuntimeObject = <RuntimeObject>parameters[1];
 
                 let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
                 helper.unregisterEvents(aktionsempfaenger);
@@ -79,7 +79,7 @@ export class GNGZeichenfensterClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let dauer: number = parameters[1].value;
+                let dauer: number = <number>parameters[1];
 
                 let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
                 helper.taktdauer = dauer;
