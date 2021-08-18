@@ -2648,7 +2648,7 @@ export class CodeGenerator {
         }
 
         this.pushStatements({
-            type: node.type,
+            type: TokenType.,
             position: node.position,
             incrementDecrementBy: node.operator == TokenType.doubleMinus ? - 1 : 1
 

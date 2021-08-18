@@ -21,7 +21,7 @@ export class SystemClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
 
         this.addAttribute(new Attribute("out", module.typeStore.getType("PrintStream"),
-            (value) => { value.value = this.printStream }, true, Visibility.public, true, "PrintStream-Objekt, mit dem Text ausgegeben werden kann."));
+            (rt) => { return this.printStream }, true, Visibility.public, true, "PrintStream-Objekt, mit dem Text ausgegeben werden kann."));
 
         this.staticClass.setupAttributeIndicesRecursive();
 
@@ -102,14 +102,14 @@ export class PrintStreamClass extends Klass {
             { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             (parameters) => {
-                module.main.getInterpreter().printManager.print(parameters[1]);
+                module.main.getInterpreter().printManager.print(<string>parameters[1]);
             }, false, true, "Gibt den Text aus."));
 
         this.addMethod(new Method("println", new Parameterlist([
             { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             (parameters) => {
-                module.main.getInterpreter().printManager.println(parameters[1]);
+                module.main.getInterpreter().printManager.println(<string>parameters[1]);
             }, false, true, "Gibt den Text aus, gefolgt von einem Zeilensprung."));
 
         this.addMethod(new Method("println", new Parameterlist([

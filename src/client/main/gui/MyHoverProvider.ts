@@ -4,7 +4,7 @@ import { Klass, Interface } from "../../compiler/types/Class.js";
 import { Method, Attribute, PrimitiveType } from "../../compiler/types/Types.js";
 import { getDeclarationAsString, getGenericParameterDefinition } from "../../compiler/types/DeclarationHelper.js";
 import { InterpreterState } from "../../interpreter/Interpreter.js";
-import { getType } from "src/client/compiler/types/PrimitiveTypes.js";
+import { getType } from "../../compiler/types/PrimitiveTypes.js";
 
 
 

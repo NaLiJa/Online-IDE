@@ -1,4 +1,4 @@
-import { Type, Method, Parameterlist, Value, Attribute } from "../compiler/types/Types.js";
+import { Type, Method, Parameterlist, Value, Attribute, NewValue } from "../compiler/types/Types.js";
 import { Klass, Visibility, Interface } from "../compiler/types/Class.js";
 import { stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, voidPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { Module } from "../compiler/parser/Module.js";
@@ -46,15 +46,8 @@ export class SystemToolsClass extends Klass {
                         let program = method?.program;
                         let invoke = method?.invoke;
 
-                        let stackElements: Value[] = [
-                            {
-                                type: r.class,
-                                value: r
-                            },
-                            {
-                                type: stringPrimitiveType,
-                                value: key
-                            }
+                        let stackElements: NewValue[] = [
+                            r, key
                         ];
 
                         if (program != null) {
@@ -106,14 +99,14 @@ export class PrintStreamClass extends Klass {
             { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             (parameters) => {
-                module.main.getInterpreter().printManager.print(parameters[1]);
+                module.main.getInterpreter().printManager.print(<string>parameters[1]);
             }, false, true, "Gibt den Text aus."));
 
         this.addMethod(new Method("println", new Parameterlist([
             { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             (parameters) => {
-                module.main.getInterpreter().printManager.println(parameters[1]);
+                module.main.getInterpreter().printManager.println(<string>parameters[1]);
             }, false, true, "Gibt den Text aus, gefolgt von einem Zeilensprung."));
 
 

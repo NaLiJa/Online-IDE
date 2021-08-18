@@ -1,4 +1,4 @@
-import { Type, Method, Parameterlist, Value, Attribute } from "../compiler/types/Types.js";
+import { Type, Method, Parameterlist, Value, Attribute, NewValue } from "../compiler/types/Types.js";
 import { Klass, Visibility, Interface } from "../compiler/types/Class.js";
 import { stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, voidPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { Module } from "../compiler/parser/Module.js";
@@ -138,16 +138,7 @@ export class TimerClass extends Klass {
     }
 
     runEntry(timerentry: TimerEntry, interpreter: Interpreter, dt: number) {
-        let stackElements: Value[] = [
-            {
-                type: timerentry.timerListener.class,
-                value: timerentry.timerListener
-            },
-            // {
-            //     type: intPrimitiveType,
-            //     value: dt
-            // }
-        ];
+        let stackElements: NewValue[] = [timerentry.timerListener];
 
         this.timerRunning = true;
         let that = this;

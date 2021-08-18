@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Method, NewValue, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { WebSocketRequestConnect, WebSocketRequestDisconnect, WebSocketRequestSendToAll, WebSocketRequestSendToClient, WebSocketResponseOtherClientDisconnected, WebSocketResponseMessage, WebSocketResponseNewClient, WebSocketResponse, GetWebSocketTokenResponse, WebSocketResponsePairingFound, WebSocketRequestFindPairing } from "../../communication/Data.js";
@@ -88,7 +88,7 @@ export class WebSocketClass extends Klass {
                 let wh: WebSocketHelper = o.intrinsicData["Helper"];
                 let nickNamesValues: NewValue[] = <NewValue[]>parameters[1];
 
-                let nicknames: string[] = nickNamesValues.map((nnv) => nnv.value);
+                let nicknames: string[] = <string[]>nickNamesValues;
 
                 wh.findClientsFromNicknames(nicknames);
 
@@ -307,15 +307,15 @@ export class WebSocketHelper {
                 clientRuntimeObject.intrinsicData["Helper"] = wch;
                 this.clientList.push(wch);
                 this.idToClientMap[response.user_id] = wch;
-                this.runMethod(this.onClientConnectedMethod, [{ type: this.webSocketClientType, value: clientRuntimeObject }]);
+                this.runMethod(this.onClientConnectedMethod, [clientRuntimeObject]);
                 break;
             case 2: // message
                 let clientHelper = this.idToClientMap[response.from_client_id];
                 if (clientHelper == null) return;
                 this.runMethod(this.onMessageMethod, [
-                    { type: this.webSocketClientType, value: clientHelper.runtimeObject },
-                    { type: stringPrimitiveType, value: response.data },
-                    { type: stringPrimitiveType, value: response.dataType }
+                    clientHelper.runtimeObject,
+                    response.data,
+                    response.dataType
                 ]);
                 break;
             case 3: // other client disconnected
@@ -323,9 +323,7 @@ export class WebSocketHelper {
                 if (clientHelper1 == null) return;
                 this.clientList.splice(this.clientList.indexOf(clientHelper1), 1);
                 this.idToClientMap[response.disconnecting_client_id] = undefined;
-                this.runMethod(this.onClientDisconnectedMethod, [
-                    { type: this.webSocketClientType, value: clientHelper1.runtimeObject }
-                ]);
+                this.runMethod(this.onClientDisconnectedMethod, [clientHelper1.runtimeObject]);
                 break;
             case 4: // time synchronization
                 this.systemClassType.deltaTimeMillis = response.currentTimeMills - Date.now();
@@ -341,7 +339,7 @@ export class WebSocketHelper {
 
     onClientsFound(response: WebSocketResponsePairingFound) {
         let own_index: number = 0;
-        let otherClients: Value[] = [];
+        let otherClients: RuntimeObject[] = [];
 
         for (let client of response.clients) {
             if (client.id == this.client_id) {
@@ -350,20 +348,12 @@ export class WebSocketHelper {
                 let otherClient = this.idToClientMap[client.id];
                 if (otherClient != null) {
                     otherClient.index = client.index;
-                    otherClients.push({
-                        type: this.webSocketClientType,
-                        value: otherClient.runtimeObject
-                    });
+                    otherClients.push(otherClient.runtimeObject);
                 }
             }
         }
 
-        let arrayValue: NewValue = {
-            type: new ArrayType(this.webSocketClientType),
-            value: otherClients
-        }
-
-        this.runMethod(this.onClientsFoundMethod, [arrayValue, { type: intPrimitiveType, value: own_index }]);
+        this.runMethod(this.onClientsFoundMethod, [otherClients, own_index ]);
 
     }
 
@@ -380,12 +370,9 @@ export class WebSocketHelper {
         this.runMethod(this.onOpenMethod, []);
     }
 
-    runMethod(method: Method, stackElements: Value[]) {
+    runMethod(method: Method, stackElements: NewValue[]) {
         if (method == null) return;
-        stackElements.splice(0, 0, {
-            type: this.runtimeObject.class,
-            value: this.runtimeObject
-        });
+        stackElements.splice(0, 0, this.runtimeObject);
 
         if (this.interpreter.state == InterpreterState.waitingForInput) {
             this.interpreter.executeImmediatelyInNewStackframe(method.program, stackElements);

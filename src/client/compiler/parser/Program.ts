@@ -26,8 +26,8 @@ export type Statement = PushValueStatement | PopAndStoreIntoLocalVariableStateme
     | CastValueStatement | CheckCastStatement | SelectArrayElementStatement | CallMethodStatement | CallMainMethodStatement | CallInputMethodStatement |
     MakeEllipsisArrayStatement | PopFromStackStatement | InitStackframeStatement |
     CloseStackframeStatement | ReturnStatement | NewObjectStatement |
-    JumpIfFalseStatement | JumpIfTrueStatement | JumpAlwaysStatement | NoOpStatement | IncrementDecrementBeforeStatement |
-    IncrementDecrementAfterStatement | ProgramEndStatement | BeginArrayStatement | AddToArrayStatement |
+    JumpIfFalseStatement | JumpIfTrueStatement | JumpAlwaysStatement | NoOpStatement | IncrementDecrementStatement |
+    ProgramEndStatement | BeginArrayStatement | AddToArrayStatement |
     PushEmptyArrayStatement | PrintStatement | PushEnumValueStatement | InitializeEnumValueStatement |
     JumpOnSwitchStatement | JumpIfTrueAndLeaveOnStackStatement | JumpIfFalseAndLeaveOnStackStatement |
     DeclareHeapVariableStatement | PushFromHeapToStackStatement | ProcessPostConstructorCallbacksStatement |
@@ -136,6 +136,26 @@ export type AssignmentStatement = {
     breakpoint?: Breakpoint
     stepFinished?: boolean,
     leaveValueOnStack: boolean,
+}
+
+
+export type IncrementDecrementStatement = {
+    type: TokenType.incrementDecrementBefore | TokenType.incrementDecrementAfter,
+    delta: number,
+    target: AssignmentTarget,
+    position: TextPosition,
+    breakpoint?: Breakpoint
+    stepFinished?: boolean,
+    leaveValueOnStack: boolean,
+    // push (static) attribute
+    klass?: StaticClass,
+    attributeIndex?: number,
+    attributeIdentifier?: string,
+    useThisObject?: boolean,
+    // push local variable to stack
+    stackposOfVariable?: number,
+    // push from heap to stack
+    identifier?: string
 }
 
 export type NewAssignmentStatement = {
@@ -325,21 +345,21 @@ export type ProcessPostConstructorCallbacksStatement = {
     stepFinished?: boolean
 }
 
-export type IncrementDecrementBeforeStatement = {
-    type: TokenType.incrementDecrementBefore,
-    position: TextPosition,
-    breakpoint?: Breakpoint
-    stepFinished?: boolean,
-    incrementDecrementBy: number
-}
+// export type IncrementDecrementBeforeStatement = {
+//     type: TokenType.incrementDecrementBefore,
+//     position: TextPosition,
+//     breakpoint?: Breakpoint
+//     stepFinished?: boolean,
+//     incrementDecrementBy: number
+// }
 
-export type IncrementDecrementAfterStatement = {
-    type: TokenType.incrementDecrementAfter,
-    position: TextPosition,
-    breakpoint?: Breakpoint
-    stepFinished?: boolean,
-    incrementDecrementBy: number
-}
+// export type IncrementDecrementAfterStatement = {
+//     type: TokenType.incrementDecrementAfter,
+//     position: TextPosition,
+//     breakpoint?: Breakpoint
+//     stepFinished?: boolean,
+//     incrementDecrementBy: number
+// }
 
 export type JumpNode = JumpIfFalseStatement | JumpAlwaysStatement | JumpIfTrueStatement |
     JumpIfTrueAndLeaveOnStackStatement | JumpIfFalseAndLeaveOnStackStatement | ExtendedForLoopCheckCounterAndGetElement;
