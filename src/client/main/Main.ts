@@ -149,9 +149,21 @@ export class Main implements MainBase {
     initGUI() {
 
         checkIfMousePresent();
-
+        
         this.login = new Login(this);
-        this.login.initGUI();
+        let hashIndex: number = window.location.href.indexOf('#');
+        if(hashIndex > 0){
+    
+            var ticket = window.location.href.substr(hashIndex + 1);
+            window.history.replaceState({}, "Online-IDE", window.location.href.substr(0, hashIndex));
+            this.login.initGUI(true);
+            this.login.loginWithTicket(ticket);
+    
+        } else {
+            this.login.initGUI(false);
+        }
+    
+
 
         this.actionManager = new ActionManager(null, this);
         this.actionManager.init();
@@ -246,7 +258,7 @@ export class Main implements MainBase {
 
         jQuery(window).trigger('resize');
 
-        this.checkStartupComplete();
+//        this.checkStartupComplete();
     }
 
     initTeacherExplorer(classdata: ClassData[]) {

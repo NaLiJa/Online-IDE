@@ -216,7 +216,7 @@ export class DebuggerElement {
             
         }
 
-        this.$debuggerElement.find('.jo_deValue').first().html(s);
+        this.$debuggerElement.find('.jo_deValue').first().html(s == null ? "" : s);
 
 
         for (let child of this.children) {

@@ -157,11 +157,17 @@ export type LoginRequest = {
     language: number
 }
 
+export type TicketLoginRequest = {
+    ticket: string,
+    language: number
+}
+
 export type LoginResponse = {
     success: boolean,
     user: UserData,
     classdata: ClassData[], // null if !is_teacher
     workspaces: Workspaces,
+    isTestuser: boolean
 }
 
 export type LogoutRequest = {
@@ -177,12 +183,15 @@ export type SendUpdatesRequest = {
     files: FileData[],
     owner_id: number,
     userId: number,
-    language: number
+    language: number,
+    currentWorkspaceId: number,
+    getModifiedWorkspaces: boolean
 }
 
 export type SendUpdatesResponse = {
-    workspaces: Workspaces;
-    success: boolean;
+    workspaces: Workspaces,
+    filesToForceUpdate: FileData[],
+    success: boolean
 }
 
 export type UpdateUserSettingsRequest = {
@@ -322,7 +331,18 @@ export type StatisticData = {
     userlist?: string[],
     webSocketSessionCount: number,
     webSocketClientCount: number,
-    webSocketRequestPerSecond: number
+    webSocketRequestPerSecond: number,
+    performanceDataList: PerformanceData[]
+}
+
+export type PerformanceData = {
+    url: string;
+    sumTime: number;
+    count: number;
+}
+
+export type CollectPerformanceDataRequest = {
+    data: PerformanceData[]
 }
 
 export type GetStatisticsResponse = {
